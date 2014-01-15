@@ -1,0 +1,9 @@
+---
+layout: post
+title:  "Seb avec les variables"
+date:   2014-01-15 10:33:21
+---
+    
+Salut test 1
+test 2s
+
