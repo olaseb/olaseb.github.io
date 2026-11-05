@@ -308,6 +308,25 @@ input.codein.small{font-size:20px;letter-spacing:2px;padding:8px;flex:1;text-tra
 .th-galaxie .who button{background:var(--card);color:var(--ink)}.th-galaxie .stabs button{background:var(--card);color:var(--ink)}.th-galaxie .stabs button.on{background:var(--me)}
 .th-galaxie .price{background:#4a3a10;color:#ffe9a8}.th-galaxie .price.owned{background:#0e5a48;color:#b8ffe8}.th-galaxie .price.eq{background:var(--me-soft);color:#fff}
 .th-galaxie .weak span{background:#4a2147;color:#ffb3c8}.th-galaxie .weak .none{background:#0e5a48;color:#b8ffe8}
+
+body.p-papa{--me:#f08a24; --me-soft:#ffe8d1}
+.th-galaxie.p-papa{--me-soft:#5a3a1a}
+.who button{padding:7px 12px}
+.who button.on.papa{border-color:#f08a24;background:#ffe8d1}
+.th-galaxie .who button.on.papa{background:#5a3a1a}
+.scene.three{height:clamp(200px,36dvh,290px)}
+@media (max-height:620px){#app.play .scene.three{height:170px}}
+.vfboard{display:flex;gap:8px;margin-bottom:10px;flex:none}
+.vfp{flex:1;background:var(--card);border-radius:16px;padding:6px 4px;text-align:center;border:3px solid var(--c);box-shadow:0 3px 0 var(--line);min-width:0}
+.vfp span{font-size:22px;line-height:1.1;display:block}.vfp b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vfp i{font-style:normal;font-family:"Baloo 2",sans-serif;font-size:28px;font-weight:800;color:var(--c);line-height:1}
+.bump{animation:popin .35s}
+.podium{display:flex;flex-direction:column;gap:6px;margin:12px 0 16px;text-align:left}
+.podium div{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:12px;padding:8px 12px;font-weight:800}
+.podium span{font-size:22px;width:28px}.podium b{margin-left:auto}.podium small{color:var(--muted);margin-left:8px;font-weight:700}
+.plist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}.pl{border:3px solid;border-radius:99px;padding:4px 12px;font-weight:800;background:var(--card)}
+.puller.n2{display:flex;flex-direction:column;top:24%;width:20%;aspect-ratio:auto;gap:2px}.puller.n2 svg{height:auto;aspect-ratio:4/3}
+.camp{position:absolute;left:4%;bottom:6%;font-size:12px;font-weight:800;color:#fff;opacity:.9}
 </style>
 </head>
 <body>
@@ -316,25 +335,26 @@ input.codein.small{font-size:20px;letter-spacing:2px;padding:8px;flex:1;text-tra
 "use strict";
 /* ============ Données ============ */
 const KEY = "tables-lana-sorya-v1";
-const NAMES = {lana:"Lana", sorya:"Sorya", cpu:"Ordinateur"};
-const AV = {lana:"🦄", sorya:"🐬", cpu:"🤖"};
-const COL = {lana:"#9b5de5", sorya:"#00a6a6", cpu:"#6c757d"};
+const PROFILES = ["lana","sorya","papa"], KIDS = ["lana","sorya"];
+const NAMES = {lana:"Lana", sorya:"Sorya", papa:"Papa", cpu:"Ordinateur"};
+const AV = {lana:"🦄", sorya:"🐬", papa:"🦁", cpu:"🤖"};
+const COL = {lana:"#9b5de5", sorya:"#00a6a6", papa:"#f08a24", cpu:"#6c757d"};
 const newProfile = () => ({chrono:[], chronoBest:{}, errors:{}, stats:{}, stars:{}, memory:{}, balloons:0, vf:0, race:{wins:0, losses:0},
   coins:0, earned:0, xp:0, totalOk:0, streak:{count:0,last:"",best:0,days:[]}, daily:null, dailyDone:0, owned:{}, equip:{track:"hippo",acc:{}},
   badges:{}, days:{}, corde:{wins:0,losses:0}, duel:{wins:0,losses:0}, flags:{}, lastPlayed:0, updatedAt:0});
 const defaults = () => ({v:1, current:"lana",
   settings:{t11:false, t12:false, answer:"keypad", sound:true, tables:[2,3,4,5,6,7,8,9,10],
-            balance:"none", balanceWho:"lana", headStart:2, cpuLevel:"moyen", raceLen:10, chronoDur:1, theme:"classique", cpuHorse:"noir", cordeLen:7},
-  profiles:{lana:newProfile(), sorya:newProfile()}, parent:{pin:"0000", rewards:{}, updatedAt:0}});
+            balance:"none", balanceWho:"lana", headStart:2, cpuLevel:"moyen", raceLen:10, chronoDur:1, theme:"classique", cpuHorse:"noir", cordeLen:7, cordeMode:"duel", vfTarget:10},
+  profiles:{lana:newProfile(), sorya:newProfile(), papa:newProfile()}, parent:{pin:"0000", rewards:{}, papa:{mode:"none",head:2}, updatedAt:0}});
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
 if (!S || !S.profiles) S = defaults();
 { const d = defaults(); S.settings = Object.assign(d.settings, S.settings);
-  S.parent = Object.assign({pin:"0000", rewards:{}, updatedAt:0}, S.parent||{}); }
+  S.parent = Object.assign({pin:"0000", rewards:{}, papa:{mode:"none",head:2}, updatedAt:0}, S.parent||{}); }
 function persist(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
 function save(){ const p=S.profiles[S.current]; if (p){ p.updatedAt=Date.now(); try { checkBadges(); } catch(e){} } persist(); try { fbPush(S.current); } catch(e){} }
 const me = () => S.current;
-const other = () => me()==="lana" ? "sorya" : "lana";
+const other = () => me()==="lana" ? "sorya" : "lana";  // (utilisé pour l'équilibrage des sœurs)
 const P = () => S.profiles[me()];
 
 /* ============ Chevaux & logo ============ */
@@ -346,8 +366,8 @@ const HORSES = {
   bai:     {name:"Bai",       coat:"#7b4a2c", mane:"#2a160b"},
   licorne: {name:"Licorne",   coat:"#ffffff", mane:"#ff8fc8", horn:true}
 };
-const DEF_HORSE = {lana:"alezan", sorya:"gris"};
-const CLOTH = {lana:"#9b5de5", sorya:"#00a6a6", cpu:"#6c757d"};
+const DEF_HORSE = {lana:"alezan", sorya:"gris", papa:"bai"};
+const CLOTH = {lana:"#9b5de5", sorya:"#00a6a6", papa:"#f08a24", cpu:"#6c757d"};
 const myHorse = p => (S.profiles[p] && HORSES[S.profiles[p].horse]) ? S.profiles[p].horse : (DEF_HORSE[p]||"noir");
 function horseSVG(kind, cloth="#9b5de5", num="", acc={}){
   acc = acc||{}; const h = HORSES[kind] || HORSES.alezan, c=h.coat, m0=h.mane, m = acc.rainbow ? "url(#rbw)" : m0, st = h.coat==="#ffffff" ? ' stroke="#e3dbe9" stroke-width="1.2"' : "";
@@ -541,23 +561,23 @@ SCREENS.home = () => {
   const rw=S.parent.rewards[me()], rp=rw?Math.max(0,(p.earned||0)-(rw.start||0)):0;
   app.innerHTML = `
   <div class="hello">${LOGO}</div>
-  <div class="who">${["lana","sorya"].map(k=>`<button class="${me()===k?"on "+k:""}" onclick="setProfile('${k}')">${AV[k]} ${NAMES[k]}</button>`).join("")}</div>
+  <div class="who">${PROFILES.map(k=>`<button class="${me()===k?"on "+k:""}" onclick="setProfile('${k}')">${AV[k]} ${NAMES[k]}</button>`).join("")}</div>
   <div class="tbar"><span class="avb">${AV[me()]}</span><div class="lvl"><b>${NAMES[me()]} · ${TITLE(x.l)}</b><small>Niveau ${x.l} · ${x.cur} / ${x.need} XP</small><div class="xp"><i style="width:${x.pct}%"></i></div></div>
     <span class="pchip">🔥 ${st}</span><span class="pchip">🪙 ${p.coins||0}</span></div>
   ${dl.done ? `<div class="daily done"><div class="big">✅</div><h2>Défi du jour réussi !</h2><p>Reviens demain pour garder ta flamme 🔥</p></div>`
     : `<button class="daily" onclick="go('dailyPlay')"><div class="big">🎯</div><h2>Défi du jour</h2><p>${dl.goal} bonnes réponses en table de ${dl.table}<br>Récompense : 🪙 50 + 🔥</p><div class="prog"><i style="width:${dl.prog/dl.goal*100}%"></i></div><span class="go">${dl.prog?"Continuer":"Commencer"} · ${dl.prog}/${dl.goal}</span></button>`}
   <div class="card"><div class="label small">🔥 ${st} jour${st>1?"s":""} d'affilée${st?(st%7===6?" · demain : bonus de la semaine !":""):" · réussis le défi pour allumer ta flamme"}</div>
     <div class="week">${week.map((d,i)=>`<div class="wd ${done.has(d)?"on":""} ${d===td?"today":""}"><span>${done.has(d)?"🔥":d===td?"🎯":i===6?"🎁":""}</span>${"LMMJVSD"[i]}</div>`).join("")}</div></div>
-  ${rw?`<div class="card rwcard"><span style="font-size:30px">${rw.emoji}</span><div style="flex:1"><b>${esc(rw.label)}</b><div class="pb"><i style="width:${Math.min(100,rp/rw.goal*100)}%"></i></div><div class="muted small">${Math.min(rp,rw.goal)} / ${rw.goal} 🪙${rp>=rw.goal?" · objectif atteint ! 🎉":""}</div></div></div>`:""}
+  ${me()!=="papa" && rw?`<div class="card rwcard"><span style="font-size:30px">${rw.emoji}</span><div style="flex:1"><b>${esc(rw.label)}</b><div class="pb"><i style="width:${Math.min(100,rp/rw.goal*100)}%"></i></div><div class="muted small">${Math.min(rp,rw.goal)} / ${rw.goal} 🪙${rp>=rw.goal?" · objectif atteint ! 🎉":""}</div></div></div>`:""}
   <div class="modes">
     <button class="mode" style="background:#ffe8a3" onclick="go('chronoSetup')"><span class="ic">⏱️</span><b>Chrono</b><span>Seule ou en duel</span></button>
-    <button class="mode" style="background:#c9f0d6" onclick="go('raceSetup')"><span class="ic">🐎</span><b>Course de chevaux</b><span>Contre l'ordi ou ${NAMES[other()]}</span></button>
-    <button class="mode" style="background:#ffe0cc" onclick="go('cordeSetup')"><span class="ic">🪢</span><b>Tir à la corde</b><span>Contre l'ordi ou ${NAMES[other()]}</span></button>
+    <button class="mode" style="background:#c9f0d6" onclick="go('raceSetup')"><span class="ic">🐎</span><b>Course de chevaux</b><span>Contre l'ordi ou en famille</span></button>
+    <button class="mode" style="background:#ffe0cc" onclick="go('cordeSetup')"><span class="ic">🪢</span><b>Tir à la corde</b><span>1c1, équipe ou tournoi</span></button>
     <button class="mode" style="background:#ffd6de" onclick="go('errors')">${ne?`<span class="badge">${ne}</span>`:""}<span class="ic">🎯</span><b>Mes erreurs</b><span>Revoir les calculs ratés</span></button>
     <button class="mode" style="background:#e3d7fb" onclick="go('defi')"><span class="ic">⭐</span><b>Défi des tables</b><span>Gagne les 3 étoiles</span></button>
     <button class="mode" style="background:#cfe9ff" onclick="go('memorySetup')"><span class="ic">🃏</span><b>Memory</b><span>Calcul ↔ résultat</span></button>
     <button class="mode" style="background:#d7f3f7" onclick="go('balloons')"><span class="ic">🎈</span><b>Ballons</b><span>Éclate la bonne réponse</span></button>
-    <button class="mode" style="background:#ffe1c7" onclick="go('vf')"><span class="ic">✅❌</span><b>Vrai ou faux</b><span>60 secondes express</span></button>
+    <button class="mode" style="background:#ffe1c7" onclick="go('vf')"><span class="ic">✅❌</span><b>Vrai ou faux</b><span>Seule ou en famille</span></button>
     <button class="mode" style="background:#fde2ff" onclick="go('shop')"><span class="ic">🛍️</span><b>Boutique</b><span>Chevaux, pistes…</span></button>
     <button class="mode" style="background:#e9e1ff" onclick="go('badges')"><span class="ic">🏅</span><b>Mes badges</b><span>${Object.keys(p.badges||{}).length} / ${BADGES.length}</span></button>
   </div>
@@ -615,8 +635,7 @@ SCREENS.chronoSetup = () => {
     ${seg("chronoDur",[[1,"1 min"],[3,"3 min"],[5,"5 min"]],d,"setOpt")}
     <hr>${tablesPicker()}</div>
   <button class="btn block" onclick="go('chrono')">C'est parti !</button>
-  <div class="card" style="margin-top:16px"><div class="label">⚔️ Duel Chrono contre ${NAMES[other()]}</div><div class="muted small" style="margin-bottom:10px">Même minuteur pour les deux, la meilleure gagne. Chacune sur son téléphone.</div>
-    <div class="row"><button class="btn sun" style="flex:1" onclick="go('raceHost','chrono')">Créer</button><button class="btn ghost" style="flex:1" onclick="go('raceJoin')">Rejoindre</button></div></div>
+  <div style="height:16px"></div>${familyCard("chrono")}
   <div class="card"><div class="label">🏆 Records de ${NAMES[me()]}</div>
     <div class="row" style="justify-content:space-around;text-align:center">${[1,3,5].map(m=>`<div><div class="muted small">${m} min</div><div class="big" style="font-size:30px">${p.chronoBest[m]??"–"}</div></div>`).join("")}</div>
     <hr><div class="label">10 dernières parties</div>
@@ -658,277 +677,487 @@ SCREENS.chrono = () => {
   next();
 };
 
-/* ---------- Course de chevaux ---------- */
-let RACE = null, NET = null;
+/* ===================== Jeux à plusieurs : course, corde, vrai/faux, chrono (2 ou 3 joueurs) ===================== */
+let RACE = null, NET = null, CHR = null;
+const PAPA_T = [6,7,8,9,10,11,12];
+const nm = p => NAMES[p] || p;
+const arr = x => Array.isArray(x) ? x : Object.keys(x||{}).sort((a,b)=>a-b).map(k=>x[k]);
+const gEnd = w => (w==="cpu"||w==="papa") ? "" : "e";
+const clearOv = () => { const o=document.getElementById("ov"); if (o) o.remove(); };
+const GAMES = {race:["🐎","Course de chevaux","raceSetup"], corde:["🪢","Tir à la corde","cordeSetup"], chrono:["⏱️","Chrono en famille","chronoSetup"], vf:["✅","Vrai ou faux en famille","vf"]};
+function familyCard(game, extra=""){
+  return `<div class="card"><div class="label">👨‍👧‍👧 En famille (2 ou 3, chacun sur son téléphone)</div>${extra}
+    <div class="row"><button class="btn sun" style="flex:1" onclick="go('lobby','${game}')">Créer</button><button class="btn ghost" style="flex:1" onclick="go('join')">Rejoindre</button></div>
+    <div class="muted small" style="margin-top:8px">${FAM?"Une personne crée la partie et donne le code, les autres le tapent dans « Rejoindre ».":"⚠️ Relie d'abord ce téléphone à la famille (Paramètres) pour jouer ensemble."}</div></div>`;
+}
+function setOptR(n,v,el){ setOpt(n,v,el); go(CUR.screen, ...CUR.args); }
+const cordeHelp = () => ({duel:"Deux joueurs face à face.", equipe:"Les bonnes réponses de Lana et Sorya tirent ensemble contre celles de Papa.", tournoi:"Chacun affronte les deux autres (Papa–Sorya, Papa–Lana, Lana–Sorya), puis finale entre les deux meilleurs : le plus de victoires, puis le temps le plus rapide."})[S.settings.cordeMode]||"";
+
 SCREENS.raceSetup = () => {
   const s=S.settings, r=P().race;
   app.innerHTML = hdr("🐎 Course de chevaux") + `
-  <div class="card"><div class="label">Nombre de questions (longueur de la course)</div>
-    ${seg("raceLen",[[10,"10"],[15,"15"],[20,"20"]],s.raceLen,"setOpt")}<hr>${tablesPicker()}</div>
-  <div class="card"><div class="label">🤖 Contre l'ordinateur</div>
-    ${seg("cpuLevel",[["facile","Facile"],["moyen","Moyen"],["difficile","Difficile"]],s.cpuLevel,"setOpt")}${cpuPick()}
-    <button class="btn block" style="margin-top:12px" onclick="startCpuRace()">Lancer la course</button></div>
-  <div class="card"><div class="label">${AV[other()]} Contre ${NAMES[other()]} (chacune sur son appareil)</div>
-    <div class="row"><button class="btn sun" style="flex:1" onclick="go('raceHost','race')">Créer</button><button class="btn ghost" style="flex:1" onclick="go('raceJoin')">Rejoindre</button></div>
-    <div class="muted small" style="margin-top:8px">Une crée la course et donne le code, l'autre le tape dans « Rejoindre ». Il faut Internet sur les deux appareils.</div></div>
+  <div class="card"><div class="label">Nombre de questions (longueur de la course)</div>${seg("raceLen",[[10,"10"],[15,"15"],[20,"20"]],s.raceLen,"setOpt")}<hr>${tablesPicker()}</div>
+  <div class="card"><div class="label">🤖 Contre l'ordinateur</div>${seg("cpuLevel",[["facile","Facile"],["moyen","Moyen"],["difficile","Difficile"]],s.cpuLevel,"setOpt")}${cpuPick()}
+    <button class="btn block" style="margin-top:12px" onclick="startCpu('race')">Lancer la course</button></div>
+  ${familyCard("race")}
+  <div class="muted small" style="text-align:center">🏆 ${r.wins} victoire${r.wins>1?"s":""} · ${r.losses} défaite${r.losses>1?"s":""}</div>`;
+};
+SCREENS.cordeSetup = () => {
+  const s=S.settings, r=P().corde;
+  app.innerHTML = hdr("🪢 Tir à la corde") + `
+  <div class="card"><div class="muted small" style="margin-bottom:10px">Chaque bonne réponse tire la corde de ton côté. Le premier camp qui amène le ruban chez lui gagne !</div>
+    <div class="label">Écart à atteindre</div>${seg("cordeLen",[[5,"5"],[7,"7"],[10,"10"]],s.cordeLen,"setOpt")}<hr>${tablesPicker()}</div>
+  <div class="card"><div class="label">🤖 Contre l'ordinateur</div>${seg("cpuLevel",[["facile","Facile"],["moyen","Moyen"],["difficile","Difficile"]],s.cpuLevel,"setOpt")}${cpuPick()}
+    <button class="btn block" style="margin-top:12px" onclick="startCpu('corde')">Lancer la partie</button></div>
+  ${familyCard("corde", `<div class="label">Formule</div>${seg("cordeMode",[["duel","1 contre 1"],["equipe","Papa contre les filles"],["tournoi","Tournoi à 3"]],s.cordeMode,"setOptR")}<div class="muted small" style="margin:6px 0 10px">${cordeHelp()}</div>`)}
   <div class="muted small" style="text-align:center">🏆 ${r.wins} victoire${r.wins>1?"s":""} · ${r.losses} défaite${r.losses>1?"s":""}</div>`;
 };
 
-/* Moteur (tourne chez celle qui crée la course ou contre l'ordi) */
-function Engine(opts){
-  // opts: {roles:["host","guest"|"cpu"], target, tables:{host,guest}, pos, emit}
-  const E = {r:0, pos:Object.assign({},opts.pos), locked:{}, done:true, q:{}, timers:[]};
+/* ---- Moteur commun (tourne chez celui qui crée la partie, ou contre l'ordi) ---- */
+function Engine(o){
+  const K = r => o.teams ? o.teams[r] : r;
+  const keys = [...new Set(o.roles.map(K))];
+  const E = {r:0, pos:{}, locked:{}, done:true, q:{}, timers:[], over:false, t0:0};
   const clearT = () => { E.timers.forEach(clearTimeout); E.timers=[]; };
   E.start = () => {
-    E.r=0; E.pos=Object.assign({},opts.pos); E.over=false;
-    opts.emit({t:"start", target:opts.target, pos:E.pos, names:opts.names, horses:opts.horses, kind:opts.kind||"race", track:opts.track||"hippo"});
+    clearT(); E.r=0; E.over=false; E.t0=0; E.pos=Object.fromEntries(keys.map(k=>[k,(o.pos||{})[k]||0]));
+    o.emit(Object.assign({t:"start", kind:o.kind, target:o.target, pos:E.pos, roles:o.roles, teams:o.teams||null, names:o.names, horses:o.horses, track:o.track||"hippo"}, o.extra||{}));
     E.timers.push(setTimeout(E.round, 3300));
   };
   E.round = () => {
-    clearT(); E.r++; E.locked={}; E.done=false;
-    const prev = E.q; E.q = {};
-    for (const role of opts.roles){
-      const tb = opts.tables[role] || opts.tables.host;
-      // même question pour les deux, sauf si l'équilibrage donne des tables différentes
-      E.q[role] = (role!=="host" && tb===opts.tables.host) ? E.q.host : randFact(tb, prev[role]);
+    clearT(); if (!E.t0) E.t0=Date.now(); E.r++; E.locked={}; E.done=false;
+    const prev=E.q; E.q={}; const cache=new Map();
+    for (const role of o.roles){
+      const tb=o.tables[role]||o.tables[o.roles[0]]; let q=cache.get(tb);
+      if (!q){ q=randFact(tb, prev[role]); if (o.kind==="vf"){ q.truth=Math.random()<.5; q.shown=q.truth?q.ans:pick(choices(q).filter(c=>c!==q.ans)); } cache.set(tb,q); }
+      E.q[role]=q;
     }
-    opts.emit({t:"round", r:E.r, q:Object.fromEntries(opts.roles.map(r=>[r,{a:E.q[r].a,b:E.q[r].b}]))});
-    if (opts.roles.includes("cpu")) cpuPlay();
+    o.emit({t:"round", r:E.r, q:Object.fromEntries(o.roles.map(r=>[r,{a:E.q[r].a, b:E.q[r].b, shown:E.q[r].shown==null?-1:E.q[r].shown}]))});
+    if (o.roles.includes("cpu")) cpuPlay();
   };
   function cpuPlay(){
-    const L = {facile:[5200,.8], moyen:[3600,.9], difficile:[2400,.96]}[opts.cpuLevel||"moyen"], q=E.q.cpu;
-    const hard = Math.min(q.a,q.b)>=6 ? 1.3 : Math.min(q.a,q.b)<=2 ? .7 : 1;
-    E.timers.push(setTimeout(()=>E.answer("cpu", E.r, Math.random()<L[1] ? q.ans : q.ans+pick([-q.a,q.b,1,-1])), L[0]*hard*(.7+Math.random()*.6)));
+    const L={facile:[5200,.8], moyen:[3600,.9], difficile:[2400,.96]}[o.cpuLevel||"moyen"], q=E.q.cpu;
+    const hard=Math.min(q.a,q.b)>=6?1.3:Math.min(q.a,q.b)<=2?.7:1, good=Math.random()<L[1];
+    const v = o.kind==="vf" ? (good?q.truth:!q.truth) : (good?q.ans:q.ans+pick([-q.a,q.b,1,-1]));
+    E.timers.push(setTimeout(()=>E.answer("cpu", E.r, v), L[0]*hard*(.7+Math.random()*.6)*(o.kind==="vf"?.6:1)));
   }
+  const won = k => o.kind==="corde" ? (E.pos[k]-Math.max(...keys.filter(x=>x!==k).map(x=>E.pos[x])) >= o.target) : (E.pos[k] >= o.target);
   E.answer = (role, r, v) => {
     if (E.over || E.done || r!==E.r || E.locked[role] || !E.q[role]) return;
-    if (v === E.q[role].ans){
-      E.done=true; clearT(); E.pos[role]++;
-      const ans = Object.fromEntries(opts.roles.map(x=>[x,E.q[x].ans]));
-      opts.emit({t:"result", r, winner:role, pos:E.pos, ans});
-      const othr = opts.roles.find(x=>x!==role);
-      if (opts.kind==="corde" ? (E.pos[role]-E.pos[othr] >= opts.target) : (E.pos[role] >= opts.target)){ E.over=true; E.timers.push(setTimeout(()=>opts.emit({t:"end", winner:role, pos:E.pos}), 900)); }
-      else E.timers.push(setTimeout(E.round, 1500));
+    const q=E.q[role], ok = o.kind==="vf" ? v===q.truth : v===q.ans;
+    if (ok){
+      E.done=true; clearT(); const k=K(role); E.pos[k]++;
+      o.emit({t:"result", r, winner:role, wkey:k, pos:E.pos});
+      if (won(k)){ E.over=true; const dur=Date.now()-E.t0; E.timers.push(setTimeout(()=>o.emit({t:"end", winner:k, pos:E.pos, dur}), 900)); }
+      else E.timers.push(setTimeout(E.round, o.kind==="vf"?1100:1500));
     } else {
-      E.locked[role]=true; opts.emit({t:"lock", r, role});
-      if (opts.roles.every(x=>E.locked[x])){ E.done=true; clearT();
-        opts.emit({t:"result", r, winner:null, pos:E.pos, ans:Object.fromEntries(opts.roles.map(x=>[x,E.q[x].ans]))});
-        E.timers.push(setTimeout(E.round, 2000)); }
+      E.locked[role]=true; o.emit({t:"lock", r, role});
+      if (o.roles.every(x=>E.locked[x])){ E.done=true; clearT(); o.emit({t:"result", r, winner:null, pos:E.pos}); E.timers.push(setTimeout(E.round, 1800)); }
     }
   };
   E.stop = () => { clearT(); E.over=true; };
   return E;
 }
-
-function startCpuRace(kind="race"){
+function startCpu(kind){
+  const s=S.settings, tb=activeTables();
+  RACE = {myRole:"host", online:false};
   go("raceView");
-  const s=S.settings;
-  RACE = {myRole:"host", oppRole:"cpu", names:{host:me(), cpu:"cpu"}, online:false};
-  const tb = activeTables();
-  RACE.engine = Engine({roles:["host","cpu"], kind, target: kind==="corde" ? s.cordeLen : s.raceLen, track:myTrack(me()), tables:{host:tb, cpu:tb}, pos:{host:0,cpu:0},
+  RACE.engine = Engine({roles:["host","cpu"], kind, target: kind==="corde"?s.cordeLen:s.raceLen, track:myTrack(me()), tables:{host:tb, cpu:tb},
     names:{host:me(), cpu:"cpu"}, horses:{host:horseSpec(me()), cpu:{k:HORSES[s.cpuHorse]?s.cpuHorse:"noir", a:{}}}, cpuLevel:s.cpuLevel, emit:ev=>raceEvent(ev)});
   cleanup.push(()=>RACE&&RACE.engine&&RACE.engine.stop());
   RACE.engine.start();
 }
 SCREENS.raceView = () => { app.innerHTML = `<div id="race"></div>`; app.className="play"; };
 
+/* ---- Affichage (chez tout le monde) ---- */
+const TRACK_T = {hippo:76, plage:86, haies:80};
+function sceneSVG(track, n){
+  if (n<=2) return SCENES[track]||HIPPO;
+  const T=TRACK_T[track]||76, h=(246-T)/n, ys=[...Array(n-1)].map((_,i)=>(T+h*(i+1)).toFixed(1));
+  let s=SCENES[track]||HIPPO;
+  if (track==="plage") s=s.replace(/<path d="M0 166 H390"[^>]*\/>/, ys.map(y=>`<path d="M0 ${y} H390" stroke="#e0b866" stroke-width="3" stroke-dasharray="14 10"/>`).join(""));
+  else if (track==="haies") s=s.replace(/<path d="M0 164 H390"[^>]*\/>/, ys.map(y=>`<path d="M0 ${y} H390" stroke="#fff" stroke-width="2" opacity=".7"/>`).join("")).replace(/<g transform="translate\((120|240) (140|226)\)">.*?<\/g>/g, "")
+      .replace("</svg>", [...Array(n)].map((_,i)=>[120,240].map(x=>`<g transform="translate(${x} ${(T+h*(i+1)-6).toFixed(1)})"><rect x="-12" y="-15" width="4" height="18" fill="#fff"/><rect x="8" y="-15" width="4" height="18" fill="#fff"/><rect x="-14" y="-13" width="28" height="4" rx="2" fill="#ef476f"/><rect x="-14" y="-6" width="28" height="4" rx="2" fill="#fff"/></g>`).join("")).join("")+"</svg>");
+  else s=s.replace('<rect y="158" width="390" height="3" fill="rgba(255,255,255,.8)"/>', ys.map(y=>`<rect y="${y}" width="390" height="3" fill="rgba(255,255,255,.8)"/>`).join(""));
+  return s;
+}
+const pav = r => AV[RACE.names[r]] || "🤖";
+const pcol = r => CLOTH[RACE.names[r]] || "#6c757d";
+function lane(role, i, n){
+  const who=RACE.names[role], col=CLOTH[who]||"#6c757d", sp=(RACE.horses||{})[role];
+  const kind = typeof sp==="string" ? sp : (sp&&sp.k) || (who==="cpu"?"noir":myHorse(who)), acc=(sp&&sp.a)||{};
+  const T=TRACK_T[RACE.track]||76, h=(246-T)/n, top=(T+h*i)/250*100-(n>2?1.5:2), ht=h/250*100*(n>2?1.05:1);
+  return `<div class="horse2" id="h-${role}" style="top:${top}%;height:${ht}%">${horseSVG(kind, col, who==="cpu"?"🤖":nm(who)[0], acc)}<i class="tagh" style="background:${col}">${role===RACE.myRole?"Toi":nm(who)} · <span id="n-${role}">0</span></i></div>`;
+}
+const CORDE_BG = `<svg class="bg" viewBox="0 0 390 250" preserveAspectRatio="none" aria-hidden="true">
+  <rect width="390" height="250" fill="#8fd16a"/>${[...Array(8)].map((_,i)=>`<rect y="${i*32}" width="390" height="16" fill="#99d873"/>`).join("")}
+  <rect x="193" y="0" width="4" height="250" fill="#fff" opacity=".9"/>
+  <rect x="76" y="0" width="5" height="250" fill="#9b5de5" opacity=".55"/><rect x="309" y="0" width="5" height="250" fill="#ef476f" opacity=".55"/></svg>`;
+const sideLabel = (R, key) => { const mem=R.roles.filter(r=>R.K(r)===key);
+  if (mem.includes(R.myRole)) return mem.length>1 ? "Ton équipe" : "Toi";
+  if (R.teams) return key==="F" ? "Les filles" : "Papa"; return nm(R.names[mem[0]]); };
+function ropeScene(R){
+  const keys=[...new Set(R.roles.map(R.K))], my=R.spect?keys[0]:R.K(R.myRole), op=keys.find(k=>k!==my);
+  R.sides=[my, op];
+  const side = (key, cls) => { const mem=R.roles.filter(r=>R.K(r)===key), col=pcol(mem[0]);
+    return `<div class="puller ${cls} n${mem.length}">${mem.map(r=>{ const sp=(R.horses||{})[r]||{}; const who=R.names[r];
+      return horseSVG(typeof sp==="string"?sp:(sp.k||(who==="cpu"?"noir":myHorse(who))), pcol(r), who==="cpu"?"🤖":nm(who)[0], sp.a||{}); }).join("")}<i class="tagh" style="background:${col}">${sideLabel(R,key)}</i></div>`; };
+  return `<div class="scene" id="scene">${CORDE_BG}<div class="tug" id="tug"><div class="rope"></div><div class="knot">🎀</div>${side(my,"left")}${side(op,"right")}</div>
+    <span class="camp">${R.spect?sideLabel(R,my).toUpperCase():"TON CAMP"}</span></div>`;
+}
+function placeRope(moved){
+  const R=RACE, t=document.getElementById("tug"); if (!t || !R.sides) return;
+  const diff=(R.pos[R.sides[0]]||0)-(R.pos[R.sides[1]]||0);
+  const k=t.querySelector(".knot"); if (k) k.style.left=(50-Math.max(-1,Math.min(1,diff/R.target))*30)+"%";
+  const pill=document.getElementById("rdiff"); if (pill) pill.textContent = diff===0 ? "égalité" : `+${Math.abs(diff)} ${diff>0?(R.spect?sideLabel(R,R.sides[0]):"pour toi"):sideLabel(R,R.sides[1])}`;
+  if (moved){ t.classList.remove("yank"); void t.offsetWidth; t.classList.add("yank"); }
+}
+function placeHorses(moved){
+  const R=RACE; if (!R) return;
+  if (R.kind==="corde") return placeRope(moved);
+  for (const role of R.order||[]){
+    const v=R.pos[R.K(role)]||0, n=document.getElementById("n-"+role); if (n) n.textContent=v;
+    const h=document.getElementById("h-"+role); if (!h) continue;
+    if (R.kind==="vf"){ if (role===moved){ h.classList.remove("bump"); void h.offsetWidth; h.classList.add("bump"); } continue; }
+    const pct=Math.min(1, v/R.target), sc=document.getElementById("scene"), W=sc?sc.clientWidth:360, hw=h.offsetWidth||90;
+    h.style.left=(4+pct*(W*0.905-hw-4))+"px";
+    if (role===moved){ h.classList.remove("gallop"); void h.offsetWidth; h.classList.add("gallop"); }
+  }
+}
+const matchLabel = R => R.roles.map(r=>nm(R.names[r])).join(" contre ");
 function raceEvent(ev){
-  const R = RACE; if (!R) return;
-  const box = document.getElementById("race"); if (!box && ev.t!=="start") return;
+  const R=RACE; if (!R) return;
+  if (ev.t!=="start" && !document.getElementById("race")) return;
   if (ev.t==="start"){
-    if (!document.getElementById("race")) { clearAll(); app.innerHTML = `<div id="race"></div>`; app.className="play"; if (R.online) cleanup.push(netClose); }
-    R.target=ev.target; R.pos=ev.pos; R.names=ev.names; R.horses=ev.horses||{}; R.kind=ev.kind||"race"; R.r=0; R.q=null; R.done=false;
-    const mine = R.names[R.myRole], opp = R.names[R.oppRole];
-    document.getElementById("race").innerHTML = `
-      <div class="hud"><button class="back" onclick="quitRace()">✕</button><span class="pill" id="rq">Prêtes ?</span>${R.kind==="corde"?`<span class="pill">🪢 <span id="rdiff">égalité</span></span>`:`<span class="pill">🏁 ${R.target}</span>`}</div>
-      ${R.kind==="corde" ? ropeScene(R) : `<div class="scene" id="scene">${SCENES[ev.track]||HIPPO}${lane(R.myRole, mine, 0)}${lane(R.oppRole, opp, 1)}</div>`}
-      <div class="qbox" id="qb"><div class="q">🐎 🐎</div><div class="fb"></div></div><div id="aa"></div>`;
-    placeHorses();
-    countdown();
+    clearOv();
+    if (!document.getElementById("race")){ CUR={screen:"raceView",args:[]}; clearAll(); app.innerHTML=`<div id="race"></div>`; app.className="play"; if (R.online) cleanup.push(netClose); }
+    Object.assign(R, {kind:ev.kind, target:ev.target, pos:ev.pos||{}, roles:arr(ev.roles), teams:ev.teams||null, names:ev.names, horses:ev.horses||{}, track:ev.track||"hippo", tour:ev.tour||null, r:0, q:null, done:false, sides:null});
+    R.spect = !R.roles.includes(R.myRole);
+    R.K = r => R.teams ? R.teams[r] : r;
+    R.order = R.spect ? R.roles.slice() : [R.myRole, ...R.roles.filter(x=>x!==R.myRole)];
+    let scene;
+    if (R.kind==="corde") scene = ropeScene(R);
+    else if (R.kind==="vf") scene = `<div class="vfboard" id="scene">${R.order.map(r=>`<div class="vfp" id="h-${r}" style="--c:${pcol(r)}"><span>${pav(r)}</span><b>${r===R.myRole?"Toi":nm(R.names[r])}</b><i id="n-${r}">0</i></div>`).join("")}</div>`;
+    else scene = `<div class="scene ${R.order.length>2?"three":""}" id="scene">${sceneSVG(R.track, R.order.length)}${R.order.map((r,i)=>lane(r,i,R.order.length)).join("")}</div>`;
+    const title = R.tour ? `${R.tour.final?"Finale":"Match "+(R.tour.idx+1)+"/3"}` : "Prêts ?";
+    document.getElementById("race").innerHTML = `<div class="hud"><button class="back" onclick="quitRace()">✕</button><span class="pill" id="rq">${title}</span>${R.kind==="corde"?`<span class="pill">🪢 <span id="rdiff">égalité</span></span>`:`<span class="pill">🏁 ${R.target}</span>`}</div>
+      ${scene}<div class="qbox" id="qb"><div class="q" style="font-size:28px">${R.spect?"👀 "+matchLabel(R):R.kind==="vf"?"Vrai ou faux ?":R.kind==="corde"?"🪢":"🐎 🐎"}</div><div class="fb">${R.spect?"Tu regardes ce match":""}</div></div><div id="aa"></div>`;
+    placeHorses(); countdown();
   }
   else if (ev.t==="round"){
-    R.r=ev.r; R.done=false; R.locked=false; const q=ev.q[R.myRole]; R.q=fact(q.a,q.b);
-    document.getElementById("rq").textContent = `Question ${ev.r}`;
+    R.r=ev.r; R.done=false; R.locked=false;
+    const rq=document.getElementById("rq"); if (rq) rq.textContent = R.tour ? `${R.tour.final?"Finale":"Match "+(R.tour.idx+1)+"/3"} · Q${ev.r}` : `Question ${ev.r}`;
+    if (R.spect) return;
+    const q=ev.q[R.myRole]; R.q=fact(q.a,q.b); R.q.shown=q.shown;
     const aa=document.getElementById("aa"); aa.classList.remove("locked");
-    document.getElementById("qb").innerHTML = qHtml(R.q); aa.innerHTML = answerArea(R.q);
+    if (R.kind==="vf"){ R.q.truth = q.shown===R.q.ans;
+      document.getElementById("qb").innerHTML=`<div class="q" id="q">${fmt(R.q)} = ${q.shown}</div><div class="fb" id="fb"></div>`;
+      aa.innerHTML=`<div class="vf"><button class="t" onclick="submitAns(true)">VRAI</button><button class="f" onclick="submitAns(false)">FAUX</button></div>`; }
+    else { document.getElementById("qb").innerHTML=qHtml(R.q); aa.innerHTML=answerArea(R.q); }
     answerHandler = (v, el) => {
-      if (R.locked || R.done) return; const ok = v===R.q.ans; record(R.q, ok); markQcm(el,R.q,ok);
-      if (!ok){ R.locked=true; sndKo(); feedback(false,R.q,"Raté ! Attends la question suivante"); document.getElementById("aa").classList.add("locked"); }
+      if (R.locked || R.done) return; if (R.kind==="vf" && typeof v!=="boolean") return;
+      const ok = R.kind==="vf" ? v===R.q.truth : v===R.q.ans; record(R.q, ok); if (R.kind!=="vf") markQcm(el,R.q,ok);
+      if (!ok){ R.locked=true; sndKo(); feedback(false,R.q, R.kind==="vf"?`Raté ! ${fmt(R.q)} = ${R.q.ans}`:"Raté ! Attends la question suivante"); aa.classList.add("locked"); }
       sendAnswer(R.r, v);
     };
   }
   else if (ev.t==="lock"){
-    if (ev.role===R.oppRole && !R.done){ const fb=document.getElementById("fb"); if (fb && !R.locked){ fb.className="fb ok"; fb.textContent=`${nm(R.names[R.oppRole])} s'est trompé${R.oppRole==="cpu"?"":"e"} !`; } }
+    if (!R.spect && ev.role!==R.myRole && !R.done && !R.locked){ const fb=document.getElementById("fb"); if (fb){ fb.className="fb ok"; fb.textContent=`${nm(R.names[ev.role])} s'est trompé${gEnd(R.names[ev.role])} !`; } }
   }
   else if (ev.t==="result"){
-    R.done=true; answerHandler=null; R.pos=ev.pos; placeHorses(ev.winner);
+    R.done=true; if (!R.spect) answerHandler=null; R.pos=ev.pos||{}; placeHorses(ev.winner);
     const aa=document.getElementById("aa"); if (aa) aa.classList.add("locked");
-    const myAns = ev.ans[R.myRole];
-    if (ev.winner===R.myRole){ sndOk(); feedback(true,R.q, R.kind==="corde"?"✓ Tu tires la corde !":"✓ Ton cheval avance !"); }
-    else if (ev.winner){ beep(300,.15,"square"); feedback(false,R.q,`${nm(R.names[R.oppRole])} a été plus rapide · ${fmt(R.q)} = ${myAns}`); }
-    else feedback(false,R.q,`Personne ! ${fmt(R.q)} = ${myAns}`);
+    if (R.spect){ const fb=document.getElementById("fb"); if (fb) fb.textContent = ev.winner ? `${nm(R.names[ev.winner])} marque !` : "Personne…"; return; }
+    const sol = R.q ? `${fmt(R.q)} = ${R.q.ans}` : "";
+    const team = ev.winner && R.teams && ev.winner!==R.myRole && R.K(ev.winner)===R.K(R.myRole);
+    if (ev.winner===R.myRole){ sndOk(); feedback(true,R.q, R.kind==="corde"?"✓ Tu tires la corde !":R.kind==="vf"?"✓ Point pour toi !":"✓ Ton cheval avance !"); }
+    else if (team){ sndOk(); feedback(true,R.q,`✓ ${nm(R.names[ev.winner])} tire pour ton équipe !`); }
+    else if (ev.winner){ beep(300,.15,"square"); feedback(false,R.q,`${nm(R.names[ev.winner])} a été plus rapide · ${sol}`); }
+    else feedback(false,R.q,`Personne ! ${sol}`);
   }
-  else if (ev.t==="end"){
-    answerHandler=null; const win = ev.winner===R.myRole;
-    const r=R.kind==="corde"?P().corde:P().race; win ? r.wins++ : r.losses++;
-    if (R.online){ win ? P().duel.wins++ : P().duel.losses++; }
-    gain(win?20:5, win?15:5, win?"🏆 Victoire !":"Bien joué !");
+  else if (ev.t==="end") raceEnd(ev);
+}
+const keyLabel = (R,k) => R.teams ? (k==="F"?"Les filles":"Papa") : (R.roles.includes(k) ? (k===R.myRole?"Toi":nm(R.names[k])) : k);
+function raceEnd(ev){
+  const R=RACE; answerHandler=null;
+  const ranking=Object.entries(ev.pos).sort((a,b)=>b[1]-a[1]), myK=R.spect?null:R.K(R.myRole), win=myK===ev.winner;
+  const rank = myK ? ranking.findIndex(([k])=>k===myK)+1 : 0, n=ranking.length;
+  if (!R.spect){
+    const p=P();
+    if (R.kind==="race") win?p.race.wins++:p.race.losses++;
+    if (R.kind==="corde") win?p.corde.wins++:p.corde.losses++;
+    if (R.online) win?p.duel.wins++:p.duel.losses++;
+    if (R.tour) gain(win?10:3, win?10:3, win?"🏆 Match gagné !":"Bien joué !");
+    else gain(win?20:(n>2&&rank===2?10:5), win?15:5, win?"🏆 Victoire !":(n>2&&rank===2)?"🥈 Deuxième !":"Bien joué !");
     if (win){ sndWin(); confetti(120); } else beep(220,.4,"triangle");
-    const ov=document.createElement("div"); ov.className="overlay"; ov.id="ov";
-    ov.innerHTML = `<div class="card result" style="width:min(90vw,420px)"><div style="font-size:70px">${win?"🏆":"🐎"}</div>
-      <h2>${win?"Tu as gagné !":`${nm(R.names[R.oppRole])} gagne !`}</h2>
-      <div class="muted" style="margin:6px 0 16px">${R.kind==="corde"?"Bonnes réponses : ":""}${nm(R.names[R.myRole])} ${ev.pos[R.myRole]} – ${ev.pos[R.oppRole]} ${nm(R.names[R.oppRole])}</div>
-      <div class="row" style="justify-content:center">${R.online && R.myRole==="guest" ? `<span class="muted">${nm(R.names.host)} peut relancer une revanche</span>` : `<button class="btn" onclick="rematch()">Revanche</button>`}
-      <button class="btn ghost" onclick="quitRace()">Quitter</button></div></div>`;
-    document.body.appendChild(ov);
   }
-}
-const nm = p => NAMES[p] || p;
-function lane(role, who, i){
-  const col = CLOTH[who] || "#6c757d", sp = (RACE.horses||{})[role];
-  const kind = typeof sp==="string" ? sp : (sp && sp.k) || (who==="cpu" ? "noir" : myHorse(who)), acc = (sp && sp.a) || {};
-  return `<div class="horse2 l${i}" id="h-${role}">${horseSVG(kind, col, who==="cpu"?"🤖":nm(who)[0], acc)}<i class="tagh" style="background:${col}">${role===RACE.myRole?"Toi":nm(who)} · <span id="n-${role}">0</span></i></div>`;
-}
-function placeHorses(moved){
-  if (RACE && RACE.kind==="corde") return placeRope(moved);
-  for (const role of [RACE.myRole, RACE.oppRole]){
-    const h=document.getElementById("h-"+role); if (!h) continue;
-    const pct = Math.min(1, RACE.pos[role]/RACE.target), sc=document.getElementById("scene");
-    const W = sc ? sc.clientWidth : 360, hw = h.offsetWidth || 90;
-    h.style.left = (4 + pct * (W*0.905 - hw - 4)) + "px";
-    const n=document.getElementById("n-"+role); if (n) n.textContent = RACE.pos[role];
-    if (role===moved){ h.classList.remove("gallop"); void h.offsetWidth; h.classList.add("gallop"); }
-  }
+  if (R.tour){ if (NET && NET.host) tourAfterMatch(ev); return; }
+  const medals=["🥇","🥈","🥉"], title = win ? (R.teams && R.roles.filter(r=>R.K(r)===myK).length>1 ? "Ton équipe gagne !" : `Tu as gagné${gEnd(R.names[R.myRole])} !`) : `${keyLabel(R,ev.winner)} gagne${R.teams&&ev.winner==="F"?"nt":""} !`;
+  const ov=document.createElement("div"); ov.className="overlay"; ov.id="ov";
+  ov.innerHTML = `<div class="card result" style="width:min(90vw,420px)"><div style="font-size:66px">${win?"🏆":R.kind==="corde"?"🪢":R.kind==="vf"?"✅":"🐎"}</div><h2>${title}</h2>
+    <div class="podium">${ranking.map(([k,v],i)=>`<div><span>${medals[i]||""}</span>${keyLabel(R,k)}<b>${v}</b></div>`).join("")}</div>
+    <div class="row" style="justify-content:center">${R.online && !(NET&&NET.host) ? `<span class="muted">${nm(R.names.host)} peut relancer</span>` : `<button class="btn" onclick="rematch()">Revanche</button>`}<button class="btn ghost" onclick="quitRace()">Quitter</button></div></div>`;
+  document.body.appendChild(ov);
 }
 function countdown(){
   let n=3; const ov=document.createElement("div"); ov.className="overlay"; ov.id="cd"; document.body.appendChild(ov);
-  const tick=()=>{ if(!document.getElementById("cd")) return;
+  const tick=()=>{ if (!document.getElementById("cd")) return;
     if (n===0){ ov.innerHTML=`<div class="bigc">Partez !</div>`; beep(880,.3); setTimeout(()=>ov.remove(),500); return; }
     ov.innerHTML=`<div class="bigc">${n}</div>`; beep(440,.15); n--; setTimeout(tick,900); };
   tick(); cleanup.push(()=>ov.remove());
 }
 function sendAnswer(r, v){
-  if (RACE.myRole==="host") RACE.engine.answer("host", r, v);
-  else if (NET && NET.conn && NET.conn.open) NET.conn.send({t:"answer", r, v});
+  if (NET && !NET.host) toHost({t:"answer", r, v});
+  else if (RACE && RACE.engine) RACE.engine.answer(RACE.myRole, r, v);
 }
-function rematch(){ const ov=document.getElementById("ov"); if (ov) ov.remove(); RACE.engine.start(); }
-function quitRace(){ const ov=document.getElementById("ov"); if (ov) ov.remove(); const back = RACE && RACE.kind==="corde" ? "cordeSetup" : "raceSetup"; if (RACE && RACE.engine) RACE.engine.stop(); RACE=null; netClose(); go(back); }
+function rematch(){ clearOv(); if (RACE && RACE.engine) RACE.engine.start(); }
+function quitRace(){ clearOv(); const k=RACE&&RACE.kind, back = k==="corde"?"cordeSetup":k==="vf"?"vf":"raceSetup";
+  if (RACE && RACE.engine) RACE.engine.stop(); RACE=null; netClose(); go(back); }
+function quitAny(){ if (CHR) quitChrono(); else quitRace(); }
 
-/* ---- Réseau (PeerJS, connexion directe entre les deux appareils) ---- */
-const PREFIX = "tables-lana-sorya-2026-";
-function loadPeer(){
-  return new Promise((ok,ko)=>{
-    if (window.Peer) return ok();
-    const s=document.createElement("script"); s.src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js";
-    s.onload=()=>ok(); s.onerror=()=>ko(new Error("load")); document.head.appendChild(s);
-  });
+/* ---- Tournoi de tir à la corde à 3 ---- */
+function tourStart(){
+  const roles=Object.keys(NET.players), who=r=>NET.players[r].who, papa=roles.find(r=>who(r)==="papa");
+  let pairs;
+  if (papa){ const kids=roles.filter(r=>r!==papa), so=kids.find(r=>who(r)==="sorya")||kids[0], la=kids.find(r=>r!==so); pairs=[[papa,so],[papa,la],[la,so]]; }
+  else pairs=[[roles[0],roles[1]],[roles[0],roles[2]],[roles[1],roles[2]]];
+  NET.tour={pairs, idx:0, rec:Object.fromEntries(roles.map(r=>[r,{w:0,t:0}])), final:false};
+  tourMatch();
 }
-function netClose(){ if (NET){ const n=NET; NET=null; if (n.fb) fbClose(n); else { try{n.conn&&n.conn.close()}catch(e){} try{n.peer&&n.peer.destroy()}catch(e){} } } }
-function newCode(){ const L="ABCDEFGHJKMNPQRSTUVWXYZ"; let c=""; for(let i=0;i<4;i++) c+=L[rnd(L.length)]; return c; }
-function setStatus(txt, ok){ const el=document.getElementById("st"); if (el) el.innerHTML=`<span class="dot ${ok?"ok":""}"></span>${txt}`; }
-
-let NET_GAME="race";
-const GAMES = {race:["🐎","Course de chevaux","raceSetup"], corde:["🪢","Tir à la corde","cordeSetup"], chrono:["⚔️","Duel Chrono","chronoSetup"]};
-SCREENS.raceHost = (game="race") => {
-  NET_GAME = GAMES[game] ? game : "race"; const G=GAMES[NET_GAME], s=S.settings;
-  const info = NET_GAME==="race" ? `Course en ${s.raceLen} questions` : NET_GAME==="corde" ? `Tir à la corde · écart de ${s.cordeLen}` : `Duel Chrono de ${s.chronoDur} min`;
-  app.innerHTML = hdr(`${G[0]} ${G[1]} contre ${NAMES[other()]}`, G[2]) + `
-    <div class="card" style="text-align:center"><div class="muted">Donne ce code à ${NAMES[other()]}</div>
-      <div class="code" id="code">····</div><div class="status" id="st"><span class="dot"></span>Préparation…</div></div>
-    <div class="card small muted">${info} · tables ${activeTables().join(", ")}${s.balance!=="none"?`<br>⚖️ ${balHelp()}`:""}</div>
-    <button class="btn block" id="go" disabled onclick="hostStart()">Départ !</button>`;
-  cleanup.push(()=>{ if (!RACE && !DUEL) netClose(); });
-  if (ROOT){ netClose(); fbHostOpen().catch(()=>setStatus("Problème de connexion. Vérifie Internet et réessaie.")); }
-  else hostOpen(0);
-};
-function hostOpen(tries){
-  netClose();
-  loadPeer().then(()=>{
-    const code=newCode(); const peer=new Peer(PREFIX+code, {debug:0}); NET={peer, role:"host", code, game:NET_GAME};
-    peer.on("open", ()=>{ const c=document.getElementById("code"); if(c) c.textContent=code; setStatus(`En attente de ${NAMES[other()]}…`); });
-    peer.on("error", e=>{ if (e.type==="unavailable-id" && tries<4) hostOpen(tries+1); else setStatus("Problème de connexion. Vérifie Internet et réessaie."); });
-    peer.on("connection", conn=>{
-      if (NET.conn && NET.conn.open){ conn.close(); return; }
-      NET.conn=conn;
-      conn.on("data", d=>hostData(d));
-      conn.on("close", ()=>netLost());
-    });
-  }).catch(()=>setStatus("Impossible de charger le mode en ligne (Internet ?)"));
-}
-function hostData(d){
-  if (!d || typeof d!=="object") return;
-  if (d.t==="hello"){
-    if (!NET.conn && NET.pconn) NET.conn=NET.pconn;
-    NET.guest = ["lana","sorya"].includes(d.who) ? d.who : other(); NET.guestHorse = d.horse;
-    NET.conn.send({t:"welcome", host:me(), game:NET.game||"race"});
-    setStatus(`${AV[NET.guest]} ${NAMES[NET.guest]} est connectée !`, true);
-    const b=document.getElementById("go"); if (b) b.disabled=false; beep(880,.15);
-  } else if (d.t==="answer" && RACE && RACE.engine){ RACE.engine.answer("guest", d.r, d.v); }
-  else if (d.t==="cscore" || d.t==="cfinal") duelOnMsg(d);
-}
-function netLost(){
-  if (!NET) return;
-  const msg = document.createElement("div"); msg.className="overlay"; msg.id="ov";
-  msg.innerHTML = `<div class="card result" style="width:min(90vw,400px)"><div style="font-size:60px">📡</div><h2>Connexion perdue</h2><div class="muted" style="margin:8px 0 16px">L'autre appareil s'est déconnecté.</div><button class="btn" onclick="quitAny()">OK</button></div>`;
-  if (RACE && RACE.engine) RACE.engine.stop();
-  const old=document.getElementById("ov"); if (old) old.remove();
-  document.body.appendChild(msg);
-}
-function hostStart(){
-  if (!NET || !NET.conn) return;
-  if (NET.game==="chrono") return duelChronoStart();
-  const s=S.settings, hostP=me(), guestP=NET.guest, kind=NET.game==="corde"?"corde":"race", len = kind==="corde" ? s.cordeLen : s.raceLen;
-  const base=activeTables(); let tables={host:base, guest:base}, pos={host:0, guest:0};
-  if (s.balance!=="none" && hostP!==guestP){
-    const adv = hostP===s.balanceWho ? "host" : guestP===s.balanceWho ? "guest" : null;
-    if (adv){
-      const oth = adv==="host"?"guest":"host";
-      if (s.balance==="head") pos[adv]=Math.min(s.headStart, len-1);
-      if (s.balance==="hard"){ let h=base.filter(t=>t>=6); if (!h.length) h=allTables().filter(t=>t>=6&&t<=10); tables[oth]=h; }
-    }
-  }
-  RACE = {myRole:"host", oppRole:"guest", online:true};
-  const gh = NET.guestHorse, gspec = (gh && typeof gh==="object" && HORSES[gh.k]) ? {k:gh.k, a:gh.a||{}} : {k:HORSES[gh]?gh:myHorse(guestP), a:{}};
-  RACE.engine = Engine({roles:["host","guest"], kind, target:len, track:myTrack(hostP), tables, pos, names:{host:hostP, guest:guestP}, horses:{host:horseSpec(hostP), guest:gspec},
-    emit:ev=>{ raceEvent(ev); if (NET && NET.conn && NET.conn.open) NET.conn.send(ev); }});
+function tourMatch(){
+  const T=NET.tour, roles=T.pairs[T.idx], hc=handicap(roles), s=S.settings;
+  RACE = {myRole:"host", online:true};
+  RACE.engine = Engine({roles, kind:"corde", target:s.cordeLen, tables:hc.tables, pos:Object.fromEntries(roles.map(r=>[r,Math.min(hc.bonus[r]||0, s.cordeLen-1)])),
+    names:namesOf(Object.keys(NET.players)), horses:horsesOf(Object.keys(NET.players)), extra:{tour:{idx:T.idx, final:T.final}}, emit:ev=>{ bcast(ev); raceEvent(ev); }});
   RACE.engine.start();
 }
-SCREENS.raceJoin = () => {
-  app.innerHTML = hdr(`⚔️ Rejoindre ${NAMES[other()]}`,"home") + `
-    <div class="card" style="text-align:center"><div class="muted" style="margin-bottom:10px">Tape le code affiché chez ${NAMES[other()]}</div>
-      <input class="codein" id="ci" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD">
-      <div class="status" id="st" style="min-height:24px"></div>
-      <button class="btn block" onclick="guestJoin()">Rejoindre</button></div>
-    <div class="muted small" style="text-align:center">Le jeu (course, tir à la corde ou duel chrono) est choisi par celle qui crée la partie.</div>`;
-  cleanup.push(()=>{ if (!RACE && !DUEL) netClose(); });
-  const ci=document.getElementById("ci"); ci.focus();
-  ci.addEventListener("keydown", e=>{ if (e.key==="Enter") guestJoin(); });
+function tourAfterMatch(ev){
+  const T=NET.tour; if (!T) return;
+  const w=ev.winner; T.rec[w].w++; T.rec[w].t+=ev.dur||0;
+  let next=null, champion=null;
+  if (T.final) champion=w;
+  else { T.idx++;
+    if (T.idx<3) next=T.pairs[T.idx];
+    else { const rk=Object.keys(T.rec).sort((a,b)=>(T.rec[b].w-T.rec[a].w)||(T.rec[a].t-T.rec[b].t)); next=[rk[0],rk[1]]; T.pairs.push(next); T.final=true; } }
+  const st={t:"tstand", rec:T.rec, names:namesOf(Object.keys(NET.players)), next, finalNext:!!(next&&T.final), champion, last:w};
+  setTimeout(()=>{ bcast(st); tourStand(st); if (next) T.timer=setTimeout(()=>{ if (NET && NET.tour===T) tourMatch(); }, 6000); }, 1200);
+}
+function tourStand(d){
+  clearOv(); const R=RACE; const myRole=NET?NET.myRole:"host";
+  const rk=Object.keys(d.rec).sort((a,b)=>(d.rec[b].w-d.rec[a].w)||(d.rec[a].t-d.rec[b].t));
+  if (d.champion===myRole){ gain(30,30,"👑 Champion du tournoi !"); sndWin(); confetti(160); }
+  const sec = ms => ms ? Math.round(ms/1000)+" s" : "–";
+  const ov=document.createElement("div"); ov.className="overlay"; ov.id="ov";
+  ov.innerHTML = `<div class="card result" style="width:min(92vw,430px)"><div style="font-size:56px">${d.champion?"👑":"🪢"}</div>
+    <h2>${d.champion ? `${d.champion===myRole?"Tu es":nm(d.names[d.champion])+" est"} champion${gEnd(d.names[d.champion])==="e"?"ne":""} du tournoi !` : `${d.last===myRole?"Tu gagnes":nm(d.names[d.last])+" gagne"} le match !`}</h2>
+    <div class="podium">${rk.map((r,i)=>`<div><span>${["🥇","🥈","🥉"][i]}</span>${r===myRole?"Toi":nm(d.names[r])}<b>${d.rec[r].w} vict.</b><small>${sec(d.rec[r].t)}</small></div>`).join("")}</div>
+    ${d.next?`<div class="muted" style="margin:8px 0 14px">${d.finalNext?"🏆 Finale":"Prochain match"} : <b>${d.next.map(r=>r===myRole?"Toi":nm(d.names[r])).join(" contre ")}</b><br><span class="small">Départ dans quelques secondes…</span></div>`
+      : `<div class="row" style="justify-content:center;margin-top:12px">${NET&&NET.host?`<button class="btn" onclick="clearOv();tourStart()">Nouveau tournoi</button>`:""}<button class="btn ghost" onclick="quitRace()">Quitter</button></div>`}</div>`;
+  document.body.appendChild(ov);
+  if (R) R.kind="corde";
+}
+
+/* ---- Handicaps (sœurs entre elles + Papa) ---- */
+function handicap(roles){
+  const s=S.settings, base=activeTables(), hard=base.filter(t=>t>=6), hardT=hard.length?hard:[6,7,8,9];
+  const who=r=>NET.players[r].who, tables={}, bonus={};
+  roles.forEach(r=>{ tables[r]=base; bonus[r]=0; });
+  const kids=roles.filter(r=>KIDS.includes(who(r)));
+  if (s.balance!=="none" && kids.length===2 && who(kids[0])!==who(kids[1])){
+    const adv=kids.find(r=>who(r)===s.balanceWho), oth=kids.find(r=>r!==adv);
+    if (adv){ if (s.balance==="head") bonus[adv]+=s.headStart; if (s.balance==="hard") tables[oth]=hardT; }
+  }
+  const ph=Object.assign({mode:"none", head:2}, S.parent.papa||{}), pr=roles.find(r=>who(r)==="papa");
+  if (pr && ph.mode!=="none"){ if (ph.mode==="hard"||ph.mode==="both") tables[pr]=PAPA_T; if (ph.mode==="head"||ph.mode==="both") kids.forEach(r=>bonus[r]+=ph.head); }
+  return {tables, bonus};
+}
+const namesOf = roles => Object.fromEntries(roles.map(r=>[r, NET.players[r].who]));
+const horsesOf = roles => Object.fromEntries(roles.map(r=>[r, NET.players[r].horse || {k:myHorse(NET.players[r].who), a:{}}]));
+
+/* ---- Salon (Firebase) ---- */
+function newCode(){ const L="ABCDEFGHJKMNPQRSTUVWXYZ"; let c=""; for (let i=0;i<4;i++) c+=L[rnd(L.length)]; return c; }
+function setStatus(txt, ok){ const el=document.getElementById("st"); if (el) el.innerHTML=`<span class="dot ${ok?"ok":""}"></span>${txt}`; }
+function gameInfo(g){ const s=S.settings, ph=Object.assign({mode:"none",head:2}, S.parent.papa||{});
+  const base = g==="race"?`Course en ${s.raceLen} questions` : g==="corde"?`${({duel:"1 contre 1",equipe:"Papa contre les filles",tournoi:"Tournoi à 3"})[s.cordeMode]} · écart de ${s.cordeLen}` : g==="chrono"?`Chrono de ${s.chronoDur} min` : `Premier à ${s.vfTarget} points`;
+  const hp = ph.mode==="none" ? "" : `<br>🦁 Handicap Papa : ${({hard:"tables 6 à 12",head:`avance de ${ph.head} pour les filles`,both:`tables 6 à 12 + avance de ${ph.head}`})[ph.mode]}`;
+  return `${base} · tables ${activeTables().join(", ")}${s.balance!=="none"?`<br>⚖️ ${balHelp()}`:""}${hp}`; }
+function lobbyCheck(){
+  if (!NET) return "…"; const n=Object.keys(NET.players).length, who=Object.values(NET.players).map(p=>p.who), g=NET.game, m=S.settings.cordeMode;
+  if (n<2) return "En attente d'au moins un autre joueur…";
+  if (new Set(who).size!==who.length) return "Deux téléphones ont le même profil : chacun doit choisir son prénom.";
+  if (g==="corde" && m==="duel" && n!==2) return "Le 1 contre 1 se joue à 2 (choisis une autre formule pour jouer à 3).";
+  if (g==="corde" && m==="equipe" && !(n===3 && who.includes("papa"))) return "Papa contre les filles : il faut Papa, Lana et Sorya.";
+  if (g==="corde" && m==="tournoi" && n!==3) return "Le tournoi se joue à 3.";
+  return "";
+}
+const plistHtml = players => Object.entries(players||{}).map(([r,p])=>`<span class="pl" style="border-color:${CLOTH[p.who]||"#ccc"}">${AV[p.who]||"?"} ${NAMES[p.who]||p.who}${NET&&r===NET.myRole?" (toi)":""}</span>`).join("");
+function lobbyRefresh(){
+  const pl=document.getElementById("pl"); if (pl) pl.innerHTML=plistHtml(NET.players);
+  const msg=lobbyCheck(), b=document.getElementById("go"), nd=document.getElementById("need");
+  if (b) b.disabled=!!msg; if (nd) nd.textContent=msg;
+  const n=Object.keys(NET.players).length; if (n>1) setStatus(`${n} joueurs connectés`, true); else setStatus("En attente des autres…");
+}
+SCREENS.lobby = (game="race") => {
+  const g=GAMES[game]?game:"race", G=GAMES[g];
+  app.innerHTML = hdr(`${G[0]} ${G[1]}`, G[2]) + `
+    <div class="card" style="text-align:center"><div class="muted">Code à donner aux autres</div><div class="code" id="code">····</div>
+      <div class="status" id="st"><span class="dot"></span>Préparation…</div><div class="plist" id="pl"></div></div>
+    <div class="card small muted">${gameInfo(g)}</div>
+    <button class="btn block" id="go" disabled onclick="lobbyStart()">Départ !</button><div class="muted small" id="need" style="text-align:center;margin-top:8px"></div>`;
+  cleanup.push(()=>{ if (!RACE && !CHR) netClose(); });
+  if (!ROOT){ setStatus(FAM?"Connexion à la famille… réessaie dans un instant.":"Relie d'abord ce téléphone à la famille (Paramètres)."); return; }
+  netClose(); lobbyOpen(g).catch(()=>setStatus("Problème de connexion. Vérifie Internet."));
 };
-function guestJoin(){
+async function lobbyOpen(game){
+  for (let i=0;i<6;i++){
+    const code=newCode(), room=ROOT.child("rooms/"+code);
+    if ((await room.child("host").get()).exists()) continue;
+    await room.set({host:{who:me(), game, at:firebase.database.ServerValue.TIMESTAMP}});
+    room.onDisconnect().remove();
+    NET={host:true, code, room, game, myRole:"host", players:{host:{who:me(), horse:horseSpec(me())}}, offs:[]};
+    const gref=room.child("guests");
+    gref.on("value", s=>{ if (!NET || NET.room!==room) return; const g=s.val()||{};
+      for (const r of ["g1","g2"]){ if (NET.players[r] && !g[r]) playerLeft(r); else if (g[r] && !NET.players[r]) NET.players[r]={who:g[r].who, horse:g[r].horse}; }
+      lobbyRefresh(); bcast({t:"lobby", players:NET.players, game:NET.game}); });
+    NET.offs.push(()=>gref.off());
+    listen(room.child("to/host"), hostMsg);
+    const c=document.getElementById("code"); if (c) c.textContent=code; lobbyRefresh();
+    return;
+  }
+  setStatus("Impossible de créer la partie, réessaie.");
+}
+SCREENS.join = () => {
+  app.innerHTML = hdr("👨‍👧‍👧 Rejoindre une partie","home") + `
+    <div class="card" style="text-align:center"><div class="muted" style="margin-bottom:10px">Tape le code affiché sur le téléphone de celui qui a créé la partie</div>
+      <input class="codein" id="ci" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD">
+      <div class="status" id="st" style="min-height:24px"></div><div class="plist" id="pl"></div>
+      <button class="btn block" onclick="joinGo()">Rejoindre</button></div>
+    <div class="muted small" style="text-align:center">Le jeu est choisi par celui qui crée la partie.</div>`;
+  cleanup.push(()=>{ if (!RACE && !CHR) netClose(); });
+  const ci=document.getElementById("ci"); ci.focus(); ci.addEventListener("keydown", e=>{ if (e.key==="Enter") joinGo(); });
+  if (!FAM) setStatus("Relie d'abord ce téléphone à la famille (Paramètres).");
+};
+async function joinGo(){
   const code=(document.getElementById("ci").value||"").trim().toUpperCase();
   if (code.length!==4){ setStatus("Le code fait 4 lettres"); return; }
+  if (!ROOT){ setStatus(FAM?"Connexion à la famille… réessaie dans un instant.":"Relie d'abord ce téléphone à la famille (Paramètres)."); return; }
   netClose(); setStatus("Connexion…");
-  if (ROOT){ fbGuestJoin(code).catch(()=>setStatus("Problème de connexion. Vérifie Internet.")); return; }
-  loadPeer().then(()=>{
-    const peer=new Peer({debug:0}); NET={peer, role:"guest"};
-    const to=setTimeout(()=>{ if (NET && !(NET.conn&&NET.conn.open)) setStatus("Code introuvable. Vérifie-le et réessaie."); }, 12000);
-    peer.on("error", e=>{ clearTimeout(to); setStatus(e.type==="peer-unavailable" ? "Code introuvable. Vérifie-le et réessaie." : "Problème de connexion. Vérifie Internet."); });
-    peer.on("open", ()=>{
-      const conn=peer.connect(PREFIX+code, {reliable:true}); NET.conn=conn;
-      conn.on("open", ()=>{ clearTimeout(to); conn.send({t:"hello", who:me(), horse:horseSpec(me())}); });
-      conn.on("data", d=>guestData(d));
-      conn.on("close", ()=>netLost());
-    });
-  }).catch(()=>setStatus("Impossible de charger le mode en ligne (Internet ?)"));
+  try {
+    const room=ROOT.child("rooms/"+code), h=await room.child("host").get();
+    if (!h.exists()){ setStatus("Code introuvable. Vérifie-le et réessaie."); return; }
+    const g=(await room.child("guests").get()).val()||{}, slot=!g.g1?"g1":!g.g2?"g2":null;
+    if (!slot){ setStatus("La partie est complète (3 joueurs maximum)."); return; }
+    await room.child("guests/"+slot).set({who:me(), horse:horseSpec(me())}); room.child("guests/"+slot).onDisconnect().remove();
+    NET={host:false, code, room, myRole:slot, game:h.val().game, players:{}, offs:[]};
+    listen(room.child("to/"+slot), guestMsg);
+    const href=room.child("host"); href.on("value", s=>{ if (!s.exists() && NET && NET.room===room) showLost("La partie a été fermée."); }); NET.offs.push(()=>href.off());
+    const G=GAMES[NET.game]||GAMES.race; setStatus(`Connecté${gEnd(me())} ! ${G[0]} ${G[1]} · attends le départ…`, true); beep(880,.15);
+  } catch(e){ setStatus("Problème de connexion. Vérifie Internet."); }
 }
-function guestData(d){
+function listen(ref, fn){ ref.on("child_added", s=>{ const v=s.val(); s.ref.remove(); try { fn(v); } catch(e){ console.log("msg error: "+(e&&e.stack||e)); } }); NET.offs.push(()=>ref.off()); }
+function sendTo(role, d){ if (NET && NET.room) NET.room.child("to/"+role).push(clean(d)); }
+function bcast(d){ if (!NET || !NET.host) return; for (const r of Object.keys(NET.players)) if (r!=="host") sendTo(r, d); }
+function toHost(d){ sendTo("host", Object.assign({from:NET.myRole}, d)); }
+function netClose(){
+  if (!NET) return; const n=NET; NET=null;
+  if (n.tour && n.tour.timer) clearTimeout(n.tour.timer);
+  (n.offs||[]).forEach(f=>{ try { f(); } catch(e){} });
+  try { if (n.host){ n.room.onDisconnect().cancel(); n.room.remove(); } else { const g=n.room.child("guests/"+n.myRole); g.onDisconnect().cancel(); g.remove(); } } catch(e){}
+}
+function playerLeft(r){
+  const who=NET.players[r] && NET.players[r].who; delete NET.players[r];
+  if (RACE || CHR){ if (RACE && RACE.engine) RACE.engine.stop(); showLost(`${nm(who)} a quitté la partie.`); }
+}
+function showLost(msg){
+  if (RACE && RACE.engine) RACE.engine.stop(); answerHandler=null; clearOv();
+  const o=document.createElement("div"); o.className="overlay"; o.id="ov";
+  o.innerHTML=`<div class="card result" style="width:min(90vw,400px)"><div style="font-size:60px">📡</div><h2>Partie interrompue</h2><div class="muted" style="margin:8px 0 16px">${msg}</div><button class="btn" onclick="quitAny()">OK</button></div>`;
+  document.body.appendChild(o);
+}
+function lobbyStart(){
+  if (!NET || !NET.host || lobbyCheck()) return;
+  const g=NET.game, s=S.settings, roles=Object.keys(NET.players);
+  if (g==="chrono") return chronoMultiStart();
+  if (g==="corde" && s.cordeMode==="tournoi") return tourStart();
+  const hc=handicap(roles), teams=(g==="corde" && s.cordeMode==="equipe") ? Object.fromEntries(roles.map(r=>[r, NET.players[r].who==="papa"?"P":"F"])) : null;
+  const target = g==="race"?s.raceLen : g==="corde"?s.cordeLen : s.vfTarget, pos={};
+  if (teams){ pos.F=Math.min(Math.max(0,...roles.filter(r=>teams[r]==="F").map(r=>hc.bonus[r]||0)), target-1); pos.P=0; }
+  else roles.forEach(r=>pos[r]=Math.min(hc.bonus[r]||0, target-1));
+  RACE = {myRole:"host", online:true};
+  RACE.engine = Engine({roles, kind:g, teams, target, pos, tables:hc.tables, track:myTrack(me()), names:namesOf(roles), horses:horsesOf(roles), emit:ev=>{ bcast(ev); raceEvent(ev); }});
+  RACE.engine.start();
+}
+function hostMsg(d){
   if (!d || typeof d!=="object") return;
-  if (d.t==="welcome"){ const G=GAMES[d.game]||GAMES.race; setStatus(`Connectée à ${NAMES[d.host]||"ta sœur"} ! ${G[0]} ${G[1]} · attends le départ…`, true); beep(880,.15); return; }
-  if (d.t==="cstart"){ RACE=null; duelChronoRun(d, "guest"); return; }
-  if (d.t==="cscore" || d.t==="cfinal"){ duelOnMsg(d); return; }
-  if (d.t==="start"){ const ov=document.getElementById("ov"); if (ov) ov.remove(); DUEL=null; RACE = {myRole:"guest", oppRole:"host", online:true}; }
+  if (d.t==="answer" && RACE && RACE.engine) RACE.engine.answer(d.from, d.r, d.v);
+  else if (d.t==="cscore") hostScore(d.from, d.s);
+  else if (d.t==="cfinal") hostFinal(d.from, d.s);
+}
+function guestMsg(d){
+  if (!d || typeof d!=="object" || !NET) return;
+  if (d.t==="lobby"){ NET.players=d.players||{}; const pl=document.getElementById("pl"); if (pl) pl.innerHTML=plistHtml(NET.players); return; }
+  if (d.t==="start"){ CHR=null; if (!RACE || !RACE.online) RACE={myRole:NET.myRole, online:true}; }
+  if (d.t==="tstand"){ d.next=d.next?arr(d.next):null; tourStand(d); return; }
+  if (d.t==="cstart"){ RACE=null; chronoRun(d); return; }
+  if (d.t==="cscores"){ chronoScores(d.scores); return; }
+  if (d.t==="cend"){ chronoEnd(d); return; }
   if (RACE) raceEvent(d);
 }
+
+/* ---- Chrono en famille (2 ou 3) ---- */
+function chronoMultiStart(){
+  const roles=Object.keys(NET.players), hc=handicap(roles);
+  const ev={t:"cstart", dur:S.settings.chronoDur, roles, names:namesOf(roles), tables:hc.tables, bonus:Object.fromEntries(roles.map(r=>[r,(hc.bonus[r]||0)*2]))};
+  NET.cs={scores:Object.assign({}, ev.bonus), finals:{}};
+  bcast(ev); chronoRun(ev);
+}
+function chronoRun(ev){
+  ev.roles=arr(ev.roles); ev.bonus=ev.bonus||{}; ev.tables=Object.fromEntries(Object.entries(ev.tables||{}).map(([k,v])=>[k,arr(v)]));
+  const role=NET?NET.myRole:"host";
+  CHR={ev, role, scores:Object.assign({}, ev.bonus), mine:ev.bonus[role]||0, shown:false};
+  CUR={screen:"duel", args:[]}; clearAll(); clearOv();
+  cleanup.push(()=>{ if (!CHR) netClose(); });
+  const tables=ev.tables[role]||activeTables(), total=ev.dur*60000; let end=0, f=null, busy=true;
+  app.className="play";
+  app.innerHTML = `<div class="hud"><button class="back" onclick="quitChrono()">✕</button><span class="pill" id="time">${ev.dur}:00</span><span class="pill">⏱️ En famille</span></div>
+    <div class="vfboard" id="board">${ev.roles.map(r=>`<div class="vfp" id="c-${r}" style="--c:${CLOTH[ev.names[r]]||"#999"}"><span>${AV[ev.names[r]]}</span><b>${r===role?"Toi":nm(ev.names[r])}</b><i>${CHR.scores[r]||0}</i></div>`).join("")}</div>
+    <div class="bar"><i id="tb" style="width:100%"></i></div><div class="qbox" id="qb"><div class="q">⏱️</div><div class="fb"></div></div><div id="aa"></div>`;
+  const next = () => { f=smartFact(tables, f); busy=false; document.getElementById("qb").innerHTML=qHtml(f); document.getElementById("aa").innerHTML=answerArea(f); };
+  answerHandler = (v, el) => {
+    if (busy || !end) return; const ok=v===f.ans; record(f, ok); markQcm(el,f,ok); busy=true;
+    if (ok){ CHR.mine++; sndOk(); feedback(true,f); if (NET && NET.host) hostScore(role, CHR.mine); else toHost({t:"cscore", s:CHR.mine}); setTimeout(next, 250); }
+    else { sndKo(); feedback(false,f); setTimeout(next, 1300); }
+  };
+  countdown();
+  const t0=setTimeout(()=>{ end=Date.now()+total; next();
+    const iv=setInterval(()=>{ const left=Math.max(0,end-Date.now()), sc=Math.ceil(left/1000);
+      const te=document.getElementById("time"); if (te) te.textContent=`${Math.floor(sc/60)}:${String(sc%60).padStart(2,"0")}`;
+      const tb=document.getElementById("tb"); if (tb) tb.style.width=(left/total*100)+"%";
+      if (left<=0){ clearInterval(iv); answerHandler=null;
+        document.getElementById("qb").innerHTML=`<div class="q" style="font-size:30px">⏱️ Temps écoulé !</div><div class="fb">En attente des autres…</div>`; document.getElementById("aa").innerHTML="";
+        if (NET && NET.host) hostFinal(role, CHR.mine); else toHost({t:"cfinal", s:CHR.mine}); } }, 200);
+    cleanup.push(()=>clearInterval(iv)); }, 3300);
+  cleanup.push(()=>clearTimeout(t0));
+}
+function chronoScores(sc){ if (!CHR) return; CHR.scores=sc; for (const [r,v] of Object.entries(sc)){ const e=document.querySelector(`#c-${r} i`); if (e && +e.textContent!==v){ e.textContent=v; const p=e.parentNode; p.classList.remove("bump"); void p.offsetWidth; p.classList.add("bump"); } } }
+function hostScore(r, s){ if (!NET || !NET.cs) return; NET.cs.scores[r]=s; bcast({t:"cscores", scores:NET.cs.scores}); chronoScores(NET.cs.scores); }
+function hostFinal(r, s){ if (!NET || !NET.cs) return; NET.cs.scores[r]=s; NET.cs.finals[r]=true; hostScore(r, s);
+  if (Object.keys(NET.players).every(x=>NET.cs.finals[x])){ const ev={t:"cend", scores:NET.cs.scores}; bcast(ev); chronoEnd(ev); } }
+function chronoEnd(d){
+  const C=CHR; if (!C || C.shown) return; C.shown=true; chronoScores(d.scores);
+  const rk=Object.entries(d.scores).sort((a,b)=>b[1]-a[1]), myRank=rk.findIndex(([r])=>r===C.role)+1, top=rk[0][1];
+  const win = d.scores[C.role]===top && rk.filter(x=>x[1]===top).length===1, tie = d.scores[C.role]===top && !win, p=P();
+  if (win){ p.duel.wins++; gain(20,15,"🏆 Victoire !"); sndWin(); confetti(120); }
+  else { if (!tie) p.duel.losses++; gain(myRank===2&&rk.length>2?10:5, 5, tie?"🤝 Égalité !":myRank===2&&rk.length>2?"🥈 Deuxième !":"Bien joué !"); }
+  const ov=document.createElement("div"); ov.className="overlay"; ov.id="ov";
+  ov.innerHTML = `<div class="card result" style="width:min(90vw,420px)"><div style="font-size:66px">${win?"🏆":tie?"🤝":"⏱️"}</div>
+    <h2>${win?"Tu as gagné !":tie?"Égalité !":`${nm(C.ev.names[rk[0][0]])} gagne !`}</h2>
+    <div class="podium">${rk.map(([r,v],i)=>`<div><span>${["🥇","🥈","🥉"][i]||""}</span>${r===C.role?"Toi":nm(C.ev.names[r])}<b>${v}</b></div>`).join("")}</div>
+    <div class="row" style="justify-content:center">${NET&&NET.host?`<button class="btn" onclick="chronoMultiStart()">Revanche</button>`:`<span class="muted">${nm(C.ev.names.host)} peut relancer</span>`}<button class="btn ghost" onclick="quitChrono()">Quitter</button></div></div>`;
+  document.body.appendChild(ov);
+}
+function quitChrono(){ clearOv(); CHR=null; netClose(); go("chronoSetup"); }
+
 
 /* ---------- Erreurs à revoir ---------- */
 SCREENS.errors = () => {
@@ -1114,7 +1343,8 @@ SCREENS.balloonsPlay = () => {
 /* ---------- Vrai ou faux ---------- */
 SCREENS.vf = () => {
   app.innerHTML = hdr("✅ Vrai ou faux") + `<div class="card"><div class="muted" style="margin-bottom:10px">Un calcul s'affiche avec un résultat. Il est juste ou faux ? Réponds le plus vite possible pendant 60 secondes. Une erreur fait perdre 2 secondes !</div>${tablesPicker()}</div>
-  <button class="btn block" onclick="go('vfPlay')">Jouer</button>
+  <button class="btn block" onclick="go('vfPlay')">Jouer seule</button>
+  <div style="height:16px"></div>${familyCard("vf", `<div class="label">Points à atteindre</div>${seg("vfTarget",[[7,"7"],[10,"10"],[15,"15"]],S.settings.vfTarget,"setOpt")}<div class="muted small" style="margin:6px 0 10px">Le même calcul s'affiche chez tout le monde : le premier qui répond juste marque le point.</div>`)}
   <div class="muted" style="text-align:center;margin-top:14px">🏆 Record de ${NAMES[me()]} : <b>${P().vf}</b></div>`;
 };
 SCREENS.vfPlay = () => {
@@ -1330,7 +1560,7 @@ function dailyCelebrate(){
 }
 
 /* ================== Espace parents ================== */
-const defParent = () => ({pin:"0000", rewards:{}, updatedAt:0});
+const defParent = () => ({pin:"0000", rewards:{}, papa:{mode:"none",head:2}, updatedAt:0});
 let pinVal="";
 SCREENS.parentsPin = () => {
   pinVal="";
@@ -1366,11 +1596,17 @@ function kidCard(k){
     <div id="rwe-${k}"></div></div>`;
 }
 SCREENS.parents = () => {
-  app.innerHTML = hdr("👨‍👧‍👧 Espace parents") + kidCard("lana") + kidCard("sorya") + `
+  app.innerHTML = hdr("👨‍👧‍👧 Espace parents") + kidCard("lana") + kidCard("sorya") + papaCard() + `
   <div class="card"><div class="label">☁️ Synchronisation</div><div class="muted small">${syncText()}</div>
     ${FAM?`<div class="muted small" style="margin-top:8px">Lien pour relier un autre téléphone (à ouvrir une fois dessus) :</div><div class="famlink" id="fl">${location.origin+location.pathname}#famille=${FAM}</div><button class="btn ghost" style="font-size:14px;margin-top:6px" onclick="copyFam(this)">📋 Copier le lien</button>`:""}</div>
   <div class="card"><div class="label">🔒 Code parent</div><div class="row"><input class="codein small" id="np" inputmode="numeric" maxlength="4" placeholder="Nouveau code"><button class="btn" onclick="setPin()">OK</button></div><div class="muted small" id="pinmsg" style="margin-top:6px"></div></div>`;
 };
+function papaCard(){ const ph=Object.assign({mode:"none",head:2}, S.parent.papa||{});
+  return `<div class="card"><div class="label">🦁 Handicap Papa (quand Papa joue avec les filles)</div>
+    <div class="seg">${[["none","Non"],["hard","Tables 6-12"],["head","Avance"],["both","Les deux"]].map(([v,l])=>`<button class="${ph.mode===v?"on":""}" onclick="setPapa('mode','${v}')">${l}</button>`).join("")}</div>
+    ${ph.mode==="head"||ph.mode==="both"?`<div class="label" style="margin-top:12px">Avance des filles</div><div class="seg">${[1,2,3,4,5].map(n=>`<button class="${ph.head===n?"on":""}" onclick="setPapa('head',${n})">${n}</button>`).join("")}</div>`:""}
+    <div class="muted small" style="margin-top:8px">Tables 6 à 12 : Papa n'a que des calculs difficiles. Avance : les filles partent avec de l'avance (cases, points, ou 2 points par cran au Chrono).</div></div>`; }
+function setPapa(k,v){ S.parent.papa=Object.assign({mode:"none",head:2}, S.parent.papa||{}, {[k]:v}); saveParent(); go("parents"); }
 function rewardEdit(k){
   const rw=S.parent.rewards[k]||{label:"", emoji:"🎬", goal:500};
   const EM=["🎬","🍕","🍦","🎮","🎁","📚","🛍️","🎡","🏊","🐴"];
@@ -1400,7 +1636,7 @@ let FAM=null; try { FAM=localStorage.getItem(FAMKEY); } catch(e){}
 { const m=location.hash.match(/famille=([A-Za-z0-9_-]{16,64})/);
   if (m){ FAM=m[1]; try { localStorage.setItem(FAMKEY,FAM); } catch(e){} history.replaceState(null,"",location.pathname+location.search); } }
 let DB=null, ROOT=null, fbState=FAM?"loading":"off";
-const syncText = () => ({off:"Pas encore relié : les scores restent sur ce téléphone.", loading:"Connexion…", ok:"✓ Relié : les scores des deux filles sont sauvegardés et partagés.", err:"⚠️ Pas de connexion pour l'instant (les scores sont gardés sur le téléphone)."})[fbState];
+const syncText = () => ({off:"Pas encore relié : les scores restent sur ce téléphone.", loading:"Connexion…", ok:"✓ Relié : les scores de toute la famille sont sauvegardés et partagés.", err:"⚠️ Pas de connexion pour l'instant (les scores sont gardés sur le téléphone)."})[fbState];
 function loadScript(src){ return new Promise((ok,ko)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=ko; document.head.appendChild(s); }); }
 async function fbInit(){
   if (!FAM || DB) return; fbState="loading";
@@ -1410,7 +1646,7 @@ async function fbInit(){
     if (!firebase.apps.length) firebase.initializeApp(FB_CFG);
     await firebase.auth().signInAnonymously();
     DB=firebase.database(); ROOT=DB.ref("fam/"+FAM); fbState="ok";
-    for (const k of ["lana","sorya"]) ROOT.child("p/"+k).on("value", s=>onRemoteProfile(k, s.val()), ()=>{ fbState="err"; });
+    for (const k of PROFILES) ROOT.child("p/"+k).on("value", s=>onRemoteProfile(k, s.val()), ()=>{ fbState="err"; });
     ROOT.child("parent").on("value", s=>onRemoteParent(s.val()));
   } catch(e){ fbState="err"; DB=null; ROOT=null; }
   rerenderIdle();
@@ -1438,7 +1674,7 @@ function onRemoteProfile(k, r){
 }
 function onRemoteParent(r){
   const loc=S.parent.updatedAt||0, rem=(r&&r.updatedAt)||0;
-  if (rem>loc){ S.parent=Object.assign(defParent(), r, {rewards:objify(r.rewards)}); persist(); rerenderIdle(); }
+  if (rem>loc){ S.parent=Object.assign(defParent(), r, {rewards:objify(r.rewards), papa:Object.assign({mode:"none",head:2}, objify(r.papa))}); persist(); rerenderIdle(); }
   else if (loc>rem) fbPushParent();
 }
 function rerenderIdle(){ if (CUR && ["home","parents","badges","shop","settings"].includes(CUR.screen) && !document.querySelector(".overlay") && !document.querySelector(".rwform") && document.activeElement.tagName!=="INPUT") go(CUR.screen, ...CUR.args); }
@@ -1446,149 +1682,8 @@ function linkFamily(){ const v=(document.getElementById("famin").value||"").trim
   if (!/^[A-Za-z0-9_-]{16,64}$/.test(v)){ document.getElementById("fammsg").textContent="Code famille invalide."; return; }
   FAM=v; try { localStorage.setItem(FAMKEY,FAM); } catch(e){} fbInit(); go("settings"); }
 
-/* ---- Duels via Firebase : même interface que PeerJS (conn.send / messages) ---- */
-function makeConn(room, outK, inK){
-  const c={open:true};
-  c.send = d => { if (c.open) room.child(outK).push(clean(d)); };
-  c.listen = fn => { const r=room.child(inK); r.on("child_added", s=>{ const v=s.val(); s.ref.remove(); fn(v); }); c._off=()=>r.off(); };
-  c.close = () => { c.open=false; try { c._off && c._off(); } catch(e){} };
-  return c;
-}
-async function fbHostOpen(){
-  for (let n=0;n<6;n++){
-    const code=newCode(), room=ROOT.child("rooms/"+code);
-    const ex=await room.child("host").get(); if (ex.exists()) continue;
-    await room.set({host:{who:me(), at:firebase.database.ServerValue.TIMESTAMP}});
-    room.onDisconnect().remove();
-    const conn=makeConn(room,"toGuest","toHost");
-    NET={role:"host", code, room, fb:true, conn:null, pconn:conn, game:NET_GAME};
-    room.child("guest").on("value", s=>{ if (!NET) return;
-      if (s.exists() && !NET.conn) NET.conn=conn;
-      else if (!s.exists() && NET.conn && NET.conn.open){ conn.open=false; netLost(); } });
-    conn.listen(d=>hostData(d));
-    const c=document.getElementById("code"); if (c) c.textContent=code; setStatus(`En attente de ${NAMES[other()]}…`);
-    return;
-  }
-  setStatus("Impossible de créer la partie, réessaie.");
-}
-async function fbGuestJoin(code){
-  const room=ROOT.child("rooms/"+code);
-  const h=await room.child("host").get(); if (!h.exists()){ setStatus("Code introuvable. Vérifie-le et réessaie."); return; }
-  const g=await room.child("guest").get(); if (g.exists()){ setStatus("Cette partie a déjà deux joueuses."); return; }
-  const conn=makeConn(room,"toHost","toGuest"); NET={role:"guest", code, room, fb:true, conn};
-  await room.child("guest").set({who:me()}); room.child("guest").onDisconnect().remove();
-  conn.listen(d=>guestData(d));
-  room.child("host").on("value", s=>{ if (!s.exists() && NET && NET.conn && NET.conn.open){ conn.open=false; netLost(); } });
-  conn.send({t:"hello", who:me(), horse:horseSpec(me())});
-}
-function fbClose(n){
-  try { n.conn && n.conn.close(); } catch(e){}
-  try { n.room.child("guest").off(); n.room.child("host").off(); } catch(e){}
-  try { if (n.role==="host"){ n.room.onDisconnect().cancel(); n.room.remove(); } else { n.room.child("guest").onDisconnect().cancel(); n.room.child("guest").remove(); } } catch(e){}
-}
-
-/* ---- Duel Chrono ---- */
-let DUEL=null;
-function duelChronoStart(){
-  const s=S.settings, hostP=me(), guestP=NET.guest, base=activeTables();
-  let tables={host:base, guest:base}, bonus={host:0, guest:0};
-  if (s.balance!=="none" && hostP!==guestP){
-    const adv = hostP===s.balanceWho ? "host" : guestP===s.balanceWho ? "guest" : null;
-    if (adv){ const oth=adv==="host"?"guest":"host";
-      if (s.balance==="head") bonus[adv]=s.headStart*2;
-      if (s.balance==="hard"){ let h=base.filter(t=>t>=6); if (!h.length) h=[6,7,8,9]; tables[oth]=h; } }
-  }
-  const ev={t:"cstart", dur:s.chronoDur, tables, bonus, names:{host:hostP, guest:guestP}};
-  if (NET && NET.conn && NET.conn.open) NET.conn.send(ev);
-  duelChronoRun(ev, "host");
-}
-function duelChronoRun(ev, role){
-  const opp = role==="host"?"guest":"host";
-  DUEL={role, opp, my:ev.bonus[role]||0, their:ev.bonus[opp]||0, myFinal:null, theirFinal:null, names:ev.names, dur:ev.dur};
-  CUR={screen:"duel", args:[]}; clearAll(); const ov0=document.getElementById("ov"); if (ov0) ov0.remove();
-  cleanup.push(()=>{ if (!DUEL) netClose(); });
-  const tables=ev.tables[role], total=ev.dur*60000; let end=0, f=null, busy=true;
-  app.className="play";
-  app.innerHTML = `<div class="hud"><button class="back" onclick="quitDuel()">✕</button><span class="pill" id="time">${ev.dur}:00</span><span class="pill" id="vs"></span></div>
-    <div class="bar"><i id="tb" style="width:100%"></i></div><div class="qbox" id="qb"><div class="q">⚔️</div><div class="fb"></div></div><div id="aa"></div>`;
-  const vs = () => { const e=document.getElementById("vs"); if (e) e.innerHTML=`Toi <b>${DUEL.my}</b> – <b>${DUEL.their}</b> ${nm(DUEL.names[opp])}`; };
-  DUEL.vs=vs; vs();
-  const next = () => { f=smartFact(tables, f); busy=false; document.getElementById("qb").innerHTML=qHtml(f); document.getElementById("aa").innerHTML=answerArea(f); };
-  answerHandler = (v, el) => {
-    if (busy || !end) return; const ok=v===f.ans; record(f, ok); markQcm(el,f,ok); busy=true;
-    if (ok){ DUEL.my++; vs(); sndOk(); feedback(true,f); if (NET&&NET.conn) NET.conn.send({t:"cscore", s:DUEL.my}); setTimeout(next, 250); }
-    else { sndKo(); feedback(false,f); setTimeout(next, 1300); }
-  };
-  countdown();
-  const t0=setTimeout(()=>{ end=Date.now()+total; next();
-    const iv=setInterval(()=>{ const left=Math.max(0,end-Date.now()), sc=Math.ceil(left/1000);
-      const te=document.getElementById("time"); if (te) te.textContent=`${Math.floor(sc/60)}:${String(sc%60).padStart(2,"0")}`;
-      const tb=document.getElementById("tb"); if (tb) tb.style.width=(left/total*100)+"%";
-      if (left<=0){ clearInterval(iv); answerHandler=null; DUEL.myFinal=DUEL.my;
-        if (NET&&NET.conn) NET.conn.send({t:"cfinal", s:DUEL.my});
-        document.getElementById("qb").innerHTML=`<div class="q" style="font-size:30px">⏱️ Temps écoulé !</div><div class="fb">En attente de ${nm(DUEL.names[opp])}…</div>`;
-        document.getElementById("aa").innerHTML=""; duelCheck(); } },200);
-    cleanup.push(()=>clearInterval(iv)); }, 3300);
-  cleanup.push(()=>clearTimeout(t0));
-}
-function duelOnMsg(d){
-  if (!DUEL) return;
-  if (d.t==="cscore"){ DUEL.their=d.s; DUEL.vs(); }
-  if (d.t==="cfinal"){ DUEL.their=d.s; DUEL.theirFinal=d.s; DUEL.vs(); duelCheck(); }
-}
-function duelCheck(){
-  const D=DUEL; if (!D || D.myFinal==null || D.theirFinal==null || D.shown) return; D.shown=true;
-  const win=D.my>D.their, tie=D.my===D.their, p=P();
-  if (win){ p.duel.wins++; gain(20,15,"⚔️ Victoire !"); sndWin(); confetti(120); } else { if (!tie) p.duel.losses++; gain(5,5, tie?"🤝 Égalité !":"Bien joué !"); }
-  const ov=document.createElement("div"); ov.className="overlay"; ov.id="ov";
-  ov.innerHTML = `<div class="card result" style="width:min(90vw,420px)"><div style="font-size:70px">${win?"🏆":tie?"🤝":"⏱️"}</div>
-    <h2>${win?"Tu as gagné !":tie?"Égalité !":`${nm(D.names[D.opp])} gagne !`}</h2>
-    <div class="muted" style="margin:6px 0 16px">Toi ${D.my} – ${D.their} ${nm(D.names[D.opp])}</div>
-    <div class="row" style="justify-content:center">${D.role==="host"?`<button class="btn" onclick="duelChronoStart()">Revanche</button>`:`<span class="muted">${nm(D.names.host)} peut relancer</span>`}<button class="btn ghost" onclick="quitDuel()">Quitter</button></div></div>`;
-  document.body.appendChild(ov);
-}
-function quitDuel(){ const ov=document.getElementById("ov"); if (ov) ov.remove(); DUEL=null; netClose(); go("chronoSetup"); }
-function quitAny(){ if (DUEL) quitDuel(); else quitRace(); }
-
-/* ---- Tir à la corde ---- */
-SCREENS.cordeSetup = () => {
-  const s=S.settings, r=P().corde;
-  app.innerHTML = hdr("🪢 Tir à la corde") + `
-  <div class="card"><div class="muted small" style="margin-bottom:10px">Chaque bonne réponse tire la corde de ton côté. La première qui amène le ruban dans son camp gagne !</div>
-    <div class="label">Écart à atteindre</div>${seg("cordeLen",[[5,"5"],[7,"7"],[10,"10"]],s.cordeLen,"setOpt")}<hr>${tablesPicker()}</div>
-  <div class="card"><div class="label">🤖 Contre l'ordinateur</div>
-    ${seg("cpuLevel",[["facile","Facile"],["moyen","Moyen"],["difficile","Difficile"]],s.cpuLevel,"setOpt")}${cpuPick()}
-    <button class="btn block" style="margin-top:12px" onclick="startCpuRace('corde')">Lancer la partie</button></div>
-  <div class="card"><div class="label">${AV[other()]} Contre ${NAMES[other()]} (chacune sur son appareil)</div>
-    <div class="row"><button class="btn sun" style="flex:1" onclick="go('raceHost','corde')">Créer</button><button class="btn ghost" style="flex:1" onclick="go('raceJoin')">Rejoindre</button></div></div>
-  <div class="muted small" style="text-align:center">🏆 ${r.wins} victoire${r.wins>1?"s":""} · ${r.losses} défaite${r.losses>1?"s":""}</div>`;
-};
-const CORDE_BG = `<svg class="bg" viewBox="0 0 390 250" preserveAspectRatio="none" aria-hidden="true">
-  <rect width="390" height="250" fill="#8fd16a"/>${[...Array(8)].map((_,i)=>`<rect y="${i*32}" width="390" height="16" fill="#99d873"/>`).join("")}
-  <rect x="193" y="0" width="4" height="250" fill="#fff" opacity=".9"/>
-  <rect x="76" y="0" width="5" height="250" fill="#9b5de5" opacity=".55"/><rect x="309" y="0" width="5" height="250" fill="#ef476f" opacity=".55"/>
-  <text x="40" y="236" font-size="13" font-weight="800" fill="#fff" font-family="Nunito,sans-serif" opacity=".9">TON CAMP</text></svg>`;
-function ropeScene(R){
-  const me_=R.names[R.myRole], op=R.names[R.oppRole], hs=R.horses||{};
-  const sp = role => { const x=hs[role]; return typeof x==="string" ? {k:x,a:{}} : (x||{k:"alezan",a:{}}); };
-  const a=sp(R.myRole), b=sp(R.oppRole);
-  return `<div class="scene" id="scene">${CORDE_BG}<div class="tug" id="tug">
-    <div class="rope"></div><div class="knot">🎀</div>
-    <div class="puller left">${horseSVG(a.k, CLOTH[me_]||"#9b5de5", (NAMES[me_]||"?")[0], a.a||{})}<i class="tagh" style="background:${CLOTH[me_]||"#9b5de5"}">Toi</i></div>
-    <div class="puller right">${horseSVG(b.k, CLOTH[op]||"#6c757d", op==="cpu"?"🤖":(NAMES[op]||"?")[0], b.a||{})}<i class="tagh" style="background:${CLOTH[op]||"#6c757d"}">${nm(op)}</i></div>
-  </div></div>`;
-}
-function placeRope(moved){
-  const R=RACE, t=document.getElementById("tug"); if (!t) return;
-  const diff=(R.pos[R.myRole]||0)-(R.pos[R.oppRole]||0);
-  const k=t.querySelector(".knot"); if (k) k.style.left = (50 - Math.max(-1,Math.min(1,diff/R.target))*30) + "%";
-  const pill=document.getElementById("rdiff"); if (pill) pill.textContent = diff>0?`+${diff} pour toi`:diff<0?`${diff}`:"égalité";
-  if (moved){ t.classList.remove("yank"); void t.offsetWidth; t.classList.add("yank"); }
-}
-
-
 /* ============ Démarrage ============ */
-for (const k of ["lana","sorya"]) S.profiles[k]=normProfile(S.profiles[k]);
+for (const k of PROFILES) S.profiles[k]=normProfile(S.profiles[k]);
 window.addEventListener("resize", ()=>{ if (RACE && document.getElementById("scene")) placeHorses(); });
 go("home");
 fbInit();
