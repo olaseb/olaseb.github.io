@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tables">
+<meta name="theme-color" content="#fff6ec">
+<title>Les Tables de Lana & Sorya</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✖️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff6ec; --card:#ffffff; --ink:#2b2340; --muted:#7a7090; --line:#efe3d6;
+  --lana:#9b5de5; --lana-soft:#efe4fc; --sorya:#00a6a6; --sorya-soft:#d9f4f2;
+  --cpu:#6c757d; --ok:#2bb673; --ko:#ef476f; --sun:#ffc43d; --orange:#ff8c42;
+  --me:var(--lana); --me-soft:var(--lana-soft);
+  --r:22px;
+}
+body.p-sorya{--me:var(--sorya); --me-soft:var(--sorya-soft)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-weight:600}
+body{min-height:100dvh;overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;cursor:pointer;background:none;touch-action:manipulation}
+h1,h2,h3,.big,.q{font-family:"Baloo 2",Nunito,sans-serif;margin:0}
+#app{max-width:560px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.top h2{font-size:24px;flex:1;line-height:1.1}
+.back{width:44px;height:44px;border-radius:14px;background:var(--card);box-shadow:0 2px 0 var(--line);font-size:22px;display:grid;place-items:center}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:0 3px 0 var(--line);margin-bottom:14px}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.row{display:flex;gap:10px;align-items:center}
+.wrap{flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border-radius:18px;font-weight:800;font-size:18px;background:var(--me);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.18);transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.btn.block{width:100%}
+.btn.ghost{background:var(--card);color:var(--ink);box-shadow:0 3px 0 var(--line)}
+.btn.sun{background:var(--sun);color:var(--ink)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:64px;padding:12px 10px;border-radius:14px;background:var(--bg);font-weight:800;border:2px solid transparent}
+.seg button.on{background:var(--me-soft);border-color:var(--me);color:var(--me)}
+.label{font-weight:800;margin:4px 0 8px;font-size:15px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:7px}
+.chips button{height:46px;border-radius:12px;background:var(--bg);font-weight:800;font-size:18px;border:2px solid transparent}
+.chips button.on{background:var(--me);color:#fff}
+.linkbtn{color:var(--me);font-weight:800;padding:4px 0}
+
+/* Home */
+.hello{text-align:center;margin:6px 0 14px}
+.hello h1{font-size:34px;line-height:1}
+.profiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.prof{border-radius:var(--r);padding:12px;background:var(--card);box-shadow:0 3px 0 var(--line);border:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px}
+.prof .av{font-size:40px;line-height:1.1}
+.prof b{font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:22px}
+.prof.lana.on{border-color:var(--lana);background:var(--lana-soft)}
+.prof.sorya.on{border-color:var(--sorya);background:var(--sorya-soft)}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode{border-radius:var(--r);padding:14px 12px;text-align:left;box-shadow:0 4px 0 rgba(0,0,0,.08);display:flex;flex-direction:column;gap:2px;min-height:118px;position:relative;overflow:hidden}
+.mode .ic{font-size:34px}
+.mode b{font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:20px;line-height:1.1}
+.mode span{font-size:13px;opacity:.8}
+.mode.wide{grid-column:span 2;min-height:96px}
+.badge{position:absolute;top:10px;right:10px;background:var(--ko);color:#fff;border-radius:99px;padding:2px 9px;font-size:13px;font-weight:800}
+
+/* Quiz */
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.pill{background:var(--card);border-radius:99px;padding:6px 14px;font-weight:800;box-shadow:0 2px 0 var(--line)}
+.bar{height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin-bottom:10px}
+.bar i{display:block;height:100%;background:var(--me);border-radius:99px;transition:width .25s linear}
+.qbox{background:var(--card);border-radius:var(--r);box-shadow:0 3px 0 var(--line);text-align:center;padding:14px 10px 10px;margin-bottom:12px;position:relative}
+.q{font-size:56px;line-height:1.1;letter-spacing:1px}
+.disp{font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:40px;min-height:56px;margin-top:4px;color:var(--me);border-bottom:3px dashed var(--line);display:inline-block;min-width:110px}
+.fb{height:30px;font-weight:800;font-size:18px;margin-top:6px}
+.fb.ok{color:var(--ok)} .fb.ko{color:var(--ko)}
+.shake{animation:shake .35s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.pop{animation:popin .25s}
+@keyframes popin{from{transform:scale(.85)}to{transform:scale(1)}}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.pad button{height:62px;border-radius:16px;background:var(--card);font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:30px;font-weight:700;box-shadow:0 4px 0 var(--line)}
+.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.pad .ok{background:var(--ok);color:#fff;box-shadow:0 4px 0 #1d8a55}
+.pad .del{background:#ffe3e9;color:var(--ko)}
+.qcm{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qcm button{height:84px;border-radius:18px;background:var(--card);font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:38px;box-shadow:0 4px 0 var(--line)}
+.qcm button.good{background:var(--ok);color:#fff}
+.qcm button.bad{background:var(--ko);color:#fff}
+.locked{opacity:.4;pointer-events:none}
+
+/* Results */
+.result{text-align:center;padding:22px 16px}
+.result .big{font-size:72px;line-height:1;color:var(--me)}
+.result h2{font-size:28px}
+.hist{display:flex;flex-direction:column;gap:6px}
+.hrow{display:grid;grid-template-columns:76px 46px 1fr 34px;align-items:center;gap:8px;font-size:14px}
+.hrow .hb{height:14px;border-radius:99px;background:var(--me);min-width:4px}
+.tag{display:inline-block;padding:1px 8px;border-radius:99px;background:var(--me-soft);color:var(--me);font-weight:800;font-size:12px}
+
+/* Race */
+.track{background:#7cc46a;border-radius:var(--r);padding:10px 8px;box-shadow:0 3px 0 #5ea24e;margin-bottom:12px;position:relative}
+.lane{position:relative;height:58px;border-radius:14px;margin:6px 0;background:#c9935a;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 2px,transparent 2px 100%);overflow:hidden}
+.lane .fin{position:absolute;right:0;top:0;bottom:0;width:16px;background:repeating-conic-gradient(#222 0 25%,#fff 0 50%) 0 0/8px 8px}
+.lane .name{position:absolute;left:8px;top:3px;font-size:12px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);z-index:2}
+.horse{position:absolute;top:8px;font-size:42px;line-height:1;transition:left .6s cubic-bezier(.3,1.4,.5,1);z-index:1}
+.horse span{display:inline-block;transform:scaleX(-1)}
+.horse .tagh{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:800;padding:0 6px;border-radius:99px;color:#fff;white-space:nowrap}
+.gallop span{animation:gallop .35s 2}
+@keyframes gallop{50%{transform:scaleX(-1) translateY(-7px) rotate(8deg)}}
+.overlay{position:fixed;inset:0;background:rgba(43,35,64,.55);display:grid;place-items:center;z-index:50}
+.overlay .bigc{font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:140px;color:#fff;text-shadow:0 6px 0 rgba(0,0,0,.2);animation:popin .4s}
+.code{font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:58px;letter-spacing:10px;color:var(--me);text-align:center;line-height:1.1}
+input.codein{font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:44px;letter-spacing:10px;text-align:center;width:100%;border:3px solid var(--line);border-radius:18px;padding:6px;text-transform:uppercase;background:var(--bg);color:var(--ink)}
+.status{display:flex;align-items:center;gap:8px;justify-content:center;font-weight:800;margin:10px 0}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--sun);animation:blink 1s infinite}
+.dot.ok{background:var(--ok);animation:none}
+@keyframes blink{50%{opacity:.3}}
+
+/* Errors / grid */
+.errlist{display:flex;flex-wrap:wrap;gap:8px}
+.err{background:#ffe3e9;color:#b3264b;border-radius:12px;padding:6px 10px;font-weight:800}
+.err small{opacity:.7;font-weight:700}
+.dots{display:inline-flex;gap:3px;margin-left:6px;vertical-align:middle}
+.dots i{width:9px;height:9px;border-radius:50%;background:#f5b7c6}
+.dots i.on{background:var(--ok)}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tcard{background:var(--card);border-radius:18px;padding:10px 6px;box-shadow:0 3px 0 var(--line);text-align:center}
+.tcard b{display:block;font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:30px;line-height:1.1}
+.stars{font-size:18px;letter-spacing:1px}
+.stars .off{filter:grayscale(1);opacity:.25}
+.pgrid{display:grid;gap:2px;font-size:10px;font-weight:800;text-align:center}
+.pgrid div{aspect-ratio:1;border-radius:4px;display:grid;place-items:center;background:#eee6dd;color:#b9ab9b}
+.pgrid .h{background:none;color:var(--muted)}
+.pgrid .g{background:#7fd6a5;color:#145a35} .pgrid .o{background:#ffd27a;color:#7a5200} .pgrid .r{background:#ff9fb3;color:#7d1630}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+
+/* Memory */
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;perspective:800px}
+.mcard{height:88px;position:relative;transform-style:preserve-3d;transition:transform .35s}
+.mcard.flip,.mcard.done{transform:rotateY(180deg)}
+.mcard>div{position:absolute;inset:0;border-radius:16px;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:30px;box-shadow:0 4px 0 rgba(0,0,0,.1)}
+.mcard .cb{background:var(--me);color:#fff;font-size:34px;background-image:radial-gradient(rgba(255,255,255,.25) 2px,transparent 2px);background-size:14px 14px}
+.mcard .face{background:var(--card);transform:rotateY(180deg)}
+.mcard.done .face{background:#d8f5e5;color:#147a46}
+
+/* Balloons */
+.sky{position:relative;height:min(60vh,520px);border-radius:var(--r);background:linear-gradient(#8fd3fe,#d9f1ff);overflow:hidden;box-shadow:0 3px 0 var(--line)}
+.balloon{position:absolute;width:78px;height:94px;margin-left:-39px;border-radius:50% 50% 48% 48%/55% 55% 45% 45%;display:grid;place-items:center;font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:32px;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.2);box-shadow:inset -8px -10px 0 rgba(0,0,0,.12)}
+.balloon::after{content:"";position:absolute;top:100%;left:50%;width:2px;height:46px;background:rgba(0,0,0,.25)}
+.balloon::before{content:"";position:absolute;bottom:-6px;left:50%;margin-left:-6px;border:6px solid transparent;border-bottom-color:inherit}
+.balloon.popped{animation:boom .3s forwards}
+@keyframes boom{to{transform:scale(1.6);opacity:0}}
+.balloon.wrong{filter:grayscale(1);opacity:.5}
+.balloon.right{outline:4px solid #fff;outline-offset:3px}
+.cloud{position:absolute;font-size:46px;opacity:.85}
+
+/* Vrai faux */
+.vf{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vf button{height:110px;border-radius:22px;font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:30px;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.18)}
+.vf .t{background:var(--ok)} .vf .f{background:var(--ko)}
+.vf button:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+
+.confetti{position:fixed;top:-20px;width:10px;height:14px;z-index:99;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.toggle{width:56px;height:32px;border-radius:99px;background:var(--line);position:relative;flex:none}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on{background:var(--me)} .toggle.on::after{left:27px}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0}
+hr{border:0;border-top:2px dashed var(--line);margin:14px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ============ Données ============ */
+const KEY = "tables-lana-sorya-v1";
+const NAMES = {lana:"Lana", sorya:"Sorya", cpu:"Ordinateur"};
+const AV = {lana:"🦄", sorya:"🐬", cpu:"🤖"};
+const COL = {lana:"#9b5de5", sorya:"#00a6a6", cpu:"#6c757d"};
+const newProfile = () => ({chrono:[], chronoBest:{}, errors:{}, stats:{}, stars:{}, memory:{}, balloons:0, vf:0, race:{wins:0, losses:0}});
+const defaults = () => ({v:1, current:"lana",
+  settings:{t11:false, t12:false, answer:"keypad", sound:true, tables:[2,3,4,5,6,7,8,9,10],
+            balance:"none", balanceWho:"lana", headStart:2, cpuLevel:"moyen", raceLen:10, chronoDur:1},
+  profiles:{lana:newProfile(), sorya:newProfile()}});
+let S;
+try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
+if (!S || !S.profiles) S = defaults();
+{ const d = defaults(); S.settings = Object.assign(d.settings, S.settings);
+  for (const p of ["lana","sorya"]) S.profiles[p] = Object.assign(newProfile(), S.profiles[p]||{}); }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+const me = () => S.current;
+const other = () => me()==="lana" ? "sorya" : "lana";
+const P = () => S.profiles[me()];
+
+/* ============ Outils ============ */
+const app = document.getElementById("app");
+const rnd = n => Math.floor(Math.random()*n);
+const pick = a => a[rnd(a.length)];
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];} return a; };
+const maxT = () => S.settings.t12 ? 12 : S.settings.t11 ? 11 : 10;
+const allTables = () => { const t=[0,1,2,3,4,5,6,7,8,9,10]; if(S.settings.t11) t.push(11); if(S.settings.t12) t.push(12); return t; };
+function activeTables(){ const ok = allTables(); const t = S.settings.tables.filter(x=>ok.includes(x)); return t.length ? t : ok.filter(x=>x>=2); }
+const keyOf = (a,b) => Math.min(a,b)+"x"+Math.max(a,b);
+function fact(a,b){ return {a, b, ans:a*b, key:keyOf(a,b)}; }
+function randFact(tables, last){
+  for (let k=0;k<8;k++){
+    const t = pick(tables);
+    const m = Math.random()<0.12 ? pick([0,1]) : 2+rnd(9);   // peu de ×0 et ×1
+    const f = Math.random()<0.5 ? fact(t,m) : fact(m,t);
+    if (!last || f.key!==last.key) return f;
+  }
+  return fact(pick(tables), 2+rnd(9));
+}
+// Une question sur 4 vient des erreurs à revoir (si elle concerne les tables choisies)
+function smartFact(tables, last){
+  const errs = Object.keys(P().errors).filter(k => { const [a,b]=k.split("x").map(Number); return tables.includes(a)||tables.includes(b); });
+  if (errs.length && Math.random()<0.25){
+    const k = pick(errs); if (!last || k!==last.key){ const [a,b]=k.split("x").map(Number); return Math.random()<.5?fact(a,b):fact(b,a); }
+  }
+  return randFact(tables, last);
+}
+function choices(f){
+  const s = new Set([f.ans]); const a=f.a, b=f.b;
+  const cands = shuffle([f.ans+a, f.ans-a, f.ans+b, f.ans-b, f.ans+1, f.ans-1, f.ans+10, f.ans-10, (a+1)*(b+1), a+b, f.ans+2]);
+  for (const c of cands){ if (s.size>=4) break; if (c>=0) s.add(c); }
+  let x=1; while(s.size<4) s.add(f.ans+(x++)*3);
+  return shuffle([...s]);
+}
+function record(f, ok){
+  const p = P(); const st = p.stats[f.key] || (p.stats[f.key]={ok:0,ko:0});
+  ok ? st.ok++ : st.ko++;
+  if (!ok) p.errors[f.key] = {miss:((p.errors[f.key]||{}).miss||0)+1, streak:0};
+  else if (p.errors[f.key]) { p.errors[f.key].streak++; if (p.errors[f.key].streak>=3) delete p.errors[f.key]; }
+  save();
+}
+const fmt = f => `${f.a} × ${f.b}`;
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dateFr = t => new Date(t).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"});
+
+/* ============ Sons & confettis ============ */
+let AC;
+function beep(freq, dur=0.12, type="sine", when=0){
+  if (!S.settings.sound) return;
+  try { AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    const o=AC.createOscillator(), g=AC.createGain(); o.type=type; o.frequency.value=freq;
+    const t=AC.currentTime+when; g.gain.setValueAtTime(.18,t); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+    o.connect(g).connect(AC.destination); o.start(t); o.stop(t+dur);
+  } catch(e){}
+}
+const sndOk = () => { beep(660,.1); beep(990,.14,"sine",.08); };
+const sndKo = () => beep(180,.25,"triangle");
+const sndWin = () => [523,659,784,1047].forEach((f,i)=>beep(f,.18,"sine",i*.12));
+function confetti(n=80){
+  const cols=["#9b5de5","#00a6a6","#ffc43d","#ef476f","#2bb673","#ff8c42"];
+  for (let i=0;i<n;i++){ const d=document.createElement("div"); d.className="confetti";
+    d.style.left=rnd(100)+"vw"; d.style.background=pick(cols); d.style.animationDuration=(1.8+Math.random()*1.8)+"s";
+    d.style.animationDelay=(Math.random()*.6)+"s"; document.body.appendChild(d); setTimeout(()=>d.remove(),4500); }
+}
+
+/* ============ Navigation ============ */
+let cleanup = [];
+function clearAll(){ cleanup.forEach(fn=>{try{fn()}catch(e){}}); cleanup=[]; answerHandler=null; }
+function go(screen, ...args){ clearAll(); document.body.className = "p-"+me(); SCREENS[screen](...args); window.scrollTo(0,0); }
+const hdr = (title, back="home") => `<div class="top"><button class="back" onclick="go('${back}')" aria-label="Retour">←</button><h2>${title}</h2></div>`;
+
+/* ============ Zone de réponse (clavier ou 4 choix) ============ */
+let answerHandler = null, padVal = "";
+function answerArea(f){
+  padVal = "";
+  if (S.settings.answer === "qcm")
+    return `<div class="qcm" id="ans">${choices(f).map(c=>`<button onclick="submitAns(${c},this)">${c}</button>`).join("")}</div>`;
+  return `<div class="pad" id="ans">${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="kp('${n}')">${n}</button>`).join("")}
+    <button class="del" onclick="kp('del')">⌫</button><button onclick="kp('0')">0</button><button class="ok" onclick="kp('ok')">OK</button></div>`;
+}
+const qHtml = f => `<div class="q" id="q">${fmt(f)} = ?</div>${S.settings.answer==="qcm"?"":`<div class="disp" id="disp">&nbsp;</div>`}<div class="fb" id="fb"></div>`;
+function kp(k){
+  if (!answerHandler) return;
+  if (k==="del") padVal = padVal.slice(0,-1);
+  else if (k==="ok"){ if (padVal!=="") submitAns(+padVal); return; }
+  else if (padVal.length<3) padVal += k;
+  const d=document.getElementById("disp"); if (d) d.innerHTML = padVal || "&nbsp;";
+}
+function submitAns(v, el){ if (answerHandler) answerHandler(v, el); }
+document.addEventListener("keydown", e=>{
+  if (!answerHandler || S.settings.answer==="qcm") return;
+  if (/^[0-9]$/.test(e.key)) kp(e.key); else if (e.key==="Backspace") kp("del"); else if (e.key==="Enter") kp("ok");
+});
+function feedback(ok, f, msg){
+  const fb=document.getElementById("fb"); if (!fb) return;
+  fb.className = "fb "+(ok?"ok":"ko"); fb.textContent = msg || (ok ? pick(["Bravo !","Super !","Génial !","Oui !","Top !"]) : `${fmt(f)} = ${f.ans}`);
+  const q=document.getElementById("q"); if (q){ q.classList.remove("shake","pop"); void q.offsetWidth; q.classList.add(ok?"pop":"shake"); }
+}
+function markQcm(el, f, ok){
+  if (S.settings.answer!=="qcm") return;
+  document.querySelectorAll("#ans button").forEach(b=>{ if (+b.textContent===f.ans) b.classList.add("good"); });
+  if (!ok && el) el.classList.add("bad");
+}
+const chosenTables = () => S.settings.tables.filter(x=>allTables().includes(x));
+function tablesPicker(){
+  const act = chosenTables();
+  return `<div class="label">Tables à travailler</div><div class="chips" id="tp">${allTables().map(t=>`<button class="${act.includes(t)?"on":""}" onclick="toggleTable(${t},this)">${t}</button>`).join("")}</div>
+  <div class="row" style="justify-content:space-between;margin-top:6px"><button class="linkbtn small" onclick="setTables('all')">Toutes</button><button class="linkbtn small" onclick="setTables('none')">Aucune</button></div>`;
+}
+function toggleTable(t, el){
+  const s = new Set(chosenTables()); s.has(t)?s.delete(t):s.add(t);
+  S.settings.tables=[...s].sort((a,b)=>a-b); save(); el.classList.toggle("on", s.has(t));
+}
+function setTables(w){ S.settings.tables = w==="all" ? allTables() : []; save();
+  document.querySelectorAll("#tp button").forEach(b=>b.classList.toggle("on", w==="all")); }
+function seg(name, opts, cur, fn){ return `<div class="seg">${opts.map(([v,l])=>`<button class="${String(v)===String(cur)?"on":""}" onclick="${fn}('${name}','${v}',this)">${l}</button>`).join("")}</div>`; }
+function setOpt(name, v, el){ const old=S.settings[name]; S.settings[name] = typeof old==="number" ? +v : v; save();
+  el.parentNode.querySelectorAll("button").forEach(b=>b.classList.remove("on")); el.classList.add("on"); }
+function stars(n, total=3){ let s=""; for(let i=0;i<total;i++) s+=`<span class="${i<n?"":"off"}">⭐</span>`; return `<span class="stars">${s}</span>`; }
+
+/* ============ Écrans ============ */
+const SCREENS = {};
+
+SCREENS.home = () => {
+  const ne = Object.keys(P().errors).length;
+  app.innerHTML = `
+  <div class="hello"><h1>Les tables ✖️</h1><div class="muted">Qui joue ?</div></div>
+  <div class="profiles">${["lana","sorya"].map(p=>`<button class="prof ${p} ${me()===p?"on":""}" onclick="setProfile('${p}')"><span class="av">${AV[p]}</span><b>${NAMES[p]}</b></button>`).join("")}</div>
+  <div class="modes">
+    <button class="mode" style="background:#ffe8a3" onclick="go('chronoSetup')"><span class="ic">⏱️</span><b>Chrono</b><span>Un maximum de bonnes réponses</span></button>
+    <button class="mode" style="background:#c9f0d6" onclick="go('raceSetup')"><span class="ic">🐎</span><b>Course de chevaux</b><span>Contre l'ordi ou ${NAMES[other()]}</span></button>
+    <button class="mode" style="background:#ffd6de" onclick="go('errors')">${ne?`<span class="badge">${ne}</span>`:""}<span class="ic">🎯</span><b>Mes erreurs</b><span>Revoir les calculs ratés</span></button>
+    <button class="mode" style="background:#e3d7fb" onclick="go('defi')"><span class="ic">⭐</span><b>Défi des tables</b><span>Gagne les 3 étoiles</span></button>
+    <button class="mode" style="background:#cfe9ff" onclick="go('memorySetup')"><span class="ic">🃏</span><b>Memory</b><span>Calcul ↔ résultat</span></button>
+    <button class="mode" style="background:#d7f3f7" onclick="go('balloons')"><span class="ic">🎈</span><b>Ballons</b><span>Éclate la bonne réponse</span></button>
+    <button class="mode wide" style="background:#ffe1c7" onclick="go('vf')"><span class="ic">✅❌</span><b>Vrai ou faux express</b><span>60 secondes pour répondre au plus vite</span></button>
+  </div>
+  <div style="text-align:center;margin-top:18px"><button class="btn ghost" onclick="go('settings')">⚙️ Paramètres</button></div>`;
+};
+function setProfile(p){ S.current=p; save(); go("home"); }
+
+/* ---------- Paramètres ---------- */
+SCREENS.settings = () => {
+  const s=S.settings;
+  app.innerHTML = hdr("⚙️ Paramètres") + `
+  <div class="card">
+    <div class="setrow"><div><b>Table de 11</b><div class="muted small">Ajoute la table de 11</div></div><button class="toggle ${s.t11?"on":""}" onclick="tog('t11')"></button></div>
+    <div class="setrow"><div><b>Table de 12</b><div class="muted small">Ajoute la table de 12</div></div><button class="toggle ${s.t12?"on":""}" onclick="tog('t12')"></button></div>
+    <div class="setrow"><div><b>Sons</b></div><button class="toggle ${s.sound?"on":""}" onclick="tog('sound')"></button></div>
+  </div>
+  <div class="card"><div class="label">Façon de répondre</div>
+    ${seg("answer",[["keypad","⌨️ Clavier"],["qcm","🔢 4 choix"]],s.answer,"setOpt")}
+    <div class="muted small" style="margin-top:8px">Le clavier fait davantage travailler la mémoire. Les 4 choix sont plus faciles.</div></div>
+  <div class="card"><div class="label">⚖️ Équilibrer la course Lana / Sorya</div>
+    ${seg("balance",[["none","Non"],["head","Avance au départ"],["hard","Calculs plus durs"]],s.balance,"setBal")}
+    <div id="balx" style="${s.balance==="none"?"display:none":""}">
+      <div class="label" style="margin-top:12px">Qui est aidée ?</div>
+      ${seg("balanceWho",[["lana","🦄 Lana"],["sorya","🐬 Sorya"]],s.balanceWho,"setOpt")}
+      <div id="headx" style="${s.balance==="head"?"":"display:none"}"><div class="label" style="margin-top:12px">Cases d'avance</div>
+      ${seg("headStart",[[1,"1"],[2,"2"],[3,"3"],[4,"4"],[5,"5"]],s.headStart,"setOpt")}</div>
+      <div class="muted small" style="margin-top:8px" id="balhelp">${balHelp()}</div>
+    </div></div>
+  <div class="card"><div class="label">Effacer les scores</div>
+    <div class="row wrap"><button class="btn ghost" id="rst" onclick="resetP(this)">🗑️ Effacer les données de ${NAMES[me()]}</button></div></div>`;
+};
+function balHelp(){ const s=S.settings, w=NAMES[s.balanceWho], o=NAMES[s.balanceWho==="lana"?"sorya":"lana"];
+  return s.balance==="head" ? `${w} part avec quelques cases d'avance.` : s.balance==="hard" ? `${o} n'a que des calculs des tables de 6 et plus, ${w} garde les tables choisies.` : ""; }
+function setBal(n,v,el){ setOpt(n,v,el); document.getElementById("balx").style.display = v==="none"?"none":"";
+  document.getElementById("headx").style.display = v==="head"?"":"none"; document.getElementById("balhelp").textContent=balHelp(); }
+const _setOpt = setOpt;
+setOpt = function(n,v,el){ _setOpt(n,v,el); const h=document.getElementById("balhelp"); if(h) h.textContent=balHelp(); };
+function tog(k){ S.settings[k]=!S.settings[k]; save(); go("settings"); }
+function resetP(el){ if (el.dataset.c){ S.profiles[me()]=newProfile(); save(); go("home"); } else { el.dataset.c=1; el.textContent="Appuie encore pour confirmer"; el.style.background="#ffe3e9"; } }
+
+/* ---------- Chrono ---------- */
+SCREENS.chronoSetup = () => {
+  const p=P(), d=S.settings.chronoDur, h=p.chrono, mx=Math.max(1,...h.map(x=>x.score));
+  app.innerHTML = hdr("⏱️ Chrono") + `
+  <div class="card"><div class="label">Durée du minuteur</div>
+    ${seg("chronoDur",[[1,"1 min"],[3,"3 min"],[5,"5 min"]],d,"setOpt")}
+    <hr>${tablesPicker()}</div>
+  <button class="btn block" onclick="go('chrono')">C'est parti !</button>
+  <div class="card" style="margin-top:16px"><div class="label">🏆 Records de ${NAMES[me()]}</div>
+    <div class="row" style="justify-content:space-around;text-align:center">${[1,3,5].map(m=>`<div><div class="muted small">${m} min</div><div class="big" style="font-size:30px">${p.chronoBest[m]??"–"}</div></div>`).join("")}</div>
+    <hr><div class="label">10 dernières parties</div>
+    ${h.length ? `<div class="hist">${h.map(x=>`<div class="hrow"><span class="muted">${dateFr(x.d)}</span><span class="tag">${x.dur} min</span><div class="hb" style="width:${Math.round(x.score/mx*100)}%"></div><b style="text-align:right">${x.score}</b></div>`).join("")}</div>
+      <div class="muted small" style="margin-top:6px">Barre = nombre de bonnes réponses</div>` : `<div class="muted">Pas encore de partie. À toi de jouer !</div>`}
+  </div>`;
+};
+SCREENS.chrono = () => {
+  const dur=S.settings.chronoDur, tables=activeTables(), total=dur*60000, end=Date.now()+total;
+  let score=0, errs=0, f=null, busy=false;
+  app.innerHTML = `<div class="hud"><button class="back" onclick="go('chronoSetup')">✕</button><span class="pill" id="time">${dur}:00</span><span class="pill">✅ <span id="sc">0</span></span></div>
+    <div class="bar"><i id="tb" style="width:100%"></i></div><div class="qbox" id="qb"></div><div id="aa"></div>`;
+  const next = () => { f = smartFact(tables, f); busy=false; document.getElementById("qb").innerHTML = qHtml(f); document.getElementById("aa").innerHTML = answerArea(f); };
+  answerHandler = (v, el) => {
+    if (busy) return; const ok = v===f.ans; record(f, ok); markQcm(el,f,ok);
+    if (ok){ score++; sndOk(); document.getElementById("sc").textContent=score; feedback(true,f); busy=true; setTimeout(next, S.settings.answer==="qcm"?350:250); }
+    else { errs++; sndKo(); feedback(false,f); busy=true; setTimeout(next, 1400); }
+  };
+  const iv = setInterval(()=>{
+    const left=Math.max(0,end-Date.now()), s=Math.ceil(left/1000);
+    document.getElementById("time").textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+    document.getElementById("tb").style.width = (left/total*100)+"%";
+    if (left<=0){ clearInterval(iv); finish(); }
+  }, 200);
+  cleanup.push(()=>clearInterval(iv));
+  function finish(){
+    const p=P(), best=p.chronoBest[dur]||0, rec = score>best && score>0;
+    p.chrono.unshift({d:Date.now(), dur, score, err:errs}); p.chrono=p.chrono.slice(0,10);
+    if (score>best) p.chronoBest[dur]=score; save();
+    clearAll();
+    app.innerHTML = hdr("⏱️ Terminé !","chronoSetup") + `<div class="card result">
+      <div class="muted">Bonnes réponses en ${dur} min</div><div class="big">${score}</div>
+      <h2>${rec?"🏆 Nouveau record !":score>=best*0.8?"Très bien joué !":"Continue comme ça !"}</h2>
+      <div class="muted" style="margin:6px 0 16px">${errs} erreur${errs>1?"s":""} · record : ${Math.max(best,score)}</div>
+      <div class="row" style="justify-content:center"><button class="btn" onclick="go('chrono')">Rejouer</button><button class="btn ghost" onclick="go('home')">Accueil</button></div></div>`;
+    if (rec){ sndWin(); confetti(); }
+  }
+  next();
+};
+
+/* ---------- Course de chevaux ---------- */
+let RACE = null, NET = null;
+SCREENS.raceSetup = () => {
+  const s=S.settings, r=P().race;
+  app.innerHTML = hdr("🐎 Course de chevaux") + `
+  <div class="card"><div class="label">Nombre de questions (longueur de la course)</div>
+    ${seg("raceLen",[[10,"10"],[15,"15"],[20,"20"]],s.raceLen,"setOpt")}<hr>${tablesPicker()}</div>
+  <div class="card"><div class="label">🤖 Contre l'ordinateur</div>
+    ${seg("cpuLevel",[["facile","Facile"],["moyen","Moyen"],["difficile","Difficile"]],s.cpuLevel,"setOpt")}
+    <button class="btn block" style="margin-top:12px" onclick="startCpuRace()">Lancer la course</button></div>
+  <div class="card"><div class="label">${AV[other()]} Contre ${NAMES[other()]} (chacune sur son appareil)</div>
+    <div class="row"><button class="btn sun" style="flex:1" onclick="go('raceHost')">Créer</button><button class="btn ghost" style="flex:1" onclick="go('raceJoin')">Rejoindre</button></div>
+    <div class="muted small" style="margin-top:8px">Une crée la course et donne le code, l'autre le tape dans « Rejoindre ». Il faut Internet sur les deux appareils.</div></div>
+  <div class="muted small" style="text-align:center">🏆 ${r.wins} victoire${r.wins>1?"s":""} · ${r.losses} défaite${r.losses>1?"s":""}</div>`;
+};
+
+/* Moteur (tourne chez celle qui crée la course ou contre l'ordi) */
+function Engine(opts){
+  // opts: {roles:["host","guest"|"cpu"], target, tables:{host,guest}, pos, emit}
+  const E = {r:0, pos:Object.assign({},opts.pos), locked:{}, done:true, q:{}, timers:[]};
+  const clearT = () => { E.timers.forEach(clearTimeout); E.timers=[]; };
+  E.start = () => {
+    E.r=0; E.pos=Object.assign({},opts.pos); E.over=false;
+    opts.emit({t:"start", target:opts.target, pos:E.pos, names:opts.names});
+    E.timers.push(setTimeout(E.round, 3300));
+  };
+  E.round = () => {
+    clearT(); E.r++; E.locked={}; E.done=false;
+    const prev = E.q; E.q = {};
+    for (const role of opts.roles){
+      const tb = opts.tables[role] || opts.tables.host;
+      // même question pour les deux, sauf si l'équilibrage donne des tables différentes
+      E.q[role] = (role!=="host" && tb===opts.tables.host) ? E.q.host : randFact(tb, prev[role]);
+    }
+    opts.emit({t:"round", r:E.r, q:Object.fromEntries(opts.roles.map(r=>[r,{a:E.q[r].a,b:E.q[r].b}]))});
+    if (opts.roles.includes("cpu")) cpuPlay();
+  };
+  function cpuPlay(){
+    const L = {facile:[5200,.8], moyen:[3600,.9], difficile:[2400,.96]}[opts.cpuLevel||"moyen"], q=E.q.cpu;
+    const hard = Math.min(q.a,q.b)>=6 ? 1.3 : Math.min(q.a,q.b)<=2 ? .7 : 1;
+    E.timers.push(setTimeout(()=>E.answer("cpu", E.r, Math.random()<L[1] ? q.ans : q.ans+pick([-q.a,q.b,1,-1])), L[0]*hard*(.7+Math.random()*.6)));
+  }
+  E.answer = (role, r, v) => {
+    if (E.over || E.done || r!==E.r || E.locked[role] || !E.q[role]) return;
+    if (v === E.q[role].ans){
+      E.done=true; clearT(); E.pos[role]++;
+      const ans = Object.fromEntries(opts.roles.map(x=>[x,E.q[x].ans]));
+      opts.emit({t:"result", r, winner:role, pos:E.pos, ans});
+      if (E.pos[role] >= opts.target){ E.over=true; E.timers.push(setTimeout(()=>opts.emit({t:"end", winner:role, pos:E.pos}), 900)); }
+      else E.timers.push(setTimeout(E.round, 1500));
+    } else {
+      E.locked[role]=true; opts.emit({t:"lock", r, role});
+      if (opts.roles.every(x=>E.locked[x])){ E.done=true; clearT();
+        opts.emit({t:"result", r, winner:null, pos:E.pos, ans:Object.fromEntries(opts.roles.map(x=>[x,E.q[x].ans]))});
+        E.timers.push(setTimeout(E.round, 2000)); }
+    }
+  };
+  E.stop = () => { clearT(); E.over=true; };
+  return E;
+}
+
+function startCpuRace(){
+  go("raceView");
+  const s=S.settings;
+  RACE = {myRole:"host", oppRole:"cpu", names:{host:me(), cpu:"cpu"}, online:false};
+  const tb = activeTables();
+  RACE.engine = Engine({roles:["host","cpu"], target:s.raceLen, tables:{host:tb, cpu:tb}, pos:{host:0,cpu:0},
+    names:{host:me(), cpu:"cpu"}, cpuLevel:s.cpuLevel, emit:ev=>raceEvent(ev)});
+  cleanup.push(()=>RACE&&RACE.engine&&RACE.engine.stop());
+  RACE.engine.start();
+}
+SCREENS.raceView = () => { app.innerHTML = `<div id="race"></div>`; };
+
+function raceEvent(ev){
+  const R = RACE; if (!R) return;
+  const box = document.getElementById("race"); if (!box && ev.t!=="start") return;
+  if (ev.t==="start"){
+    if (!document.getElementById("race")) { clearAll(); app.innerHTML = `<div id="race"></div>`; if (R.online) cleanup.push(netClose); }
+    R.target=ev.target; R.pos=ev.pos; R.names=ev.names; R.r=0; R.q=null; R.done=false;
+    const mine = R.names[R.myRole], opp = R.names[R.oppRole];
+    document.getElementById("race").innerHTML = `
+      <div class="hud"><button class="back" onclick="quitRace()">✕</button><span class="pill" id="rq">Prêtes ?</span><span class="pill">🏁 ${R.target}</span></div>
+      <div class="track">${lane(R.myRole, mine)}${lane(R.oppRole, opp)}</div>
+      <div class="qbox" id="qb"><div class="q">🐎 🐎</div><div class="fb"></div></div><div id="aa"></div>`;
+    placeHorses();
+    countdown();
+  }
+  else if (ev.t==="round"){
+    R.r=ev.r; R.done=false; R.locked=false; const q=ev.q[R.myRole]; R.q=fact(q.a,q.b);
+    document.getElementById("rq").textContent = `Question ${ev.r}`;
+    const aa=document.getElementById("aa"); aa.classList.remove("locked");
+    document.getElementById("qb").innerHTML = qHtml(R.q); aa.innerHTML = answerArea(R.q);
+    answerHandler = (v, el) => {
+      if (R.locked || R.done) return; const ok = v===R.q.ans; record(R.q, ok); markQcm(el,R.q,ok);
+      if (!ok){ R.locked=true; sndKo(); feedback(false,R.q,"Raté ! Attends la question suivante"); document.getElementById("aa").classList.add("locked"); }
+      sendAnswer(R.r, v);
+    };
+  }
+  else if (ev.t==="lock"){
+    if (ev.role===R.oppRole && !R.done){ const fb=document.getElementById("fb"); if (fb && !R.locked){ fb.className="fb ok"; fb.textContent=`${nm(R.names[R.oppRole])} s'est trompé${R.oppRole==="cpu"?"":"e"} !`; } }
+  }
+  else if (ev.t==="result"){
+    R.done=true; answerHandler=null; R.pos=ev.pos; placeHorses(ev.winner);
+    const aa=document.getElementById("aa"); if (aa) aa.classList.add("locked");
+    const myAns = ev.ans[R.myRole];
+    if (ev.winner===R.myRole){ sndOk(); feedback(true,R.q,"✓ Ton cheval avance !"); }
+    else if (ev.winner){ beep(300,.15,"square"); feedback(false,R.q,`${nm(R.names[R.oppRole])} a été plus rapide · ${fmt(R.q)} = ${myAns}`); }
+    else feedback(false,R.q,`Personne ! ${fmt(R.q)} = ${myAns}`);
+  }
+  else if (ev.t==="end"){
+    answerHandler=null; const win = ev.winner===R.myRole;
+    const r=P().race; win ? r.wins++ : r.losses++; save();
+    if (win){ sndWin(); confetti(120); } else beep(220,.4,"triangle");
+    const ov=document.createElement("div"); ov.className="overlay"; ov.id="ov";
+    ov.innerHTML = `<div class="card result" style="width:min(90vw,420px)"><div style="font-size:70px">${win?"🏆":"🐎"}</div>
+      <h2>${win?"Tu as gagné !":`${nm(R.names[R.oppRole])} gagne !`}</h2>
+      <div class="muted" style="margin:6px 0 16px">${nm(R.names[R.myRole])} ${ev.pos[R.myRole]} – ${ev.pos[R.oppRole]} ${nm(R.names[R.oppRole])}</div>
+      <div class="row" style="justify-content:center">${R.online && R.myRole==="guest" ? `<span class="muted">${nm(R.names.host)} peut relancer une revanche</span>` : `<button class="btn" onclick="rematch()">Revanche</button>`}
+      <button class="btn ghost" onclick="quitRace()">Quitter</button></div></div>`;
+    document.body.appendChild(ov);
+  }
+}
+const nm = p => NAMES[p] || p;
+function lane(role, who){
+  const col = COL[who] || "#6c757d";
+  return `<div class="lane"><span class="name">${AV[who]||""} ${nm(who)}</span><div class="fin"></div>
+    <div class="horse" id="h-${role}"><span>🐎</span><i class="tagh" style="background:${col}">${role===RACE.myRole?"Toi":nm(who)}</i></div></div>`;
+}
+function placeHorses(moved){
+  for (const role of [RACE.myRole, RACE.oppRole]){
+    const h=document.getElementById("h-"+role); if (!h) continue;
+    const pct = Math.min(1, RACE.pos[role]/RACE.target);
+    h.style.left = `calc(${pct} * (100% - 64px) + 6px)`;
+    if (role===moved){ h.classList.remove("gallop"); void h.offsetWidth; h.classList.add("gallop"); }
+  }
+}
+function countdown(){
+  let n=3; const ov=document.createElement("div"); ov.className="overlay"; ov.id="cd"; document.body.appendChild(ov);
+  const tick=()=>{ if(!document.getElementById("cd")) return;
+    if (n===0){ ov.innerHTML=`<div class="bigc">Partez !</div>`; beep(880,.3); setTimeout(()=>ov.remove(),500); return; }
+    ov.innerHTML=`<div class="bigc">${n}</div>`; beep(440,.15); n--; setTimeout(tick,900); };
+  tick(); cleanup.push(()=>ov.remove());
+}
+function sendAnswer(r, v){
+  if (RACE.myRole==="host") RACE.engine.answer("host", r, v);
+  else if (NET && NET.conn && NET.conn.open) NET.conn.send({t:"answer", r, v});
+}
+function rematch(){ const ov=document.getElementById("ov"); if (ov) ov.remove(); RACE.engine.start(); }
+function quitRace(){ const ov=document.getElementById("ov"); if (ov) ov.remove(); if (RACE && RACE.engine) RACE.engine.stop(); RACE=null; netClose(); go("raceSetup"); }
+
+/* ---- Réseau (PeerJS, connexion directe entre les deux appareils) ---- */
+const PREFIX = "tables-lana-sorya-2026-";
+function loadPeer(){
+  return new Promise((ok,ko)=>{
+    if (window.Peer) return ok();
+    const s=document.createElement("script"); s.src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js";
+    s.onload=()=>ok(); s.onerror=()=>ko(new Error("load")); document.head.appendChild(s);
+  });
+}
+function netClose(){ if (NET){ try{NET.conn&&NET.conn.close()}catch(e){} try{NET.peer&&NET.peer.destroy()}catch(e){} NET=null; } }
+function newCode(){ const L="ABCDEFGHJKMNPQRSTUVWXYZ"; let c=""; for(let i=0;i<4;i++) c+=L[rnd(L.length)]; return c; }
+function setStatus(txt, ok){ const el=document.getElementById("st"); if (el) el.innerHTML=`<span class="dot ${ok?"ok":""}"></span>${txt}`; }
+
+SCREENS.raceHost = () => {
+  app.innerHTML = hdr(`🐎 Course contre ${NAMES[other()]}`,"raceSetup") + `
+    <div class="card" style="text-align:center"><div class="muted">Donne ce code à ${NAMES[other()]}</div>
+      <div class="code" id="code">····</div><div class="status" id="st"><span class="dot"></span>Préparation…</div></div>
+    <div class="card small muted">Course en ${S.settings.raceLen} questions · tables ${activeTables().join(", ")}${S.settings.balance!=="none"?`<br>⚖️ ${balHelp()}`:""}</div>
+    <button class="btn block" id="go" disabled onclick="hostStart()">Départ !</button>`;
+  cleanup.push(()=>{ if (!RACE) netClose(); });
+  hostOpen(0);
+};
+function hostOpen(tries){
+  netClose();
+  loadPeer().then(()=>{
+    const code=newCode(); const peer=new Peer(PREFIX+code, {debug:0}); NET={peer, role:"host", code};
+    peer.on("open", ()=>{ const c=document.getElementById("code"); if(c) c.textContent=code; setStatus(`En attente de ${NAMES[other()]}…`); });
+    peer.on("error", e=>{ if (e.type==="unavailable-id" && tries<4) hostOpen(tries+1); else setStatus("Problème de connexion. Vérifie Internet et réessaie."); });
+    peer.on("connection", conn=>{
+      if (NET.conn && NET.conn.open){ conn.close(); return; }
+      NET.conn=conn;
+      conn.on("data", d=>hostData(d));
+      conn.on("close", ()=>netLost());
+    });
+  }).catch(()=>setStatus("Impossible de charger le mode en ligne (Internet ?)"));
+}
+function hostData(d){
+  if (!d || typeof d!=="object") return;
+  if (d.t==="hello"){
+    NET.guest = ["lana","sorya"].includes(d.who) ? d.who : other();
+    NET.conn.send({t:"welcome", host:me()});
+    setStatus(`${AV[NET.guest]} ${NAMES[NET.guest]} est connectée !`, true);
+    const b=document.getElementById("go"); if (b) b.disabled=false; beep(880,.15);
+  } else if (d.t==="answer" && RACE && RACE.engine){ RACE.engine.answer("guest", d.r, d.v); }
+}
+function netLost(){
+  if (!NET) return;
+  const msg = document.createElement("div"); msg.className="overlay"; msg.id="ov";
+  msg.innerHTML = `<div class="card result" style="width:min(90vw,400px)"><div style="font-size:60px">📡</div><h2>Connexion perdue</h2><div class="muted" style="margin:8px 0 16px">L'autre appareil s'est déconnecté.</div><button class="btn" onclick="quitRace()">OK</button></div>`;
+  if (RACE && RACE.engine) RACE.engine.stop();
+  const old=document.getElementById("ov"); if (old) old.remove();
+  document.body.appendChild(msg);
+}
+function hostStart(){
+  const s=S.settings, hostP=me(), guestP=NET.guest;
+  const base=activeTables(); let tables={host:base, guest:base}, pos={host:0, guest:0};
+  if (s.balance!=="none" && hostP!==guestP){
+    const adv = hostP===s.balanceWho ? "host" : guestP===s.balanceWho ? "guest" : null;
+    if (adv){
+      const oth = adv==="host"?"guest":"host";
+      if (s.balance==="head") pos[adv]=Math.min(s.headStart, s.raceLen-1);
+      if (s.balance==="hard"){ let h=base.filter(t=>t>=6); if (!h.length) h=allTables().filter(t=>t>=6&&t<=10); tables[oth]=h; }
+    }
+  }
+  RACE = {myRole:"host", oppRole:"guest", online:true};
+  RACE.engine = Engine({roles:["host","guest"], target:s.raceLen, tables, pos, names:{host:hostP, guest:guestP},
+    emit:ev=>{ raceEvent(ev); if (NET && NET.conn && NET.conn.open) NET.conn.send(ev); }});
+  RACE.engine.start();
+}
+SCREENS.raceJoin = () => {
+  app.innerHTML = hdr(`🐎 Rejoindre ${NAMES[other()]}`,"raceSetup") + `
+    <div class="card" style="text-align:center"><div class="muted" style="margin-bottom:10px">Tape le code affiché chez ${NAMES[other()]}</div>
+      <input class="codein" id="ci" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD">
+      <div class="status" id="st" style="min-height:24px"></div>
+      <button class="btn block" onclick="guestJoin()">Rejoindre la course</button></div>`;
+  cleanup.push(()=>{ if (!RACE) netClose(); });
+  const ci=document.getElementById("ci"); ci.focus();
+  ci.addEventListener("keydown", e=>{ if (e.key==="Enter") guestJoin(); });
+};
+function guestJoin(){
+  const code=(document.getElementById("ci").value||"").trim().toUpperCase();
+  if (code.length!==4){ setStatus("Le code fait 4 lettres"); return; }
+  netClose(); setStatus("Connexion…");
+  loadPeer().then(()=>{
+    const peer=new Peer({debug:0}); NET={peer, role:"guest"};
+    const to=setTimeout(()=>{ if (NET && !(NET.conn&&NET.conn.open)) setStatus("Code introuvable. Vérifie-le et réessaie."); }, 12000);
+    peer.on("error", e=>{ clearTimeout(to); setStatus(e.type==="peer-unavailable" ? "Code introuvable. Vérifie-le et réessaie." : "Problème de connexion. Vérifie Internet."); });
+    peer.on("open", ()=>{
+      const conn=peer.connect(PREFIX+code, {reliable:true}); NET.conn=conn;
+      conn.on("open", ()=>{ clearTimeout(to); conn.send({t:"hello", who:me()}); });
+      conn.on("data", d=>guestData(d));
+      conn.on("close", ()=>netLost());
+    });
+  }).catch(()=>setStatus("Impossible de charger le mode en ligne (Internet ?)"));
+}
+function guestData(d){
+  if (!d || typeof d!=="object") return;
+  if (d.t==="welcome"){ setStatus(`Connectée à ${NAMES[d.host]||"ta sœur"} ! Attends le départ…`, true); beep(880,.15); return; }
+  if (d.t==="start"){ const ov=document.getElementById("ov"); if (ov) ov.remove(); RACE = {myRole:"guest", oppRole:"host", online:true}; }
+  if (RACE) raceEvent(d);
+}
+
+/* ---------- Erreurs à revoir ---------- */
+SCREENS.errors = () => {
+  const e=P().errors, keys=Object.keys(e).sort((a,b)=>e[b].miss-e[a].miss);
+  const dots = n => `<span class="dots">${[0,1,2].map(i=>`<i class="${i<n?"on":""}"></i>`).join("")}</span>`;
+  app.innerHTML = hdr("🎯 Mes erreurs") + (keys.length ? `
+    <div class="card"><div class="label">${keys.length} calcul${keys.length>1?"s":""} à revoir</div>
+      <div class="errlist">${keys.map(k=>{const [a,b]=k.split("x");return `<span class="err">${a} × ${b} ${dots(e[k].streak)}<br><small>raté ${e[k].miss} fois</small></span>`}).join("")}</div>
+      <div class="muted small" style="margin-top:10px">Un calcul disparaît de la liste quand tu le réussis 3 fois de suite (les points verts).</div></div>
+    <button class="btn block" onclick="go('errorsPlay')">Réviser maintenant</button>` :
+    `<div class="card result"><div style="font-size:70px">🎉</div><h2>Aucune erreur à revoir</h2><div class="muted" style="margin:8px 0 16px">Les calculs ratés dans les autres jeux arrivent ici automatiquement.</div><button class="btn" onclick="go('home')">Accueil</button></div>`);
+};
+SCREENS.errorsPlay = () => {
+  let f=null, busy=false, done=0;
+  app.innerHTML = `<div class="hud"><button class="back" onclick="go('errors')">✕</button><span class="pill">🎯 Reste <span id="left"></span></span><span class="pill">✅ <span id="dn">0</span></span></div>
+    <div class="qbox" id="qb"></div><div id="aa"></div>`;
+  const next = () => {
+    const e=P().errors, keys=Object.keys(e);
+    if (!keys.length){ clearAll(); sndWin(); confetti();
+      app.innerHTML = hdr("🎯 Mes erreurs") + `<div class="card result"><div style="font-size:70px">🏅</div><h2>Tout est maîtrisé !</h2><div class="muted" style="margin:8px 0 16px">${done} bonnes réponses</div><button class="btn" onclick="go('home')">Accueil</button></div>`; return; }
+    document.getElementById("left").textContent = keys.length;
+    let pool = keys.length>1 && f ? keys.filter(k=>k!==f.key) : keys;
+    pool = pool.flatMap(k=>Array(1+Math.min(3,e[k].miss)).fill(k));
+    const [a,b]=pick(pool).split("x").map(Number); f = Math.random()<.5?fact(a,b):fact(b,a); busy=false;
+    document.getElementById("qb").innerHTML = qHtml(f); document.getElementById("aa").innerHTML = answerArea(f);
+  };
+  answerHandler = (v, el) => {
+    if (busy) return; const ok=v===f.ans; const st=(P().errors[f.key]||{}).streak; record(f, ok); markQcm(el,f,ok); busy=true;
+    if (ok){ done++; sndOk(); document.getElementById("dn").textContent=done;
+      feedback(true,f, P().errors[f.key] ? `Bravo ! (${P().errors[f.key].streak}/3)` : "⭐ Maîtrisé !"); setTimeout(next, 700); }
+    else { sndKo(); feedback(false,f); setTimeout(next, 1600); }
+  };
+  next();
+};
+
+/* ---------- Défi des tables ---------- */
+function mastery(){
+  const st=P().stats, n=maxT(); let h=`<div class="pgrid" style="grid-template-columns:repeat(${n+2},1fr)"><div class="h">×</div>`;
+  for (let b=0;b<=n;b++) h+=`<div class="h">${b}</div>`;
+  for (let a=0;a<=n;a++){ h+=`<div class="h">${a}</div>`;
+    for (let b=0;b<=n;b++){ const s=st[keyOf(a,b)]; let c="";
+      if (s){ const tot=s.ok+s.ko; c = s.ok>=3 && s.ko/tot<=0.2 ? "g" : s.ko>s.ok ? "r" : "o"; }
+      h+=`<div class="${c}">${c?a*b:""}</div>`; } }
+  return h+`</div><div class="legend"><span><i style="background:#7fd6a5"></i>Maîtrisé</span><span><i style="background:#ffd27a"></i>En progrès</span><span><i style="background:#ff9fb3"></i>À travailler</span><span><i style="background:#eee6dd"></i>Pas encore vu</span></div>`;
+}
+SCREENS.defi = () => {
+  const st=P().stars, tot=allTables().reduce((s,t)=>s+(st[t]||0),0);
+  app.innerHTML = hdr("⭐ Défi des tables") + `
+  <div class="card"><div class="muted small" style="margin-bottom:10px">11 calculs de la table. Sans faute et en moins de 45 s = 3 étoiles.</div>
+    <div class="tgrid">${allTables().map(t=>`<button class="tcard" onclick="go('defiPlay',${t})"><span class="muted small">Table de</span><b>${t}</b>${stars(st[t]||0)}</button>`).join("")}</div>
+    <div style="text-align:center;margin-top:12px;font-weight:800">⭐ ${tot} / ${allTables().length*3}</div></div>
+  <div class="card"><div class="label">Ma grille de progrès</div>${mastery()}</div>`;
+};
+SCREENS.defiPlay = (t) => {
+  const list = shuffle([...Array(11).keys()]).map(m=>Math.random()<.5?fact(t,m):fact(m,t));
+  let i=0, errs=0, busy=false; const t0=Date.now();
+  app.innerHTML = `<div class="hud"><button class="back" onclick="go('defi')">✕</button><span class="pill">Table de ${t}</span><span class="pill" id="tm">0 s</span></div>
+    <div class="bar"><i id="pb" style="width:0%"></i></div><div class="qbox" id="qb"></div><div id="aa"></div>`;
+  const iv=setInterval(()=>{ const e=document.getElementById("tm"); if(e) e.textContent=Math.floor((Date.now()-t0)/1000)+" s"; },250); cleanup.push(()=>clearInterval(iv));
+  const show = () => { busy=false; const f=list[i]; document.getElementById("pb").style.width=(i/11*100)+"%";
+    document.getElementById("qb").innerHTML=qHtml(f); document.getElementById("aa").innerHTML=answerArea(f); };
+  answerHandler = (v, el) => {
+    if (busy) return; const f=list[i], ok=v===f.ans; record(f, ok); markQcm(el,f,ok); busy=true;
+    ok ? (sndOk(), feedback(true,f)) : (errs++, sndKo(), feedback(false,f));
+    setTimeout(()=>{ i++; if (i<11) show(); else end(); }, ok?300:1500);
+  };
+  function end(){
+    clearAll(); const sec=Math.round((Date.now()-t0)/1000), n = errs===0&&sec<=45 ? 3 : errs<=1 ? 2 : errs<=3 ? 1 : 0;
+    const old=P().stars[t]||0; if (n>old){ P().stars[t]=n; save(); }
+    if (n===3){ sndWin(); confetti(); } else if (n>0) sndOk();
+    app.innerHTML = hdr("⭐ Table de "+t,"defi") + `<div class="card result"><div style="font-size:44px">${stars(n)}</div>
+      <h2>${n===3?"Parfait !":n===2?"Presque parfait !":n===1?"Bien !":"On s'entraîne encore !"}</h2>
+      <div class="muted" style="margin:6px 0 16px">${11-errs}/11 bonnes réponses · ${sec} s${n>old&&old?" · nouveau record":""}</div>
+      <div class="row" style="justify-content:center"><button class="btn" onclick="go('defiPlay',${t})">Rejouer</button><button class="btn ghost" onclick="go('defi')">Tables</button></div></div>`;
+  }
+  show();
+};
+
+/* ---------- Memory ---------- */
+let memT = "mix";
+SCREENS.memorySetup = () => {
+  const best=P().memory;
+  app.innerHTML = hdr("🃏 Memory") + `<div class="card"><div class="muted small" style="margin-bottom:10px">Retourne les cartes et retrouve les paires : un calcul et son résultat.</div>
+    <div class="label">Quelle table ?</div>
+    <div class="chips">${allTables().filter(t=>t>=2).map(t=>`<button class="${memT===t?"on":""}" onclick="memT=${t};go('memorySetup')">${t}</button>`).join("")}</div>
+    <div class="seg" style="margin-top:8px"><button class="${memT==="mix"?"on":""}" onclick="memT='mix';go('memorySetup')">🔀 Mélange de mes tables</button></div></div>
+    <button class="btn block" onclick="go('memory')">Jouer</button>
+    ${Object.keys(best).length?`<div class="card" style="margin-top:16px"><div class="label">🏆 Meilleurs scores (en coups)</div><div class="row wrap">${Object.entries(best).map(([k,v])=>`<span class="tag">${k==="mix"?"Mélange":"Table "+k} : ${v}</span>`).join("")}</div></div>`:""}`;
+};
+SCREENS.memory = () => {
+  const facts=[], used=new Set();
+  const tables = memT==="mix" ? activeTables().filter(t=>t>=2) : [memT];
+  const src = tables.length ? tables : [2,3,4,5];
+  for (let k=0; facts.length<6 && k<300; k++){
+    const t=pick(src), m=2+rnd(9), f=Math.random()<.5?fact(t,m):fact(m,t);
+    if (!used.has(f.ans)){ used.add(f.ans); facts.push(f); }
+  }
+  const cards = shuffle(facts.flatMap((f,i)=>[{p:i,l:fmt(f)},{p:i,l:String(f.ans)}]));
+  let open=[], moves=0, found=0, lock=false; const t0=Date.now();
+  app.innerHTML = `<div class="hud"><button class="back" onclick="go('memorySetup')">✕</button><span class="pill">Coups : <span id="mv">0</span></span><span class="pill">Paires : <span id="fd">0</span>/6</span></div>
+    <div class="mgrid">${cards.map((c,i)=>`<div class="mcard" id="c${i}" onclick="memFlip(${i})"><div class="cb">?</div><div class="face" style="${c.l.length>4?"font-size:24px":""}">${c.l}</div></div>`).join("")}</div>`;
+  window.memFlip = i => {
+    const el=document.getElementById("c"+i); if (lock || !el || el.classList.contains("flip") || el.classList.contains("done")) return;
+    el.classList.add("flip"); beep(520,.05); open.push(i);
+    if (open.length===2){
+      moves++; document.getElementById("mv").textContent=moves; const [x,y]=open; open=[];
+      if (cards[x].p===cards[y].p){ found++; sndOk(); document.getElementById("fd").textContent=found;
+        setTimeout(()=>{ ["c"+x,"c"+y].forEach(id=>document.getElementById(id).classList.add("done")); if (found===6) end(); },300);
+      } else { lock=true; setTimeout(()=>{ document.getElementById("c"+x).classList.remove("flip"); document.getElementById("c"+y).classList.remove("flip"); lock=false; },950); }
+    }
+  };
+  function end(){
+    const sec=Math.round((Date.now()-t0)/1000), b=P().memory, old=b[memT], rec=!old||moves<old;
+    if (rec){ b[memT]=moves; save(); }
+    setTimeout(()=>{ sndWin(); confetti();
+      app.innerHTML = hdr("🃏 Bravo !","memorySetup") + `<div class="card result"><div style="font-size:70px">🃏</div><h2>${rec?"🏆 Nouveau record !":"Toutes les paires trouvées !"}</h2>
+      <div class="muted" style="margin:6px 0 16px">${moves} coups · ${sec} s${old?` · record : ${Math.min(old,moves)} coups`:""}</div>
+      <div class="row" style="justify-content:center"><button class="btn" onclick="go('memory')">Rejouer</button><button class="btn ghost" onclick="go('home')">Accueil</button></div></div>`; },700);
+  }
+};
+
+/* ---------- Ballons ---------- */
+SCREENS.balloons = () => {
+  app.innerHTML = hdr("🎈 Ballons") + `<div class="card"><div class="muted" style="margin-bottom:10px">Un calcul s'affiche, des ballons montent. Éclate celui qui porte la bonne réponse avant qu'il s'envole ! Tu as 3 vies ❤️, et les ballons vont de plus en plus vite.</div>${tablesPicker()}</div>
+  <button class="btn block" onclick="go('balloonsPlay')">Jouer</button>
+  <div class="muted" style="text-align:center;margin-top:14px">🏆 Record de ${NAMES[me()]} : <b>${P().balloons}</b></div>`;
+};
+SCREENS.balloonsPlay = () => {
+  const tables=activeTables(), cols=["#ef476f","#9b5de5","#00a6a6","#ff8c42","#2bb673","#3a86ff"];
+  let lives=3, score=0, f=null, items=[], raf=0, t0=0, D=7000, roundOver=false;
+  app.innerHTML = `<div class="hud"><button class="back" onclick="go('balloons')">✕</button><span class="pill" id="lv">❤️❤️❤️</span><span class="pill">🎈 <span id="sc">0</span></span></div>
+    <div class="qbox" style="padding:6px"><div class="q" id="q" style="font-size:44px"></div><div class="fb" id="fb" style="height:24px;margin:0"></div></div>
+    <div class="sky" id="sky"><span class="cloud" style="left:8%;top:12%">☁️</span><span class="cloud" style="left:66%;top:30%">☁️</span></div>`;
+  const sky=document.getElementById("sky");
+  cleanup.push(()=>cancelAnimationFrame(raf));
+  function round(){
+    items.forEach(it=>it.el.remove()); items=[]; roundOver=false;
+    f = smartFact(tables, f); document.getElementById("q").textContent = fmt(f)+" = ?"; document.getElementById("fb").textContent="";
+    D = Math.max(3300, 7000 - score*220);
+    const xs = shuffle([14,38,62,86]);
+    choices(f).forEach((v,i)=>{
+      const el=document.createElement("button"); el.className="balloon"; el.textContent=v;
+      const c=pick(cols); el.style.background=c; el.style.borderBottomColor=c; el.style.left=xs[i]+"%";
+      const it={v, el, delay:Math.random()*600, wob:Math.random()*6};
+      el.onpointerdown = e=>{ e.preventDefault(); hit(it); };
+      sky.appendChild(el); items.push(it);
+    });
+    t0=performance.now(); cancelAnimationFrame(raf); raf=requestAnimationFrame(loop);
+  }
+  function loop(now){
+    const H=sky.clientHeight; let escaped=false;
+    for (const it of items){ const p=Math.max(0,(now-t0-it.delay)/D);
+      it.el.style.top = (H - p*(H+150)) + "px"; it.el.style.marginLeft = (-39 + Math.sin(now/400+it.wob)*8)+"px";
+      if (it.v===f.ans && p>=1) escaped=true; }
+    if (escaped && !roundOver){ miss("Envolé ! "); return; }
+    if (!roundOver) raf=requestAnimationFrame(loop);
+  }
+  function hit(it){
+    if (roundOver) return;
+    if (it.v===f.ans){ roundOver=true; record(f,true); score++; sndOk(); it.el.classList.add("popped");
+      document.getElementById("sc").textContent=score; const fb=document.getElementById("fb"); fb.className="fb ok"; fb.textContent="Pop ! Bravo !";
+      setTimeout(round, 500); }
+    else { it.el.classList.add("wrong"); miss(""); }
+  }
+  function miss(prefix){
+    roundOver=true; cancelAnimationFrame(raf); record(f,false); sndKo(); lives--;
+    document.getElementById("lv").textContent = "❤️".repeat(lives)+"🤍".repeat(3-lives);
+    items.forEach(it=>{ if (it.v===f.ans) it.el.classList.add("right"); });
+    const fb=document.getElementById("fb"); fb.className="fb ko"; fb.textContent=prefix+fmt(f)+" = "+f.ans;
+    setTimeout(()=>{ lives>0 ? round() : end(); }, 1600);
+  }
+  function end(){
+    clearAll(); const best=P().balloons, rec=score>best; if (rec){ P().balloons=score; save(); sndWin(); confetti(); }
+    app.innerHTML = hdr("🎈 Partie terminée","balloons") + `<div class="card result"><div class="muted">Ballons éclatés</div><div class="big">${score}</div>
+      <h2>${rec?"🏆 Nouveau record !":"Bien joué !"}</h2><div class="muted" style="margin:6px 0 16px">Record : ${Math.max(best,score)}</div>
+      <div class="row" style="justify-content:center"><button class="btn" onclick="go('balloonsPlay')">Rejouer</button><button class="btn ghost" onclick="go('home')">Accueil</button></div></div>`;
+  }
+  round();
+};
+
+/* ---------- Vrai ou faux ---------- */
+SCREENS.vf = () => {
+  app.innerHTML = hdr("✅ Vrai ou faux") + `<div class="card"><div class="muted" style="margin-bottom:10px">Un calcul s'affiche avec un résultat. Il est juste ou faux ? Réponds le plus vite possible pendant 60 secondes. Une erreur fait perdre 2 secondes !</div>${tablesPicker()}</div>
+  <button class="btn block" onclick="go('vfPlay')">Jouer</button>
+  <div class="muted" style="text-align:center;margin-top:14px">🏆 Record de ${NAMES[me()]} : <b>${P().vf}</b></div>`;
+};
+SCREENS.vfPlay = () => {
+  const tables=activeTables(); let end=Date.now()+60000, score=0, f=null, shown=0, truth=true, busy=false, streak=0;
+  app.innerHTML = `<div class="hud"><button class="back" onclick="go('vf')">✕</button><span class="pill" id="time">60 s</span><span class="pill">✅ <span id="sc">0</span></span></div>
+    <div class="bar"><i id="tb" style="width:100%"></i></div>
+    <div class="qbox"><div class="q" id="q"></div><div class="fb" id="fb"></div></div>
+    <div class="vf"><button class="t" onclick="vfAns(true)">VRAI</button><button class="f" onclick="vfAns(false)">FAUX</button></div>`;
+  const next = () => { f=smartFact(tables,f); truth=Math.random()<.5; shown = truth ? f.ans : pick(choices(f).filter(c=>c!==f.ans)); busy=false;
+    const q=document.getElementById("q"); q.textContent=`${fmt(f)} = ${shown}`; q.classList.remove("pop"); void q.offsetWidth; q.classList.add("pop"); };
+  window.vfAns = v => {
+    if (busy) return; const ok = v===truth; record(f, ok);
+    if (ok){ score++; streak++; sndOk(); document.getElementById("sc").textContent=score; feedback(true,f, streak>=5?`🔥 ${streak} d'affilée !`:"Oui !"); next(); }
+    else { streak=0; sndKo(); end-=2000; busy=true; feedback(false,f); setTimeout(next, 1100); }
+  };
+  const iv=setInterval(()=>{ const left=Math.max(0,end-Date.now()); document.getElementById("time").textContent=Math.ceil(left/1000)+" s";
+    document.getElementById("tb").style.width=(left/600)+"%"; if (left<=0){ clearInterval(iv); fin(); } },150);
+  cleanup.push(()=>clearInterval(iv));
+  document.addEventListener("keydown", kd); cleanup.push(()=>document.removeEventListener("keydown", kd));
+  function kd(e){ if (e.key==="ArrowLeft"||e.key==="v") vfAns(true); if (e.key==="ArrowRight"||e.key==="f") vfAns(false); }
+  function fin(){
+    clearAll(); const best=P().vf, rec=score>best; if (rec){ P().vf=score; save(); sndWin(); confetti(); }
+    app.innerHTML = hdr("✅ Temps écoulé !","vf") + `<div class="card result"><div class="muted">Bonnes réponses en 60 s</div><div class="big">${score}</div>
+      <h2>${rec?"🏆 Nouveau record !":"Bien joué !"}</h2><div class="muted" style="margin:6px 0 16px">Record : ${Math.max(best,score)}</div>
+      <div class="row" style="justify-content:center"><button class="btn" onclick="go('vfPlay')">Rejouer</button><button class="btn ghost" onclick="go('home')">Accueil</button></div></div>`;
+  }
+  next();
+};
+
+go("home");
+</script>
+</body>
+</html>
