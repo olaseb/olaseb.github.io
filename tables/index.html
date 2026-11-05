@@ -8,18 +8,20 @@
 <meta name="apple-mobile-web-app-title" content="Tables">
 <meta name="theme-color" content="#fff6ec">
 <title>Les Tables de Lana & Sorya</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✖️</text></svg>">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Lilita+One&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#fff6ec; --card:#ffffff; --ink:#2b2340; --muted:#7a7090; --line:#efe3d6;
   --lana:#9b5de5; --lana-soft:#efe4fc; --sorya:#00a6a6; --sorya-soft:#d9f4f2;
   --cpu:#6c757d; --ok:#2bb673; --ko:#ef476f; --sun:#ffc43d; --orange:#ff8c42;
-  --me:var(--lana); --me-soft:var(--lana-soft);
   --r:22px;
 }
+body{--me:var(--lana); --me-soft:var(--lana-soft)}
 body.p-sorya{--me:var(--sorya); --me-soft:var(--sorya-soft)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-weight:600}
@@ -172,6 +174,77 @@ input.codein{font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:44px;le
 .toggle.on{background:var(--me)} .toggle.on::after{left:27px}
 .setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0}
 hr{border:0;border-top:2px dashed var(--line);margin:14px 0}
+
+/* ---- Hippodrome ---- */
+.scene{position:relative;border-radius:var(--r);overflow:hidden;height:clamp(170px,31dvh,250px);flex:none;margin-bottom:10px;box-shadow:0 4px 0 rgba(0,0,0,.12)}
+.scene>svg.bg{position:absolute;inset:0;width:100%;height:100%}
+.horse2{position:absolute;height:34%;aspect-ratio:4/3;left:4px;transition:left .6s cubic-bezier(.3,1.3,.5,1);z-index:1}
+.horse2.l0{top:28%}.horse2.l1{top:62%}
+.horse2 svg{width:100%;height:100%;overflow:visible;display:block}
+.horse2 .tagh{position:absolute;left:50%;top:-13px;transform:translateX(-50%);font:800 11px Nunito,sans-serif;color:#fff;padding:1px 8px;border-radius:99px;white-space:nowrap;font-style:normal;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.gallop svg{animation:gallop2 .3s 3}
+@keyframes gallop2{50%{transform:translateY(-9%) rotate(-5deg)}}
+.hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hgrid button{background:var(--bg);border-radius:16px;padding:8px 4px 6px;border:3px solid transparent;font-weight:800;font-size:13px}
+.hgrid button.on{border-color:var(--me);background:var(--me-soft)}
+.hgrid svg{width:100%;height:56px;display:block;overflow:visible}
+.logo{display:block;margin:0 auto 6px;width:150px;height:150px;filter:drop-shadow(0 6px 10px rgba(16,15,46,.25))}
+.th-galaxie .logo{filter:drop-shadow(0 0 16px rgba(199,125,255,.45))}
+/* ---- Écrans de jeu : tout tient dans l'écran du téléphone ---- */
+#app.play{display:flex;flex-direction:column;height:calc(100dvh - max(14px,env(safe-area-inset-top)) - 16px - env(safe-area-inset-bottom));padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+#app.play>#race{display:flex;flex-direction:column;flex:1;min-height:0}
+#app.play .qbox{flex:none;padding:8px 10px 4px}
+#app.play .q{font-size:clamp(38px,12vw,56px)}
+#app.play .disp{min-height:46px;font-size:36px}
+#app.play .fb{height:24px;font-size:16px;margin-top:2px}
+#app.play #aa{flex:1;min-height:0;display:flex;flex-direction:column}
+#app.play .pad,#app.play .qcm{flex:1;min-height:0;grid-auto-rows:1fr;max-height:330px}
+#app.play #aa>.pad,#app.play #aa>.qcm{display:grid}
+#app.play .pad button,#app.play .qcm button{height:auto;min-height:44px}
+#app.play .track{flex:none;margin-bottom:8px;padding:6px}
+#app.play .lane{height:52px;margin:4px 0}
+#app.play .horse{top:6px;font-size:38px}
+@media (max-height:620px){#app.play .scene{height:132px;margin-bottom:6px}#app.play .hud{margin-bottom:6px}#app.play .qbox{margin-bottom:8px;padding:4px 8px 2px}#app.play .q{font-size:34px !important}#app.play .disp{min-height:30px !important;font-size:26px !important;margin-top:0}#app.play .fb{height:20px;font-size:14px}#app.play .pad{gap:6px}#app.play .pad button{min-height:38px;font-size:24px}#app.play .bar{margin-bottom:6px}}
+@media (max-height:700px){#app.play .q{font-size:40px}#app.play .lane{height:46px}#app.play .horse{font-size:32px;top:5px}#app.play .disp{min-height:38px;font-size:30px}}
+
+/* ================= Thème Galaxie ================= */
+body.th-galaxie{--ink:#f2f0ff;--muted:#a9a6d6;--card:#24234f;--bg:#15143a;--line:#33326a;--lana:#c77dff;--lana-soft:#3a2a6e;--sorya:#29e0d0;--sorya-soft:#173f55;
+  background:#100f2e;background-image:radial-gradient(1.5px 1.5px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 120px,#fff,transparent),radial-gradient(2px 2px at 160px 60px,#ffe9a8,transparent),radial-gradient(1px 1px at 60px 180px,#fff,transparent),radial-gradient(1.5px 1.5px at 200px 200px,#bfe6ff,transparent),radial-gradient(ellipse at top,#3b1f7a 0,transparent 60%);background-size:230px 230px,230px 230px,230px 230px,230px 230px,230px 230px,100% 100%;background-attachment:fixed;color:var(--ink)}
+html:has(body.th-galaxie){background:#100f2e}
+.th-galaxie h1,.th-galaxie h2,.th-galaxie .mode b,.th-galaxie .prof b{font-family:"Lilita One","Baloo 2",sans-serif;font-weight:400;letter-spacing:.5px}
+.th-galaxie .hello h1{font-size:40px;color:#fff;text-shadow:0 0 18px #c77dff,0 0 2px #fff}
+.th-galaxie .prof{background:var(--card);box-shadow:none;border:3px solid var(--line)}
+.th-galaxie .prof.lana.on{background:#3a2a6e;border-color:#c77dff;box-shadow:0 0 18px rgba(199,125,255,.55)}
+.th-galaxie .prof.sorya.on{background:#173f55;border-color:#29e0d0;box-shadow:0 0 18px rgba(41,224,208,.5)}
+.th-galaxie .mode{background:var(--card) !important;border:2px solid var(--c);box-shadow:0 0 16px -2px var(--c),inset 0 0 22px -12px var(--c) !important;color:#fff}
+.th-galaxie .mode b{color:var(--c)}
+.th-galaxie .modes .mode:nth-child(1){--c:#ffd166}.th-galaxie .modes .mode:nth-child(2){--c:#06d6a0}.th-galaxie .modes .mode:nth-child(3){--c:#ff5d8f}
+.th-galaxie .modes .mode:nth-child(4){--c:#c77dff}.th-galaxie .modes .mode:nth-child(5){--c:#4cc9f0}.th-galaxie .modes .mode:nth-child(6){--c:#29e0d0}.th-galaxie .modes .mode:nth-child(7){--c:#ff9e4a}
+.th-galaxie .card,.th-galaxie .qbox,.th-galaxie .tcard{background:var(--card);box-shadow:0 0 0 2px var(--line)}
+.th-galaxie .q{color:#fff;text-shadow:0 0 14px rgba(199,125,255,.7)}
+.th-galaxie .btn.ghost{background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--line)}
+.th-galaxie .btn.sun{color:#15143a}
+.th-galaxie .pad button,.th-galaxie .qcm button{background:#2c2b5e;color:#fff;box-shadow:0 4px 0 #1b1a44}
+.th-galaxie .qcm button.good{background:var(--ok)}.th-galaxie .qcm button.bad{background:var(--ko)}
+.th-galaxie .pad .ok{background:#06d6a0;color:#10102e;box-shadow:0 4px 0 #04976f,0 0 14px rgba(6,214,160,.5)}
+.th-galaxie .pad .del{background:#4a2147;color:#ff8fb3}
+.th-galaxie .pill,.th-galaxie .back{background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--line)}
+.th-galaxie .bar{background:#2c2b5e}.th-galaxie .bar i{background:linear-gradient(90deg,#4cc9f0,#c77dff);box-shadow:0 0 10px #c77dff}
+.th-galaxie .track{background:#1b1a44;box-shadow:0 0 0 2px var(--line)}
+.th-galaxie .lane{background:#2a1f5c;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 2px,transparent 2px 40px)}
+.th-galaxie .chips button,.th-galaxie .seg button{background:#2c2b5e;color:var(--ink)}
+.th-galaxie .chips button.on{background:var(--me);color:#fff}
+.th-galaxie .seg button.on{background:var(--me-soft);color:#fff;border-color:var(--me)}
+.th-galaxie .toggle{background:#3a3970}
+.th-galaxie .err{background:#4a2147;color:#ffb3c8}
+.th-galaxie .pgrid div{background:#2c2b5e;color:#6d6aa8}.th-galaxie .pgrid .h{background:none;color:var(--muted)}
+.th-galaxie .pgrid .g{background:#06d6a0;color:#063d2e}.th-galaxie .pgrid .o{background:#ffd166;color:#5a4300}.th-galaxie .pgrid .r{background:#ff5d8f;color:#4a0f22}
+.th-galaxie .mcard .face{background:#2c2b5e;color:#fff}.th-galaxie .mcard.done .face{background:#0e5a48;color:#b8ffe8}
+.th-galaxie .sky{background:linear-gradient(#1b1a44,#3b1f7a)}
+.th-galaxie .tag{background:#3a2a6e;color:#e6ccff}
+.th-galaxie input.codein{background:#15143a;color:#fff;border-color:var(--line)}
+.th-galaxie hr{border-top-color:var(--line)}
+.th-galaxie .result .big{color:var(--me);text-shadow:0 0 16px var(--me)}
 </style>
 </head>
 <body>
@@ -186,7 +259,7 @@ const COL = {lana:"#9b5de5", sorya:"#00a6a6", cpu:"#6c757d"};
 const newProfile = () => ({chrono:[], chronoBest:{}, errors:{}, stats:{}, stars:{}, memory:{}, balloons:0, vf:0, race:{wins:0, losses:0}});
 const defaults = () => ({v:1, current:"lana",
   settings:{t11:false, t12:false, answer:"keypad", sound:true, tables:[2,3,4,5,6,7,8,9,10],
-            balance:"none", balanceWho:"lana", headStart:2, cpuLevel:"moyen", raceLen:10, chronoDur:1},
+            balance:"none", balanceWho:"lana", headStart:2, cpuLevel:"moyen", raceLen:10, chronoDur:1, theme:"classique"},
   profiles:{lana:newProfile(), sorya:newProfile()}});
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
@@ -197,6 +270,61 @@ function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) 
 const me = () => S.current;
 const other = () => me()==="lana" ? "sorya" : "lana";
 const P = () => S.profiles[me()];
+
+/* ============ Chevaux & logo ============ */
+const HORSES = {
+  alezan:  {name:"Alezan",    coat:"#c8743a", mane:"#5a3218"},
+  gris:    {name:"Gris",      coat:"#f1ece6", mane:"#b7aea4"},
+  noir:    {name:"Noir",      coat:"#3a3a48", mane:"#15151c"},
+  palomino:{name:"Doré",      coat:"#e8b04a", mane:"#fff3d0"},
+  bai:     {name:"Bai",       coat:"#7b4a2c", mane:"#2a160b"},
+  licorne: {name:"Licorne",   coat:"#ffffff", mane:"#ff8fc8", horn:true}
+};
+const DEF_HORSE = {lana:"alezan", sorya:"gris"};
+const CLOTH = {lana:"#9b5de5", sorya:"#00a6a6", cpu:"#6c757d"};
+const myHorse = p => (S.profiles[p] && HORSES[S.profiles[p].horse]) ? S.profiles[p].horse : (DEF_HORSE[p]||"noir");
+function horseSVG(kind, cloth="#9b5de5", num=""){
+  const h = HORSES[kind] || HORSES.alezan, c=h.coat, m=h.mane, st = h.coat==="#ffffff" ? ' stroke="#e3dbe9" stroke-width="1.2"' : "";
+  return `<svg viewBox="0 0 120 90" aria-hidden="true"><ellipse cx="60" cy="86" rx="38" ry="4" fill="rgba(0,0,0,.18)"/>
+  <path d="M30 40 C14 38 8 52 4 66 C14 60 20 56 30 50 Z" fill="${m}"/>
+  <path d="M36 52 L24 70 L20 82" stroke="${c}" stroke-width="7" stroke-linecap="round" fill="none" style="filter:brightness(.85)"/>
+  <path d="M42 54 L40 70 L46 82" stroke="${c}" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M80 52 L96 62 L104 58" stroke="${c}" stroke-width="7" stroke-linecap="round" fill="none" style="filter:brightness(.85)"/>
+  <path d="M76 54 L80 70 L74 82" stroke="${c}" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <g fill="#3b2a20"><circle cx="20" cy="83" r="4"/><circle cx="46" cy="83" r="4"/><circle cx="74" cy="83" r="4"/><circle cx="105" cy="58" r="4"/></g>
+  <ellipse cx="58" cy="44" rx="30" ry="15" fill="${c}"${st}/>
+  <path d="M74 36 C80 26 86 14 92 10 L104 18 C100 26 92 40 86 50 Z" fill="${c}"/>
+  <path d="M92 8 C100 4 112 12 116 22 C117 26 112 28 108 26 L96 22 Z" fill="${c}"${st}/>
+  <circle cx="113" cy="23" r="1.6" fill="${m}"/><path d="M93 6 L95 -2 L99 6 Z" fill="${c}"/>
+  ${h.horn?`<path d="M98 4 L108 -14 L103 6 Z" fill="#ffd84d" stroke="#f5a623" stroke-width="1"/>`:""}
+  <path d="M92 6 C84 10 78 22 72 34 C78 32 82 28 84 24 C86 30 88 26 90 20 C92 22 94 16 96 10 Z" fill="${m}"/>
+  <circle cx="102" cy="13" r="2.4" fill="#2b1a10"/><circle cx="102.8" cy="12.2" r=".8" fill="#fff"/>
+  <path d="M48 31 H72 Q74 31 74 33 V50 Q74 53 71 53 H49 Q46 53 46 50 V33 Q46 31 48 31 Z" fill="${cloth}"/>
+  <path d="M46 49 H74" stroke="#fff" stroke-width="2" opacity=".7"/>
+  <text x="60" y="47" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="700" font-size="14" fill="#fff">${num}</text>
+  <path d="M50 30 Q60 24 70 30" stroke="#5a3a20" stroke-width="4" fill="none"/></svg>`;
+}
+const HIPPO = (()=>{ const cols=['#ff7aa2','#ffd166','#7ad3ff','#a78bfa','#6ee7a8'];
+  return `<svg class="bg" viewBox="0 0 390 250" preserveAspectRatio="none" aria-hidden="true">
+  <defs><pattern id="chk" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#fff"/><rect width="4" height="4" fill="#222"/><rect x="4" y="4" width="4" height="4" fill="#222"/></pattern></defs>
+  <rect width="390" height="70" fill="#9ad8ff"/><rect x="0" y="26" width="200" height="44" fill="#e8ecf2"/><rect x="200" y="34" width="190" height="36" fill="#e8ecf2"/>
+  <path d="M0 26 L200 26 L190 14 L10 14 Z" fill="#d94c4c"/><path d="M200 34 L390 34 L380 22 L210 22 Z" fill="#3a7bd5"/>
+  ${[...Array(36)].map((_,i)=>`<circle cx="${8+i*11}" cy="${50+(i%3)*6}" r="3.2" fill="${cols[i%5]}"/>`).join("")}
+  <rect y="70" width="390" height="180" fill="#4caf50"/>${[...Array(10)].map((_,i)=>`<rect x="${i*39}" y="70" width="20" height="180" fill="#5cbd5f"/>`).join("")}
+  <rect y="72" width="390" height="4" fill="#fff"/>${[...Array(20)].map((_,i)=>`<rect x="${i*20}" y="72" width="3" height="10" fill="#fff"/>`).join("")}
+  <rect y="158" width="390" height="3" fill="rgba(255,255,255,.8)"/><rect y="242" width="390" height="4" fill="#fff"/>
+  <rect x="352" y="76" width="16" height="170" fill="url(#chk)"/>
+  <rect x="368" y="40" width="4" height="40" fill="#555"/><circle cx="370" cy="38" r="9" fill="#ffd166" stroke="#c98d00" stroke-width="2"/></svg>`; })();
+const LOGO = `<svg class="logo" viewBox="0 0 260 260" role="img" aria-label="Les Tables">
+  <defs><radialGradient id="pl" cx=".35" cy=".3"><stop offset="0" stop-color="#e3b8ff"/><stop offset="1" stop-color="#7b2ff7"/></radialGradient>
+  <filter id="lg"><feGaussianBlur stdDeviation="3" result="b"/><feFlood flood-color="#c77dff"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <rect width="260" height="260" rx="56" fill="#100f2e"/>
+  <g fill="#fff"><circle cx="30" cy="40" r="1.5"/><circle cx="220" cy="30" r="2"/><circle cx="200" cy="210" r="1.5"/><circle cx="40" cy="200" r="2"/><circle cx="120" cy="24" r="1"/><circle cx="236" cy="120" r="1.2"/><circle cx="20" cy="120" r="1"/></g>
+  <ellipse cx="130" cy="118" rx="104" ry="26" fill="none" stroke="#29e0d0" stroke-width="7" transform="rotate(-18 130 118)" opacity=".9"/>
+  <circle cx="130" cy="118" r="56" fill="url(#pl)"/>
+  <path d="M38 136 A104 26 -18 0 0 222 100" fill="none" stroke="#29e0d0" stroke-width="7"/>
+  <g transform="translate(130 118)"><rect x="-7" y="-28" width="14" height="56" rx="7" fill="#fff" transform="rotate(45)"/><rect x="-7" y="-28" width="14" height="56" rx="7" fill="#fff" transform="rotate(-45)"/></g>
+  <text x="130" y="222" text-anchor="middle" font-family="Baloo 2,Nunito,sans-serif" font-weight="800" font-size="38" fill="#fff" filter="url(#lg)">Les Tables</text></svg>`;
 
 /* ============ Outils ============ */
 const app = document.getElementById("app");
@@ -266,7 +394,7 @@ function confetti(n=80){
 /* ============ Navigation ============ */
 let cleanup = [];
 function clearAll(){ cleanup.forEach(fn=>{try{fn()}catch(e){}}); cleanup=[]; answerHandler=null; }
-function go(screen, ...args){ clearAll(); document.body.className = "p-"+me(); SCREENS[screen](...args); window.scrollTo(0,0); }
+function go(screen, ...args){ clearAll(); document.body.className = "p-"+me()+" th-"+S.settings.theme; app.className=""; const tc=document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = S.settings.theme==="galaxie" ? "#100f2e" : "#fff6ec"; SCREENS[screen](...args); window.scrollTo(0,0); }
 const hdr = (title, back="home") => `<div class="top"><button class="back" onclick="go('${back}')" aria-label="Retour">←</button><h2>${title}</h2></div>`;
 
 /* ============ Zone de réponse (clavier ou 4 choix) ============ */
@@ -324,7 +452,7 @@ const SCREENS = {};
 SCREENS.home = () => {
   const ne = Object.keys(P().errors).length;
   app.innerHTML = `
-  <div class="hello"><h1>Les tables ✖️</h1><div class="muted">Qui joue ?</div></div>
+  <div class="hello">${LOGO}<div class="muted">Qui joue ?</div></div>
   <div class="profiles">${["lana","sorya"].map(p=>`<button class="prof ${p} ${me()===p?"on":""}" onclick="setProfile('${p}')"><span class="av">${AV[p]}</span><b>${NAMES[p]}</b></button>`).join("")}</div>
   <div class="modes">
     <button class="mode" style="background:#ffe8a3" onclick="go('chronoSetup')"><span class="ic">⏱️</span><b>Chrono</b><span>Un maximum de bonnes réponses</span></button>
@@ -343,6 +471,10 @@ function setProfile(p){ S.current=p; save(); go("home"); }
 SCREENS.settings = () => {
   const s=S.settings;
   app.innerHTML = hdr("⚙️ Paramètres") + `
+  <div class="card"><div class="label">🐴 Le cheval de ${NAMES[me()]}</div>
+    <div class="hgrid">${Object.entries(HORSES).map(([k,h])=>`<button class="${myHorse(me())===k?"on":""}" onclick="setHorse('${k}')">${horseSVG(k, CLOTH[me()], NAMES[me()][0])}${h.name}</button>`).join("")}</div></div>
+  <div class="card"><div class="label">🎨 Thème</div>
+    ${seg("theme",[["classique","☀️ Classique"],["galaxie","🌌 Galaxie"]],s.theme,"setTheme")}</div>
   <div class="card">
     <div class="setrow"><div><b>Table de 11</b><div class="muted small">Ajoute la table de 11</div></div><button class="toggle ${s.t11?"on":""}" onclick="tog('t11')"></button></div>
     <div class="setrow"><div><b>Table de 12</b><div class="muted small">Ajoute la table de 12</div></div><button class="toggle ${s.t12?"on":""}" onclick="tog('t12')"></button></div>
@@ -369,6 +501,8 @@ function setBal(n,v,el){ setOpt(n,v,el); document.getElementById("balx").style.d
   document.getElementById("headx").style.display = v==="head"?"":"none"; document.getElementById("balhelp").textContent=balHelp(); }
 const _setOpt = setOpt;
 setOpt = function(n,v,el){ _setOpt(n,v,el); const h=document.getElementById("balhelp"); if(h) h.textContent=balHelp(); };
+function setHorse(k){ P().horse=k; save(); go('settings'); }
+function setTheme(n,v,el){ S.settings.theme=v; save(); go('settings'); }
 function tog(k){ S.settings[k]=!S.settings[k]; save(); go("settings"); }
 function resetP(el){ if (el.dataset.c){ S.profiles[me()]=newProfile(); save(); go("home"); } else { el.dataset.c=1; el.textContent="Appuie encore pour confirmer"; el.style.background="#ffe3e9"; } }
 
@@ -390,6 +524,7 @@ SCREENS.chronoSetup = () => {
 SCREENS.chrono = () => {
   const dur=S.settings.chronoDur, tables=activeTables(), total=dur*60000, end=Date.now()+total;
   let score=0, errs=0, f=null, busy=false;
+  app.className="play";
   app.innerHTML = `<div class="hud"><button class="back" onclick="go('chronoSetup')">✕</button><span class="pill" id="time">${dur}:00</span><span class="pill">✅ <span id="sc">0</span></span></div>
     <div class="bar"><i id="tb" style="width:100%"></i></div><div class="qbox" id="qb"></div><div id="aa"></div>`;
   const next = () => { f = smartFact(tables, f); busy=false; document.getElementById("qb").innerHTML = qHtml(f); document.getElementById("aa").innerHTML = answerArea(f); };
@@ -443,7 +578,7 @@ function Engine(opts){
   const clearT = () => { E.timers.forEach(clearTimeout); E.timers=[]; };
   E.start = () => {
     E.r=0; E.pos=Object.assign({},opts.pos); E.over=false;
-    opts.emit({t:"start", target:opts.target, pos:E.pos, names:opts.names});
+    opts.emit({t:"start", target:opts.target, pos:E.pos, names:opts.names, horses:opts.horses});
     E.timers.push(setTimeout(E.round, 3300));
   };
   E.round = () => {
@@ -481,28 +616,29 @@ function Engine(opts){
   return E;
 }
 
+const cpuHorse = h => ["noir","bai","gris"].find(x=>x!==h);
 function startCpuRace(){
   go("raceView");
   const s=S.settings;
   RACE = {myRole:"host", oppRole:"cpu", names:{host:me(), cpu:"cpu"}, online:false};
   const tb = activeTables();
   RACE.engine = Engine({roles:["host","cpu"], target:s.raceLen, tables:{host:tb, cpu:tb}, pos:{host:0,cpu:0},
-    names:{host:me(), cpu:"cpu"}, cpuLevel:s.cpuLevel, emit:ev=>raceEvent(ev)});
+    names:{host:me(), cpu:"cpu"}, horses:{host:myHorse(me()), cpu:cpuHorse(myHorse(me()))}, cpuLevel:s.cpuLevel, emit:ev=>raceEvent(ev)});
   cleanup.push(()=>RACE&&RACE.engine&&RACE.engine.stop());
   RACE.engine.start();
 }
-SCREENS.raceView = () => { app.innerHTML = `<div id="race"></div>`; };
+SCREENS.raceView = () => { app.innerHTML = `<div id="race"></div>`; app.className="play"; };
 
 function raceEvent(ev){
   const R = RACE; if (!R) return;
   const box = document.getElementById("race"); if (!box && ev.t!=="start") return;
   if (ev.t==="start"){
-    if (!document.getElementById("race")) { clearAll(); app.innerHTML = `<div id="race"></div>`; if (R.online) cleanup.push(netClose); }
-    R.target=ev.target; R.pos=ev.pos; R.names=ev.names; R.r=0; R.q=null; R.done=false;
+    if (!document.getElementById("race")) { clearAll(); app.innerHTML = `<div id="race"></div>`; app.className="play"; if (R.online) cleanup.push(netClose); }
+    R.target=ev.target; R.pos=ev.pos; R.names=ev.names; R.horses=ev.horses||{}; R.r=0; R.q=null; R.done=false;
     const mine = R.names[R.myRole], opp = R.names[R.oppRole];
     document.getElementById("race").innerHTML = `
       <div class="hud"><button class="back" onclick="quitRace()">✕</button><span class="pill" id="rq">Prêtes ?</span><span class="pill">🏁 ${R.target}</span></div>
-      <div class="track">${lane(R.myRole, mine)}${lane(R.oppRole, opp)}</div>
+      <div class="scene" id="scene">${HIPPO}${lane(R.myRole, mine, 0)}${lane(R.oppRole, opp, 1)}</div>
       <div class="qbox" id="qb"><div class="q">🐎 🐎</div><div class="fb"></div></div><div id="aa"></div>`;
     placeHorses();
     countdown();
@@ -543,16 +679,17 @@ function raceEvent(ev){
   }
 }
 const nm = p => NAMES[p] || p;
-function lane(role, who){
-  const col = COL[who] || "#6c757d";
-  return `<div class="lane"><span class="name">${AV[who]||""} ${nm(who)}</span><div class="fin"></div>
-    <div class="horse" id="h-${role}"><span>🐎</span><i class="tagh" style="background:${col}">${role===RACE.myRole?"Toi":nm(who)}</i></div></div>`;
+function lane(role, who, i){
+  const col = CLOTH[who] || "#6c757d", kind = (RACE.horses||{})[role] || (who==="cpu" ? "noir" : myHorse(who));
+  return `<div class="horse2 l${i}" id="h-${role}">${horseSVG(kind, col, who==="cpu"?"🤖":nm(who)[0])}<i class="tagh" style="background:${col}">${role===RACE.myRole?"Toi":nm(who)} · <span id="n-${role}">0</span></i></div>`;
 }
 function placeHorses(moved){
   for (const role of [RACE.myRole, RACE.oppRole]){
     const h=document.getElementById("h-"+role); if (!h) continue;
-    const pct = Math.min(1, RACE.pos[role]/RACE.target);
-    h.style.left = `calc(${pct} * (100% - 64px) + 6px)`;
+    const pct = Math.min(1, RACE.pos[role]/RACE.target), sc=document.getElementById("scene");
+    const W = sc ? sc.clientWidth : 360, hw = h.offsetWidth || 90;
+    h.style.left = (4 + pct * (W*0.905 - hw - 4)) + "px";
+    const n=document.getElementById("n-"+role); if (n) n.textContent = RACE.pos[role];
     if (role===moved){ h.classList.remove("gallop"); void h.offsetWidth; h.classList.add("gallop"); }
   }
 }
@@ -609,7 +746,7 @@ function hostOpen(tries){
 function hostData(d){
   if (!d || typeof d!=="object") return;
   if (d.t==="hello"){
-    NET.guest = ["lana","sorya"].includes(d.who) ? d.who : other();
+    NET.guest = ["lana","sorya"].includes(d.who) ? d.who : other(); NET.guestHorse = d.horse;
     NET.conn.send({t:"welcome", host:me()});
     setStatus(`${AV[NET.guest]} ${NAMES[NET.guest]} est connectée !`, true);
     const b=document.getElementById("go"); if (b) b.disabled=false; beep(880,.15);
@@ -635,7 +772,7 @@ function hostStart(){
     }
   }
   RACE = {myRole:"host", oppRole:"guest", online:true};
-  RACE.engine = Engine({roles:["host","guest"], target:s.raceLen, tables, pos, names:{host:hostP, guest:guestP},
+  RACE.engine = Engine({roles:["host","guest"], target:s.raceLen, tables, pos, names:{host:hostP, guest:guestP}, horses:{host:myHorse(hostP), guest:HORSES[NET.guestHorse]?NET.guestHorse:myHorse(guestP)},
     emit:ev=>{ raceEvent(ev); if (NET && NET.conn && NET.conn.open) NET.conn.send(ev); }});
   RACE.engine.start();
 }
@@ -659,7 +796,7 @@ function guestJoin(){
     peer.on("error", e=>{ clearTimeout(to); setStatus(e.type==="peer-unavailable" ? "Code introuvable. Vérifie-le et réessaie." : "Problème de connexion. Vérifie Internet."); });
     peer.on("open", ()=>{
       const conn=peer.connect(PREFIX+code, {reliable:true}); NET.conn=conn;
-      conn.on("open", ()=>{ clearTimeout(to); conn.send({t:"hello", who:me()}); });
+      conn.on("open", ()=>{ clearTimeout(to); conn.send({t:"hello", who:me(), horse:myHorse(me())}); });
       conn.on("data", d=>guestData(d));
       conn.on("close", ()=>netLost());
     });
@@ -685,6 +822,7 @@ SCREENS.errors = () => {
 };
 SCREENS.errorsPlay = () => {
   let f=null, busy=false, done=0;
+  app.className="play";
   app.innerHTML = `<div class="hud"><button class="back" onclick="go('errors')">✕</button><span class="pill">🎯 Reste <span id="left"></span></span><span class="pill">✅ <span id="dn">0</span></span></div>
     <div class="qbox" id="qb"></div><div id="aa"></div>`;
   const next = () => {
@@ -727,6 +865,7 @@ SCREENS.defi = () => {
 SCREENS.defiPlay = (t) => {
   const list = shuffle([...Array(11).keys()]).map(m=>Math.random()<.5?fact(t,m):fact(m,t));
   let i=0, errs=0, busy=false; const t0=Date.now();
+  app.className="play";
   app.innerHTML = `<div class="hud"><button class="back" onclick="go('defi')">✕</button><span class="pill">Table de ${t}</span><span class="pill" id="tm">0 s</span></div>
     <div class="bar"><i id="pb" style="width:0%"></i></div><div class="qbox" id="qb"></div><div id="aa"></div>`;
   const iv=setInterval(()=>{ const e=document.getElementById("tm"); if(e) e.textContent=Math.floor((Date.now()-t0)/1000)+" s"; },250); cleanup.push(()=>clearInterval(iv));
@@ -884,6 +1023,7 @@ SCREENS.vfPlay = () => {
   next();
 };
 
+window.addEventListener("resize", ()=>{ if (RACE && document.getElementById("scene")) placeHorses(); });
 go("home");
 </script>
 </body>
