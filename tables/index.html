@@ -272,11 +272,13 @@ html:has(body.th-galaxie){background:#100f2e}
 .toast b{color:#ffd166}.toast.out{opacity:0;transition:opacity .3s}
 @keyframes tin{from{transform:translate(-50%,-20px);opacity:0}}
 .gains{display:flex;justify-content:center;gap:8px;margin:14px 0 16px;flex-wrap:wrap}.gains span{background:#fff4cc;color:#7a5200;border-radius:14px;padding:8px 12px;font-weight:800}
-.stabs{display:flex;gap:6px;margin-bottom:12px}.stabs button{flex:1;padding:9px 2px;border-radius:12px;background:var(--card);font-weight:800;font-size:12px;box-shadow:0 2px 0 var(--line)}
+.stabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.stabs button{flex:1 1 28%;padding:9px 2px;border-radius:12px;background:var(--card);font-weight:800;font-size:12px;box-shadow:0 2px 0 var(--line)}
 .stabs button.on{background:var(--me);color:#fff}
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .sitem{background:var(--card);border-radius:18px;padding:8px 8px 10px;text-align:center;box-shadow:0 3px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:4px}
-.sitem>svg{width:100%;height:78px;overflow:visible}.sitem b{font-size:14px}.sitem.lock{opacity:.6}
+.sitem>svg{width:100%;height:96px;overflow:visible}.shead{grid-column:1/-1;font-weight:900;font-size:16px;margin:10px 2px 0;color:var(--me)}
+.mypet{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:8px 12px;margin-bottom:10px;box-shadow:0 3px 0 var(--line)}.mypet>svg{width:120px;height:90px;flex:none;overflow:visible}
+.cpuscroll{max-height:150px;overflow-y:auto;padding:2px}.sitem b{font-size:14px}.sitem.lock{opacity:.6}
 .tprev{position:relative;width:100%;height:78px;border-radius:12px;overflow:hidden}.tprev svg{position:absolute;inset:0;width:100%;height:100%}
 .tprev.th-classique{background:#fff6ec;display:grid;place-items:center;font-size:36px;border:2px solid var(--line)}.tprev.th-galaxie{background:radial-gradient(ellipse at top,#3b1f7a,#100f2e);display:grid;place-items:center;font-size:36px}
 .price{display:inline-block;background:#fff4cc;color:#8a5a00;border-radius:99px;padding:5px 12px;font-weight:800;font-size:13px}
@@ -331,6 +333,7 @@ body.p-papa{--me:#f08a24; --me-soft:#ffe8d1}
 </head>
 <body>
 <div id="app"></div>
+<script src="assets.js"></script>
 <script>
 "use strict";
 /* ============ Données ============ */
@@ -344,7 +347,7 @@ const newProfile = () => ({chrono:[], chronoBest:{}, errors:{}, stats:{}, stars:
   badges:{}, days:{}, corde:{wins:0,losses:0}, duel:{wins:0,losses:0}, flags:{}, lastPlayed:0, updatedAt:0});
 const defaults = () => ({v:1, current:"lana",
   settings:{t11:false, t12:false, answer:"keypad", sound:true, tables:[2,3,4,5,6,7,8,9,10],
-            balance:"none", balanceWho:"lana", headStart:2, cpuLevel:"moyen", raceLen:10, chronoDur:1, theme:"classique", cpuHorse:"noir", cordeLen:7, cordeMode:"duel", vfTarget:10},
+            balance:"none", balanceWho:"lana", headStart:2, cpuLevel:"moyen", raceLen:10, chronoDur:1, theme:"classique", cpuHorse:"roboloup", cordeLen:7, cordeMode:"duel", vfTarget:10},
   profiles:{lana:newProfile(), sorya:newProfile(), papa:newProfile()}, parent:{pin:"0000", rewards:{}, papa:{mode:"none",head:2}, updatedAt:0}});
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
@@ -357,40 +360,126 @@ const me = () => S.current;
 const other = () => me()==="lana" ? "sorya" : "lana";  // (utilisé pour l'équilibrage des sœurs)
 const P = () => S.profiles[me()];
 
-/* ============ Chevaux & logo ============ */
-const HORSES = {
-  alezan:  {name:"Alezan",    coat:"#c8743a", mane:"#5a3218"},
-  gris:    {name:"Gris",      coat:"#f1ece6", mane:"#b7aea4"},
-  noir:    {name:"Noir",      coat:"#3a3a48", mane:"#15151c"},
-  palomino:{name:"Doré",      coat:"#e8b04a", mane:"#fff3d0"},
-  bai:     {name:"Bai",       coat:"#7b4a2c", mane:"#2a160b"},
-  licorne: {name:"Licorne",   coat:"#ffffff", mane:"#ff8fc8", horn:true}
+/* ============ Animaux & accessoires ============ */
+// Illustrations : Graphics RF, Surya Ali Zaidan, Mastuti Mastuti (Vecteezy) · Freepik / Magnific
+const ANIMALS={
+lion:{n:"Lion",c:"depart",p:0,l:0,f:"R",h:[0.87, 0.08, 0.19],k:[0.8, 0.45, 0.14],b:[0.5, 0.28],a:[0.66, 0.5, 0.22]},
+renard:{n:"Renard roux",c:"depart",p:0,l:0,f:"L",h:[0.24, 0.05, 0.26],k:[0.24, 0.45, 0.26],b:[0.62, 0.3],a:[0.3, 0.55, 0.3]},
+renardpol:{n:"Renard polaire",c:"depart",p:0,l:0,f:"L",h:[0.22, 0.1, 0.26],k:[0.22, 0.36, 0.24],b:[0.45, 0.4],a:[0.3, 0.5, 0.3]},
+panda:{n:"Panda",c:"depart",p:0,l:0,f:"L",h:[0.46, 0.08, 0.42],k:[0.48, 0.5, 0.35],b:[0.5, 0.45],a:[0.48, 0.62, 0.45]},
+zebre:{n:"Zèbre",c:"depart",p:0,l:0,f:"L",h:[0.21, 0.14, 0.22],k:[0.3, 0.5, 0.2],b:[0.62, 0.35],a:[0.45, 0.55, 0.3]},
+tigre:{n:"Tigre",c:"depart",p:0,l:0,f:"L",h:[0.15, 0.04, 0.2],k:[0.2, 0.42, 0.18],b:[0.45, 0.28],a:[0.35, 0.48, 0.25]},
+girafe:{n:"Girafe",c:"savane",p:150,l:0,f:"L",h:[0.13, 0.01, 0.18],k:[0.42, 0.38, 0.16],b:[0.62, 0.42],a:[0.55, 0.52, 0.3]},
+chameau:{n:"Chameau",c:"savane",p:150,l:0,f:"L",h:[0.14, 0.02, 0.17],k:[0.22, 0.34, 0.14],b:[0.4, 0.2],a:[0.45, 0.38, 0.28]},
+autruche:{n:"Autruche",c:"savane",p:150,l:0,f:"L",h:[0.17, 0.0, 0.12],k:[0.2, 0.32, 0.16],b:[0.55, 0.33],a:[0.45, 0.45, 0.4]},
+hyene:{n:"Hyène",c:"savane",p:150,l:0,f:"L",h:[0.12, 0.18, 0.18],k:[0.25, 0.45, 0.18],b:[0.45, 0.08],a:[0.35, 0.4, 0.3]},
+gnou:{n:"Gnou",c:"savane",p:150,l:0,f:"L",h:[0.13, 0.1, 0.16],k:[0.2, 0.45, 0.16],b:[0.45, 0.12],a:[0.35, 0.35, 0.3]},
+hippo:{n:"Hippopotame",c:"savane",p:200,l:0,f:"L",h:[0.15, 0.3, 0.22],k:[0.3, 0.62, 0.18],b:[0.55, 0.08],a:[0.45, 0.4, 0.35]},
+renardbrun:{n:"Renard brun",c:"savane",p:200,l:0,f:"L",h:[0.22, 0.05, 0.26],k:[0.22, 0.38, 0.24],b:[0.45, 0.42],a:[0.3, 0.5, 0.28]},
+elephant:{n:"Éléphant",c:"savane",p:250,l:0,f:"R",h:[0.73, 0.05, 0.2],k:[0.68, 0.45, 0.16],b:[0.4, 0.02],a:[0.5, 0.35, 0.3]},
+rhino:{n:"Rhinocéros",c:"savane",p:250,l:0,f:"R",h:[0.78, 0.28, 0.15],k:[0.62, 0.55, 0.15],b:[0.4, 0.05],a:[0.5, 0.35, 0.3]},
+tigreblanc:{n:"Tigre blanc",c:"savane",p:400,l:0,f:"L",h:[0.17, 0.03, 0.3],k:[0.2, 0.38, 0.22],b:[0.45, 0.22],a:[0.35, 0.45, 0.3]},
+rhinofurieux:{n:"Rhino furieux",c:"savane",p:500,l:0,f:"L",h:[0.38, 0.25, 0.2],k:[0.45, 0.62, 0.18],b:[0.6, 0.12],a:[0.55, 0.4, 0.3]},
+alezan:{n:"Cheval alezan",c:"chevaux",p:100,l:0,f:"R",h:[0.88, 0.03, 0.12],k:[0.84, 0.38, 0.12],b:[0.62, 0.3],a:[0.75, 0.45, 0.2]},
+palomino:{n:"Cheval palomino",c:"chevaux",p:150,l:0,f:"R",h:[0.88, 0.03, 0.12],k:[0.84, 0.38, 0.12],b:[0.62, 0.3],a:[0.75, 0.45, 0.2]},
+bai:{n:"Cheval bai",c:"chevaux",p:150,l:0,f:"R",h:[0.88, 0.03, 0.12],k:[0.84, 0.38, 0.12],b:[0.62, 0.3],a:[0.75, 0.45, 0.2]},
+blanc:{n:"Cheval blanc",c:"chevaux",p:200,l:0,f:"R",h:[0.88, 0.03, 0.12],k:[0.84, 0.38, 0.12],b:[0.62, 0.3],a:[0.75, 0.45, 0.2]},
+petitelicorne:{n:"Petite licorne",c:"mythiques",p:400,l:4,f:"L",h:[0.18, 0.08, 0.25],k:[0.22, 0.42, 0.2],b:[0.55, 0.4],a:[0.4, 0.55, 0.3]},
+licorne:{n:"Licorne",c:"mythiques",p:600,l:4,f:"R",h:[0.84, 0.19, 0.12],k:[0.82, 0.48, 0.12],b:[0.62, 0.42],a:[0.73, 0.55, 0.2]},
+pegase:{n:"Pégase",c:"mythiques",p:600,l:4,f:"R",h:[0.87, 0.22, 0.12],k:[0.84, 0.52, 0.12],b:[0.62, 0.45],a:[0.75, 0.58, 0.2]},
+dragonvert:{n:"Dragon vert",c:"mythiques",p:700,l:4,f:"L",h:[0.1, 0.48, 0.15],k:[0.2, 0.62, 0.14],b:[0.4, 0.5],a:[0.3, 0.65, 0.25]},
+dragonrose:{n:"Dragon rose",c:"mythiques",p:700,l:4,f:"L",h:[0.1, 0.07, 0.18],k:[0.15, 0.45, 0.15],b:[0.35, 0.2],a:[0.3, 0.45, 0.3]},
+licorneailee:{n:"Licorne ailée",c:"mythiques",p:800,l:4,f:"L",h:[0.2, 0.12, 0.22],k:[0.25, 0.5, 0.18],b:[0.5, 0.4],a:[0.4, 0.6, 0.3]},
+dragonjade:{n:"Dragon de jade",c:"mythiques",p:800,l:4,f:"L",h:[0.12, 0.15, 0.2],k:[0.25, 0.4, 0.15],b:[0.45, 0.35],a:[0.35, 0.55, 0.3]},
+liondragon:{n:"Lion-dragon",c:"mythiques",p:900,l:4,f:"L",h:[0.22, 0.22, 0.3],k:[0.25, 0.6, 0.2],b:[0.55, 0.1],a:[0.45, 0.5, 0.35]},
+dragonnoir:{n:"Dragon noir",c:"mythiques",p:1000,l:4,f:"L",h:[0.14, 0.35, 0.15],k:[0.2, 0.52, 0.14],b:[0.4, 0.35],a:[0.35, 0.55, 0.25]},
+dragonfeu:{n:"Dragon de feu",c:"mythiques",p:1200,l:4,f:"L",h:[0.23, 0.43, 0.1],k:[0.3, 0.55, 0.1],b:[0.45, 0.5],a:[0.45, 0.65, 0.2]},
+apatosaure:{n:"Apatosaure",c:"dinos",p:300,l:5,f:"R",h:[0.93, 0.0, 0.07],k:[0.82, 0.4, 0.08],b:[0.5, 0.25],a:[0.5, 0.45, 0.25]},
+brachio:{n:"Brachiosaure",c:"dinos",p:300,l:5,f:"L",h:[0.06, 0.01, 0.08],k:[0.1, 0.5, 0.08],b:[0.4, 0.6],a:[0.3, 0.7, 0.2]},
+stego:{n:"Stégosaure",c:"dinos",p:300,l:5,f:"L",h:[0.05, 0.33, 0.08],k:[0.15, 0.42, 0.1],b:[0.4, 0.15],a:[0.35, 0.55, 0.25]},
+parasaur:{n:"Parasaurolophus",c:"dinos",p:300,l:5,f:"L",h:[0.12, 0.14, 0.14],k:[0.2, 0.4, 0.1],b:[0.4, 0.3],a:[0.5, 0.45, 0.25]},
+plesio:{n:"Plésiosaure",c:"dinos",p:350,l:5,f:"L",h:[0.07, 0.03, 0.1],k:[0.15, 0.55, 0.08],b:[0.45, 0.35],a:[0.45, 0.55, 0.25]},
+pterosaure:{n:"Ptérosaure",c:"dinos",p:350,l:5,f:"L",h:[0.2, 0.24, 0.12],k:[0.25, 0.5, 0.1],b:[0.45, 0.45],a:[0.45, 0.55, 0.2]},
+dilopho:{n:"Dilophosaure",c:"dinos",p:350,l:5,f:"L",h:[0.3, 0.22, 0.18],k:[0.25, 0.5, 0.12],b:[0.5, 0.55],a:[0.45, 0.62, 0.25]},
+archeo:{n:"Archéoptéryx",c:"dinos",p:350,l:5,f:"L",h:[0.1, 0.03, 0.12],k:[0.12, 0.35, 0.08],b:[0.3, 0.45],a:[0.3, 0.55, 0.2]},
+spinojaune:{n:"Spinosaure jaune",c:"dinos",p:400,l:5,f:"L",h:[0.12, 0.03, 0.18],k:[0.2, 0.35, 0.14],b:[0.45, 0.3],a:[0.4, 0.5, 0.3]},
+veloci:{n:"Vélociraptor",c:"dinos",p:500,l:5,f:"L",h:[0.1, 0.0, 0.12],k:[0.15, 0.3, 0.08],b:[0.4, 0.35],a:[0.3, 0.4, 0.2]},
+spino:{n:"Spinosaure",c:"dinos",p:500,l:5,f:"L",h:[0.08, 0.02, 0.12],k:[0.2, 0.3, 0.1],b:[0.45, 0.3],a:[0.35, 0.45, 0.25]},
+allo:{n:"Allosaure",c:"dinos",p:500,l:5,f:"L",h:[0.15, 0.02, 0.2],k:[0.25, 0.35, 0.12],b:[0.45, 0.3],a:[0.38, 0.45, 0.25]},
+trice:{n:"Tricératops",c:"dinos",p:600,l:5,f:"L",h:[0.2, 0.05, 0.28],k:[0.3, 0.55, 0.15],b:[0.55, 0.1],a:[0.5, 0.4, 0.3]},
+trex:{n:"T-rex",c:"dinos",p:800,l:5,f:"L",h:[0.1, 0.02, 0.12],k:[0.2, 0.4, 0.1],b:[0.4, 0.2],a:[0.35, 0.35, 0.22]},
+roboguepe:{n:"Robo-guêpe",c:"robots",p:700,l:6,f:"L",h:[0.38, 0.72, 0.14],k:[0.45, 0.82, 0.1],b:[0.5, 0.55],a:[0.5, 0.75, 0.2]},
+robolapin:{n:"Robo-lapin",c:"robots",p:700,l:6,f:"L",h:[0.3, 0.3, 0.3],k:[0.35, 0.58, 0.2],b:[0.7, 0.4],a:[0.55, 0.62, 0.3]},
+roboloup:{n:"Robo-loup",c:"robots",p:800,l:6,f:"L",h:[0.22, 0.08, 0.36],k:[0.35, 0.48, 0.2],b:[0.65, 0.35],a:[0.55, 0.6, 0.35]},
+robochat:{n:"Robo-chat",c:"robots",p:800,l:6,f:"L",h:[0.18, 0.1, 0.3],k:[0.22, 0.42, 0.2],b:[0.45, 0.45],a:[0.35, 0.55, 0.25]},
+robocerf:{n:"Robo-cerf",c:"robots",p:900,l:6,f:"L",h:[0.38, 0.25, 0.25],k:[0.4, 0.42, 0.15],b:[0.65, 0.5],a:[0.5, 0.55, 0.3]},
+roborhino:{n:"Robo-rhino",c:"robots",p:1000,l:6,f:"L",h:[0.2, 0.2, 0.25],k:[0.25, 0.62, 0.2],b:[0.55, 0.05],a:[0.5, 0.45, 0.4]}
 };
-const DEF_HORSE = {lana:"alezan", sorya:"gris", papa:"bai"};
+const ACCS={
+w_ange:{wf: 1.0, at: [0.85, 0.92], n: "Ailes d'ange", s: "dos", p: 300},
+w_dragon:{wf: 0.85, at: [0.88, 0.9], fv: 1, n: "Ailes de dragon", s: "dos", p: 300},
+w_fee:{wf: 1.0, at: [0.9, 0.88], n: "Ailes de fée", s: "dos", p: 300},
+w_azur:{wf: 0.8, at: [0.7, 0.9], fv: 1, n: "Ailes azur", s: "dos", p: 350},
+w_glace:{wf: 1.4, at: [0.9, 0.85], rot: -25, n: "Ailes de glace", s: "dos", p: 400},
+w_cristal:{wf: 1.3, at: [0.9, 0.8], rot: -25, n: "Ailes cristal", s: "dos", p: 400},
+w_chauve:{wf: 1.15, at: [0.9, 0.9], fv: 1, n: "Ailes chauve-souris", s: "dos", p: 400},
+w_feu:{wf: 0.9, at: [0.85, 0.45], fv: 1, n: "Ailes de feu", s: "dos", p: 500},
+w_rubis:{wf: 1.4, at: [0.88, 0.92], fv: 1, rot: -15, n: "Ailes rubis", s: "dos", p: 500},
+w_argent:{wf: 0.85, at: [0.6, 0.9], fv: 1, n: "Ailes d'argent", s: "dos", p: 600},
+w_or:{wf: 0.9, at: [0.85, 0.85], fv: 1, n: "Ailes d'or", s: "dos", p: 800},
+c_or:{wf: 0.95, at: [0.5, 0.92], dy: 0.14, n: "Couronne d'or", s: "tete", p: 200},
+c_saphir:{wf: 0.95, at: [0.5, 0.92], dy: 0.14, n: "Couronne saphir", s: "tete", p: 300},
+c_royale:{wf: 0.95, at: [0.5, 0.9], dy: 0.14, n: "Couronne royale", s: "tete", p: 400},
+c_rubis:{wf: 0.95, at: [0.5, 0.9], dy: 0.14, n: "Couronne rubis", s: "tete", p: 500},
+c_diademe:{wf: 1.0, at: [0.5, 0.85], dy: 0.14, n: "Diadème d'argent", s: "tete", p: 400},
+k_vikfour:{wf: 1.35, at: [0.5, 0.62], dy: 0.18, n: "Casque viking fourrure", s: "tete", p: 250},
+k_vikacier:{wf: 1.3, at: [0.5, 0.6], dy: 0.22, n: "Casque viking d'acier", s: "tete", p: 300},
+k_gladiateur:{wf: 1.1, at: [0.5, 0.45], dy: 0.3, n: "Casque de gladiateur", s: "tete", p: 300},
+k_dore:{wf: 1.35, at: [0.5, 0.5], dy: 0.25, n: "Casque doré à cornes", s: "tete", p: 400},
+k_chaos:{wf: 1.1, at: [0.5, 0.45], dy: 0.3, n: "Casque du chaos", s: "tete", p: 500},
+k_spartiate:{wf: 1.35, at: [0.45, 0.55], dy: 0.38, n: "Casque spartiate", s: "tete", p: 400},
+k_spartroyal:{wf: 1.35, at: [0.45, 0.55], dy: 0.38, n: "Spartiate royal", s: "tete", p: 450},
+n_rubis:{wf: 1.5, at: [0.55, 0.08], n: "Collier rubis", s: "cou", p: 250},
+n_emeraude:{wf: 1.5, at: [0.5, 0.08], n: "Collier émeraude", s: "cou", p: 250},
+n_medaillon:{wf: 1.5, at: [0.5, 0.08], n: "Médaillon d'or", s: "cou", p: 300},
+n_diamant:{wf: 0.6, at: [0.5, 0.1], n: "Pendentif diamant", s: "cou", p: 350},
+a_tunique:{wf: 1.0, n: "Tunique de cuir", s: "corps", p: 200},
+a_bronze:{wf: 1.0, n: "Plastron de bronze", s: "corps", p: 350},
+a_acier:{wf: 1.0, n: "Plastron d'acier", s: "corps", p: 450},
+a_chaos:{wf: 1.1, n: "Armure du chaos", s: "corps", p: 600}
+};
+const HORSES = ANIMALS;
+const CATS = [["depart","🐾 Au départ"],["savane","🦒 Savane"],["chevaux","🐴 Chevaux"],["mythiques","🦄 Mythiques"],["dinos","🦖 Dinosaures"],["robots","🤖 Robots"]];
+const SLOTS = {tete:"👑 Tête", cou:"📿 Cou", dos:"🪽 Dos", corps:"🛡️ Corps"};
+const DEF_HORSE = {papa:"lion"};
 const CLOTH = {lana:"#9b5de5", sorya:"#00a6a6", papa:"#f08a24", cpu:"#6c757d"};
-const myHorse = p => (S.profiles[p] && HORSES[S.profiles[p].horse]) ? S.profiles[p].horse : (DEF_HORSE[p]||"noir");
-function horseSVG(kind, cloth="#9b5de5", num="", acc={}){
-  acc = acc||{}; const h = HORSES[kind] || HORSES.alezan, c=h.coat, m0=h.mane, m = acc.rainbow ? "url(#rbw)" : m0, st = h.coat==="#ffffff" ? ' stroke="#e3dbe9" stroke-width="1.2"' : "";
-  return `<svg viewBox="0 0 120 90" aria-hidden="true">${acc.rainbow?`<defs><linearGradient id="rbw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5d8f"/><stop offset=".3" stop-color="#ffd166"/><stop offset=".6" stop-color="#06d6a0"/><stop offset="1" stop-color="#4cc9f0"/></linearGradient></defs>`:""}<ellipse cx="60" cy="86" rx="38" ry="4" fill="rgba(0,0,0,.18)"/>
-  <path d="M30 40 C14 38 8 52 4 66 C14 60 20 56 30 50 Z" fill="${m}"/>
-  <path d="M36 52 L24 70 L20 82" stroke="${c}" stroke-width="7" stroke-linecap="round" fill="none" style="filter:brightness(.85)"/>
-  <path d="M42 54 L40 70 L46 82" stroke="${c}" stroke-width="7" stroke-linecap="round" fill="none"/>
-  <path d="M80 52 L96 62 L104 58" stroke="${c}" stroke-width="7" stroke-linecap="round" fill="none" style="filter:brightness(.85)"/>
-  <path d="M76 54 L80 70 L74 82" stroke="${c}" stroke-width="7" stroke-linecap="round" fill="none"/>
-  <g fill="#3b2a20"><circle cx="20" cy="83" r="4"/><circle cx="46" cy="83" r="4"/><circle cx="74" cy="83" r="4"/><circle cx="105" cy="58" r="4"/></g>
-  <ellipse cx="58" cy="44" rx="30" ry="15" fill="${c}"${st}/>
-  <path d="M74 36 C80 26 86 14 92 10 L104 18 C100 26 92 40 86 50 Z" fill="${c}"/>
-  <path d="M92 8 C100 4 112 12 116 22 C117 26 112 28 108 26 L96 22 Z" fill="${c}"${st}/>
-  <circle cx="113" cy="23" r="1.6" fill="${m0}"/><path d="M93 6 L95 -2 L99 6 Z" fill="${c}"/>
-  ${h.horn?`<path d="M98 4 L108 -14 L103 6 Z" fill="#ffd84d" stroke="#f5a623" stroke-width="1"/>`:""}
-  <path d="M92 6 C84 10 78 22 72 34 C78 32 82 28 84 24 C86 30 88 26 90 20 C92 22 94 16 96 10 Z" fill="${m}"/>
-  <circle cx="102" cy="13" r="2.4" fill="#2b1a10"/><circle cx="102.8" cy="12.2" r=".8" fill="#fff"/>
-  <path d="M48 31 H72 Q74 31 74 33 V50 Q74 53 71 53 H49 Q46 53 46 50 V33 Q46 31 48 31 Z" fill="${cloth}"${acc.gold?' stroke="#ffd84d" stroke-width="3"':""}/>
-  <path d="M46 49 H74" stroke="${acc.gold?"#ffd84d":"#fff"}" stroke-width="${acc.gold?3:2}" opacity="${acc.gold?1:.7}"/>
-  ${acc.crown?`<path d="M95 1 L96 -9 L100 -4 L103 -12 L106 -4 L110 -9 L110 1 Z" fill="#ffd84d" stroke="#e0a100" stroke-width="1"/><circle cx="103" cy="-3" r="1.6" fill="#ef476f"/>`:""}
-  <text x="60" y="47" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="700" font-size="14" fill="#fff">${num}</text>
-  <path d="M50 30 Q60 24 70 30" stroke="#5a3a20" stroke-width="4" fill="none"/></svg>`;
+const IMG = {};
+(function(){ const A=window.ASSETS||{}; for (const k in A){ try{ const b64=A[k][0].split(",")[1], bin=atob(b64), u=new Uint8Array(bin.length);
+  for (let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); IMG[k]=[URL.createObjectURL(new Blob([u],{type:"image/webp"})),A[k][1],A[k][2]]; }catch(e){ IMG[k]=A[k]; } } })();
+const myHorse = p => { const h=(S.profiles[p]||{}).horse; return ANIMALS[h] ? h : (DEF_HORSE[p]||"lion"); };
+const hasAnimal = p => !!ANIMALS[(S.profiles[p]||{}).horse];
+function cleanEq(eq){ const o={}; for (const s in SLOTS){ const k=(eq||{})[s]; if (ACCS[k] && ACCS[k].s===s) o[s]=k; } return o; }
+function animalSVG(id, eq, mode){
+  const A=ANIMALS[id]||ANIMALS.lion, src=IMG[ANIMALS[id]?id:"lion"]; eq=cleanEq(eq);
+  if (!src) return `<svg viewBox="0 0 120 90" aria-hidden="true"><text x="60" y="78" font-size="70" text-anchor="middle">🐾</text></svg>`;
+  const [u,W,H]=src, L=A.f==="L", fx=x=>L?1-x:x;
+  let x0=0,y0=0,x1=W,y1=H;
+  const put=(k,px,py,w,at,o={})=>{ const s=IMG[k]; if(!s) return ""; const h=w*s[2]/s[1], X=px-at[0]*w, Y=py-at[1]*h;
+    x0=Math.min(x0,X); y0=Math.min(y0,Y); x1=Math.max(x1,X+w); y1=Math.max(y1,Y+h);
+    const img=`<image href="${s[0]}" x="${X.toFixed(1)}" y="${Y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"${o.fv?` transform="translate(0 ${(2*Y+h).toFixed(1)}) scale(1 -1)"`:""}/>`;
+    return o.rot ? `<g transform="rotate(${-o.rot} ${px.toFixed(1)} ${py.toFixed(1)})">${img}</g>` : img; };
+  let back="", front="";
+  if (eq.dos){ const p=ACCS[eq.dos]; back=put(eq.dos, fx(A.b[0])*W, A.b[1]*H, p.wf*.5*Math.sqrt(W*H), p.at, p); }
+  if (eq.corps){ const p=ACCS[eq.corps]; front+=put(eq.corps, fx(A.a[0])*W, A.a[1]*H, p.wf*A.a[2]*W, [.5,.5]); }
+  if (eq.cou){ const p=ACCS[eq.cou]; front+=put(eq.cou, fx(A.k[0])*W, A.k[1]*H, p.wf*A.k[2]*W, p.at); }
+  if (eq.tete){ const p=ACCS[eq.tete], hw=A.h[2]*W; front+=put(eq.tete, fx(A.h[0])*W, A.h[1]*H+p.dy*hw, p.wf*hw, p.at); }
+  const body=`<image href="${u}" x="0" y="0" width="${W}" height="${H}"${L?` transform="translate(${W} 0) scale(-1 1)"`:""}/>`;
+  let vb;
+  if (mode==="race"){ const bw=W*1.15, bh=Math.max(H*1.15, bw*.75); vb=[-(bw-W)/2, H-bh+H*.02, bw, bh]; }
+  else { const pw=(x1-x0)*.04, ph=(y1-y0)*.04; vb=[x0-pw, y0-ph, x1-x0+2*pw, y1-y0+2*ph]; }
+  return `<svg viewBox="${vb.map(v=>v.toFixed(1)).join(" ")}" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><ellipse cx="${W/2}" cy="${H*.985}" rx="${W*.38}" ry="${H*.03}" fill="rgba(0,0,0,.16)"/>${back}${body}${front}</svg>`;
 }
+function horseSVG(kind, cloth, num, acc, mode){ return animalSVG(kind, acc, mode); }
 const HIPPO = (()=>{ const cols=['#ff7aa2','#ffd166','#7ad3ff','#a78bfa','#6ee7a8'];
   return `<svg class="bg" viewBox="0 0 390 250" preserveAspectRatio="none" aria-hidden="true">
   <defs><pattern id="chk" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#fff"/><rect width="4" height="4" fill="#222"/><rect x="4" y="4" width="4" height="4" fill="#222"/></pattern></defs>
@@ -554,6 +643,8 @@ function stars(n, total=3){ let s=""; for(let i=0;i<total;i++) s+=`<span class="
 const SCREENS = {};
 
 SCREENS.home = () => {
+  if (!hasAnimal(me())){ if (me()==="papa"){ P().horse="lion"; save(); } else return go("starter"); }
+  if (P().refund2){ const r=P().refund2; delete P().refund2; save(); setTimeout(()=>toast(`🐾 Les chevaux ont été remplacés par les animaux : <b>🪙 +${r}</b> remboursées !`),400); }
   const p=P(), ne=Object.keys(p.errors).length, x=xpInfo(p), dl=dailyGet(), st=streakNow(p);
   const mon=new Date(); mon.setDate(mon.getDate()-((mon.getDay()+6)%7));
   const week=[...Array(7)].map((_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return today(d); });
@@ -571,14 +662,14 @@ SCREENS.home = () => {
   ${me()!=="papa" && rw?`<div class="card rwcard"><span style="font-size:30px">${rw.emoji}</span><div style="flex:1"><b>${esc(rw.label)}</b><div class="pb"><i style="width:${Math.min(100,rp/rw.goal*100)}%"></i></div><div class="muted small">${Math.min(rp,rw.goal)} / ${rw.goal} 🪙${rp>=rw.goal?" · objectif atteint ! 🎉":""}</div></div></div>`:""}
   <div class="modes">
     <button class="mode" style="background:#ffe8a3" onclick="go('chronoSetup')"><span class="ic">⏱️</span><b>Chrono</b><span>Seule ou en duel</span></button>
-    <button class="mode" style="background:#c9f0d6" onclick="go('raceSetup')"><span class="ic">🐎</span><b>Course de chevaux</b><span>Contre l'ordi ou en famille</span></button>
+    <button class="mode" style="background:#c9f0d6" onclick="go('raceSetup')"><span class="ic">🐎</span><b>Course d'animaux</b><span>Contre l'ordi ou en famille</span></button>
     <button class="mode" style="background:#ffe0cc" onclick="go('cordeSetup')"><span class="ic">🪢</span><b>Tir à la corde</b><span>1c1, équipe ou tournoi</span></button>
     <button class="mode" style="background:#ffd6de" onclick="go('errors')">${ne?`<span class="badge">${ne}</span>`:""}<span class="ic">🎯</span><b>Mes erreurs</b><span>Revoir les calculs ratés</span></button>
     <button class="mode" style="background:#e3d7fb" onclick="go('defi')"><span class="ic">⭐</span><b>Défi des tables</b><span>Gagne les 3 étoiles</span></button>
     <button class="mode" style="background:#cfe9ff" onclick="go('memorySetup')"><span class="ic">🃏</span><b>Memory</b><span>Calcul ↔ résultat</span></button>
     <button class="mode" style="background:#d7f3f7" onclick="go('balloons')"><span class="ic">🎈</span><b>Ballons</b><span>Éclate la bonne réponse</span></button>
     <button class="mode" style="background:#ffe1c7" onclick="go('vf')"><span class="ic">✅❌</span><b>Vrai ou faux</b><span>Seule ou en famille</span></button>
-    <button class="mode" style="background:#fde2ff" onclick="go('shop')"><span class="ic">🛍️</span><b>Boutique</b><span>Chevaux, pistes…</span></button>
+    <button class="mode" style="background:#fde2ff" onclick="go('shop')"><span class="ic">🛍️</span><b>Boutique</b><span>Animaux, ailes, couronnes…</span></button>
     <button class="mode" style="background:#e9e1ff" onclick="go('badges')"><span class="ic">🏅</span><b>Mes badges</b><span>${Object.keys(p.badges||{}).length} / ${BADGES.length}</span></button>
   </div>
   <div class="row" style="justify-content:center;margin-top:18px"><button class="btn ghost" onclick="go('settings')">⚙️ Paramètres</button><button class="btn ghost" onclick="go('parentsPin')">👨‍👧‍👧 Parents</button></div>`;
@@ -590,8 +681,8 @@ function setProfile(p){ S.current=p; save(); go("home"); }
 SCREENS.settings = () => {
   const s=S.settings;
   app.innerHTML = hdr("⚙️ Paramètres") + `
-  <div class="card"><div class="label">🐴 Le cheval de ${NAMES[me()]}</div>
-    <div class="row"><div style="width:110px">${horseSVG(myHorse(me()), CLOTH[me()], NAMES[me()][0], myAcc(me()))}</div><button class="btn sun" style="flex:1" onclick="go('shop')">🛍️ Changer dans la boutique</button></div></div>
+  <div class="card"><div class="label">🐾 L'animal de ${NAMES[me()]} : ${ANIMALS[myHorse(me())].n}</div>
+    <div class="row"><div style="width:120px;height:90px">${animalSVG(myHorse(me()), myAcc(me()))}</div><button class="btn sun" style="flex:1" onclick="go('shop')">🛍️ Changer dans la boutique</button></div></div>
   <div class="card"><div class="label">☁️ Synchronisation</div><div class="muted small">${syncText()}</div>
     ${FAM?"":`<div class="row" style="margin-top:10px"><input class="codein small" id="famin" placeholder="Code famille" autocapitalize="off" spellcheck="false"><button class="btn" onclick="linkFamily()">Relier</button></div><div class="muted small" id="fammsg"></div>`}</div>
   <div class="card"><div class="label">🎨 Thème</div>
@@ -684,7 +775,7 @@ const nm = p => NAMES[p] || p;
 const arr = x => Array.isArray(x) ? x : Object.keys(x||{}).sort((a,b)=>a-b).map(k=>x[k]);
 const gEnd = w => (w==="cpu"||w==="papa") ? "" : "e";
 const clearOv = () => { const o=document.getElementById("ov"); if (o) o.remove(); };
-const GAMES = {race:["🐎","Course de chevaux","raceSetup"], corde:["🪢","Tir à la corde","cordeSetup"], chrono:["⏱️","Chrono en famille","chronoSetup"], vf:["✅","Vrai ou faux en famille","vf"]};
+const GAMES = {race:["🐎","Course d'animaux","raceSetup"], corde:["🪢","Tir à la corde","cordeSetup"], chrono:["⏱️","Chrono en famille","chronoSetup"], vf:["✅","Vrai ou faux en famille","vf"]};
 function familyCard(game, extra=""){
   return `<div class="card"><div class="label">👨‍👧‍👧 En famille (2 ou 3, chacun sur son téléphone)</div>${extra}
     <div class="row"><button class="btn sun" style="flex:1" onclick="go('lobby','${game}')">Créer</button><button class="btn ghost" style="flex:1" onclick="go('join')">Rejoindre</button></div>
@@ -695,7 +786,7 @@ const cordeHelp = () => ({duel:"Deux joueurs face à face.", equipe:"Les bonnes 
 
 SCREENS.raceSetup = () => {
   const s=S.settings, r=P().race;
-  app.innerHTML = hdr("🐎 Course de chevaux") + `
+  app.innerHTML = hdr("🐎 Course d'animaux") + `
   <div class="card"><div class="label">Nombre de questions (longueur de la course)</div>${seg("raceLen",[[10,"10"],[15,"15"],[20,"20"]],s.raceLen,"setOpt")}<hr>${tablesPicker()}</div>
   <div class="card"><div class="label">🤖 Contre l'ordinateur</div>${seg("cpuLevel",[["facile","Facile"],["moyen","Moyen"],["difficile","Difficile"]],s.cpuLevel,"setOpt")}${cpuPick()}
     <button class="btn block" style="margin-top:12px" onclick="startCpu('race')">Lancer la course</button></div>
@@ -763,7 +854,7 @@ function startCpu(kind){
   RACE = {myRole:"host", online:false};
   go("raceView");
   RACE.engine = Engine({roles:["host","cpu"], kind, target: kind==="corde"?s.cordeLen:s.raceLen, track:myTrack(me()), tables:{host:tb, cpu:tb},
-    names:{host:me(), cpu:"cpu"}, horses:{host:horseSpec(me()), cpu:{k:HORSES[s.cpuHorse]?s.cpuHorse:"noir", a:{}}}, cpuLevel:s.cpuLevel, emit:ev=>raceEvent(ev)});
+    names:{host:me(), cpu:"cpu"}, horses:{host:horseSpec(me()), cpu:{k:HORSES[s.cpuHorse]?s.cpuHorse:"roboloup", a:{}}}, cpuLevel:s.cpuLevel, emit:ev=>raceEvent(ev)});
   cleanup.push(()=>RACE&&RACE.engine&&RACE.engine.stop());
   RACE.engine.start();
 }
@@ -785,9 +876,9 @@ const pav = r => AV[RACE.names[r]] || "🤖";
 const pcol = r => CLOTH[RACE.names[r]] || "#6c757d";
 function lane(role, i, n){
   const who=RACE.names[role], col=CLOTH[who]||"#6c757d", sp=(RACE.horses||{})[role];
-  const kind = typeof sp==="string" ? sp : (sp&&sp.k) || (who==="cpu"?"noir":myHorse(who)), acc=(sp&&sp.a)||{};
+  const kind = typeof sp==="string" ? sp : (sp&&sp.k) || (who==="cpu"?(ANIMALS[S.settings.cpuHorse]?S.settings.cpuHorse:"roboloup"):myHorse(who)), acc=(sp&&sp.a)||{};
   const T=TRACK_T[RACE.track]||76, h=(246-T)/n, top=(T+h*i)/250*100-(n>2?1.5:2), ht=h/250*100*(n>2?1.05:1);
-  return `<div class="horse2" id="h-${role}" style="top:${top}%;height:${ht}%">${horseSVG(kind, col, who==="cpu"?"🤖":nm(who)[0], acc)}<i class="tagh" style="background:${col}">${role===RACE.myRole?"Toi":nm(who)} · <span id="n-${role}">0</span></i></div>`;
+  return `<div class="horse2" id="h-${role}" style="top:${top}%;height:${ht}%">${horseSVG(kind, col, who==="cpu"?"🤖":nm(who)[0], acc, "race")}<i class="tagh" style="background:${col}">${role===RACE.myRole?"Toi":nm(who)} · <span id="n-${role}">0</span></i></div>`;
 }
 const CORDE_BG = `<svg class="bg" viewBox="0 0 390 250" preserveAspectRatio="none" aria-hidden="true">
   <rect width="390" height="250" fill="#8fd16a"/>${[...Array(8)].map((_,i)=>`<rect y="${i*32}" width="390" height="16" fill="#99d873"/>`).join("")}
@@ -801,7 +892,7 @@ function ropeScene(R){
   R.sides=[my, op];
   const side = (key, cls) => { const mem=R.roles.filter(r=>R.K(r)===key), col=pcol(mem[0]);
     return `<div class="puller ${cls} n${mem.length}">${mem.map(r=>{ const sp=(R.horses||{})[r]||{}; const who=R.names[r];
-      return horseSVG(typeof sp==="string"?sp:(sp.k||(who==="cpu"?"noir":myHorse(who))), pcol(r), who==="cpu"?"🤖":nm(who)[0], sp.a||{}); }).join("")}<i class="tagh" style="background:${col}">${sideLabel(R,key)}</i></div>`; };
+      return horseSVG(typeof sp==="string"?sp:(sp.k||(who==="cpu"?(ANIMALS[S.settings.cpuHorse]?S.settings.cpuHorse:"roboloup"):myHorse(who))), pcol(r), who==="cpu"?"🤖":nm(who)[0], sp.a||{}, "race"); }).join("")}<i class="tagh" style="background:${col}">${sideLabel(R,key)}</i></div>`; };
   return `<div class="scene" id="scene">${CORDE_BG}<div class="tug" id="tug"><div class="rope"></div><div class="knot">🎀</div>${side(my,"left")}${side(op,"right")}</div>
     <span class="camp">${R.spect?sideLabel(R,my).toUpperCase():"TON CAMP"}</span></div>`;
 }
@@ -870,7 +961,7 @@ function raceEvent(ev){
     if (R.spect){ const fb=document.getElementById("fb"); if (fb) fb.textContent = ev.winner ? `${nm(R.names[ev.winner])} marque !` : "Personne…"; return; }
     const sol = R.q ? `${fmt(R.q)} = ${R.q.ans}` : "";
     const team = ev.winner && R.teams && ev.winner!==R.myRole && R.K(ev.winner)===R.K(R.myRole);
-    if (ev.winner===R.myRole){ sndOk(); feedback(true,R.q, R.kind==="corde"?"✓ Tu tires la corde !":R.kind==="vf"?"✓ Point pour toi !":"✓ Ton cheval avance !"); }
+    if (ev.winner===R.myRole){ sndOk(); feedback(true,R.q, R.kind==="corde"?"✓ Tu tires la corde !":R.kind==="vf"?"✓ Point pour toi !":"✓ Ton animal avance !"); }
     else if (team){ sndOk(); feedback(true,R.q,`✓ ${nm(R.names[ev.winner])} tire pour ton équipe !`); }
     else if (ev.winner){ beep(300,.15,"square"); feedback(false,R.q,`${nm(R.names[ev.winner])} a été plus rapide · ${sol}`); }
     else feedback(false,R.q,`Personne ! ${sol}`);
@@ -1450,7 +1541,7 @@ const BADGES = [
   ["mem","🃏","Memory en 9 coups", p=>Object.values(p.memory||{}).some(v=>v<=9)],
   ["err","🧹","Erreurs toutes corrigées", p=>!!p.flags.errClear],
   ["shop","🛍️","Premier achat", p=>Object.keys(p.owned||{}).length>0],
-  ["uni","🦄","Licorne achetée", p=>!!(p.owned||{})["h:licorne"]],
+  ["uni","🦄","Licorne achetée", p=>["licorne","petitelicorne","licorneailee"].some(k=>(p.owned||{})["an:"+k])],
   ["l5","🏅","Niveau 5", p=>lvlOf(p)>=5],
   ["l10","🌟","Niveau 10", p=>lvlOf(p)>=10]
 ];
@@ -1464,62 +1555,76 @@ function checkBadges(){
 }
 
 /* ================== Boutique ================== */
-const PRICES = {alezan:0, gris:0, noir:120, bai:120, palomino:200, licorne:400};
 const SHOP = {
-  chevaux: Object.keys(HORSES).map(k=>({id:"h:"+k, name:HORSES[k].name, price:PRICES[k], lvl:k==="licorne"?3:0})),
-  accessoires: [{id:"a:gold", name:"Selle d'or", price:150, lvl:0},{id:"a:rainbow", name:"Crinière arc-en-ciel", price:250, lvl:0},{id:"a:crown", name:"Couronne", price:300, lvl:2}],
+  animaux: Object.entries(ANIMALS).map(([k,a])=>({id:"an:"+k, name:a.n, price:a.p, lvl:a.l, cat:a.c})),
+  ailes: Object.entries(ACCS).filter(([k,a])=>a.s==="dos").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
+  tetes: Object.entries(ACCS).filter(([k,a])=>a.s==="tete").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
+  bijoux: Object.entries(ACCS).filter(([k,a])=>a.s==="cou").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
+  armures: Object.entries(ACCS).filter(([k,a])=>a.s==="corps").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
   pistes: [{id:"t:hippo", name:"Hippodrome", price:0, lvl:0},{id:"t:plage", name:"Plage", price:300, lvl:3},{id:"t:haies", name:"Course de haies", price:500, lvl:5}],
   themes: [{id:"th:classique", name:"Classique", price:0, lvl:0},{id:"th:galaxie", name:"Galaxie", price:0, lvl:0}]
 };
-const TABS = [["chevaux","🐴 Chevaux"],["accessoires","🎀 Accessoires"],["pistes","🏞️ Pistes"],["themes","🎨 Thèmes"]];
+const TABS = [["animaux","🐾 Animaux"],["ailes","🪽 Ailes"],["tetes","👑 Couronnes & casques"],["bijoux","📿 Colliers"],["armures","🛡️ Armures"],["pistes","🏞️ Pistes"],["themes","🎨 Thèmes"]];
 const ALLITEMS = Object.values(SHOP).flat();
 const owns = (p,id) => { const it=ALLITEMS.find(x=>x.id===id); return it && (it.price===0 || !!(p.owned||{})[id]); };
-const myAcc = who => ((S.profiles[who]||{}).equip||{}).acc || {};
+const myAcc = who => cleanEq(((S.profiles[who]||{}).equip||{}).acc);
 const myTrack = who => { const t=((S.profiles[who]||{}).equip||{}).track||"hippo"; return SCENES[t] ? t : "hippo"; };
 const horseSpec = who => ({k:myHorse(who), a:myAcc(who)});
 function isEquipped(p, id){
   const [c,k]=id.split(":");
-  if (c==="h") return myHorse(me())===k; if (c==="a") return !!(p.equip.acc||{})[k];
+  if (c==="an") return myHorse(me())===k; if (c==="x") return myAcc(me())[ACCS[k].s]===k;
   if (c==="t") return myTrack(me())===k; if (c==="th") return S.settings.theme===k; return false;
 }
-let shopTab="chevaux";
+let shopTab="animaux";
 SCREENS.shop = (tab) => {
-  if (tab) shopTab=tab; const p=P(), L=lvlOf(p);
+  if (tab) shopTab=tab; if (!SHOP[shopTab]) shopTab="animaux"; const p=P(), L=lvlOf(p), mine=myHorse(me()), acc=myAcc(me());
   const prev = it => { const [c,k]=it.id.split(":");
-    if (c==="h") return horseSVG(k, CLOTH[me()], NAMES[me()][0], myAcc(me()));
-    if (c==="a") return horseSVG(myHorse(me()), CLOTH[me()], NAMES[me()][0], {[k]:true});
+    if (c==="an") return animalSVG(k, isEquipped(p,it.id)?acc:{});
+    if (c==="x"){ const m=IMG[k]; return m ? `<svg viewBox="0 0 ${m[1]} ${m[2]}" aria-hidden="true"><image href="${m[0]}" width="${m[1]}" height="${m[2]}"/></svg>` : ""; }
     if (c==="t") return `<div class="tprev">${SCENES[k]}</div>`;
     return `<div class="tprev th-${k}"><span>${k==="galaxie"?"🌌":"☀️"}</span></div>`; };
-  app.innerHTML = hdr("🛍️ Boutique") + `<div class="coinsrow"><span class="pchip">🪙 ${p.coins||0}</span></div>
-  <div class="stabs">${TABS.map(([k,l])=>`<button class="${shopTab===k?"on":""}" onclick="go('shop','${k}')">${l}</button>`).join("")}</div>
-  <div class="sgrid">${SHOP[shopTab].map(it=>{
-    const own=owns(p,it.id), eq=own&&isEquipped(p,it.id), lock=!own && L<it.lvl, poor=!own && (p.coins||0)<it.price;
-    const btn = eq ? `<span class="price owned">✓ ${it.id.startsWith("a:")?"Porté":"Équipé"}</span>`
-      : own ? `<button class="price eq" onclick="equip('${it.id}')">${it.id.startsWith("a:")?"Mettre":"Équiper"}</button>`
+  const card = it => {
+    const own=owns(p,it.id), eq=own&&isEquipped(p,it.id), lock=!own && L<it.lvl, poor=!own && (p.coins||0)<it.price, isX=it.id.startsWith("x:");
+    const btn = eq ? (isX ? `<button class="price owned" onclick="equip('${it.id}')">✓ Porté · enlever</button>` : `<span class="price owned">✓ Équipé</span>`)
+      : own ? `<button class="price eq" onclick="equip('${it.id}')">${isX?"Mettre":"Choisir"}</button>`
       : lock ? `<span class="price">🔒 Niveau ${it.lvl}</span>`
       : `<button class="price ${poor?"poor":""}" onclick="buy('${it.id}',this)">🪙 ${it.price}</button>`;
-    return `<div class="sitem ${lock?"lock":""}">${prev(it)}<b>${it.name}</b>${btn}</div>`; }).join("")}</div>
-  <div class="muted small" style="text-align:center;margin-top:12px">Chaque bonne réponse rapporte 🪙 1. Les victoires, records et défis en rapportent plus !</div>`;
+    return `<div class="sitem ${lock?"lock":""}">${prev(it)}<b>${it.name}</b>${btn}</div>`; };
+  const list = shopTab==="animaux"
+    ? CATS.map(([c,l])=>`<div class="shead">${l}${c==="mythiques"?" · niveau 4":c==="dinos"?" · niveau 5":c==="robots"?" · niveau 6":""}</div>`+SHOP.animaux.filter(it=>it.cat===c).map(card).join("")).join("")
+    : SHOP[shopTab].map(card).join("");
+  app.innerHTML = hdr("🛍️ Boutique") + `<div class="coinsrow"><span class="pchip">🪙 ${p.coins||0}</span></div>
+  <div class="mypet">${animalSVG(mine, acc)}<div><b>${ANIMALS[mine].n}</b><div class="muted small">${Object.keys(acc).length?Object.keys(acc).map(s=>ACCS[acc[s]].n).join(" · "):"Aucun accessoire"}</div></div></div>
+  <div class="stabs">${TABS.map(([k,l])=>`<button class="${shopTab===k?"on":""}" onclick="go('shop','${k}')">${l}</button>`).join("")}</div>
+  <div class="sgrid">${list}</div>
+  <div class="muted small" style="text-align:center;margin-top:12px">Chaque bonne réponse rapporte 🪙 1. Les victoires, records et défis en rapportent plus !</div>
+  <div class="muted small" style="text-align:center;margin-top:8px;opacity:.7">Illustrations : Graphics RF, Surya Ali Zaidan, Mastuti Mastuti (Vecteezy) · Freepik</div>`;
 };
 function buy(id, el){
   const p=P(), it=ALLITEMS.find(x=>x.id===id); if (!it) return;
   if ((p.coins||0) < it.price){ toast(`Il te manque <b>🪙 ${it.price-(p.coins||0)}</b>`); return; }
   if (!el.dataset.c){ el.dataset.c=1; el.textContent="Acheter ?"; el.classList.add("confirm"); setTimeout(()=>{ if (el.isConnected){ delete el.dataset.c; el.textContent=`🪙 ${it.price}`; el.classList.remove("confirm"); } },3000); return; }
   p.coins-=it.price; p.owned=p.owned||{}; p.owned[id]=Date.now(); sndWin(); confetti(50);
-  toast(`🛍️ <b>${it.name}</b> est à toi !`); equip(id);
+  toast(`🛍️ <b>${it.name}</b> est à toi !`); equip(id, true);
 }
-function equip(id){
+function equip(id, force){
   const p=P(), [c,k]=id.split(":");
-  if (c==="h") p.horse=k;
-  if (c==="a"){ p.equip.acc=p.equip.acc||{}; if (p.equip.acc[k]) delete p.equip.acc[k]; else p.equip.acc[k]=true; }
+  if (c==="an") p.horse=k;
+  if (c==="x"){ const s=ACCS[k].s; p.equip.acc=cleanEq(p.equip.acc); if (p.equip.acc[s]===k && !force) delete p.equip.acc[s]; else p.equip.acc[s]=k; }
   if (c==="t") p.equip.track=k;
   if (c==="th") S.settings.theme=k;
-  save(); go("shop");
+  save(); const y=scrollY; go("shop"); scrollTo(0,y);
 }
 function cpuPick(){
-  const cur=S.settings.cpuHorse||"noir";
-  return `<div class="label" style="margin-top:12px">Cheval de l'ordinateur</div><div class="hgrid mini">${Object.keys(HORSES).map(k=>`<button class="${cur===k?"on":""}" onclick="S.settings.cpuHorse='${k}';save();go('${CUR.screen}')">${horseSVG(k, CLOTH.cpu, "🤖")}</button>`).join("")}</div>`;
+  const cur=ANIMALS[S.settings.cpuHorse]?S.settings.cpuHorse:"roboloup";
+  return `<div class="label" style="margin-top:12px">Animal de l'ordinateur : <b>${ANIMALS[cur].n}</b></div><div class="hgrid mini cpuscroll">${Object.keys(ANIMALS).map(k=>`<button class="${cur===k?"on":""}" onclick="S.settings.cpuHorse='${k}';save();go('${CUR.screen}')">${animalSVG(k,{})}</button>`).join("")}</div>`;
 }
+SCREENS.starter = () => {
+  app.innerHTML = hdr("🐾 Choisis ton animal") + `<div class="card" style="text-align:center"><div class="label">${NAMES[me()]}, choisis ton animal de départ !</div>
+  <div class="muted small">Tu pourras en gagner plein d'autres dans la boutique 🛍️</div></div>
+  <div class="sgrid">${SHOP.animaux.filter(it=>it.cat==="depart").map(it=>`<div class="sitem">${animalSVG(it.id.slice(3),{})}<b>${it.name}</b><button class="price eq" onclick="pickStarter('${it.id.slice(3)}')">Choisir</button></div>`).join("")}</div>`;
+};
+function pickStarter(k){ P().horse=k; save(); toast(`🐾 Bienvenue <b>${ANIMALS[k].n}</b> !`); go("home"); }
 
 /* ================== Badges ================== */
 SCREENS.badges = () => {
@@ -1662,6 +1767,10 @@ function normProfile(r){
   p.chrono = (Array.isArray(p.chrono)?p.chrono:Object.values(p.chrono||{})).filter(Boolean);
   if (p.daily) p.daily=objify(p.daily);
   if (!p.totalOk) p.totalOk = Object.values(p.stats).reduce((s,x)=>s+(x.ok||0),0);
+  if (!p.anim2){ const OLD={"h:noir":120,"h:bai":120,"h:palomino":200,"h:licorne":400,"h:gris":0,"h:alezan":0,"a:gold":150,"a:rainbow":250,"a:crown":300}; let r=0;
+    for (const k in p.owned) if (OLD[k]!=null){ r+=OLD[k]; delete p.owned[k]; }
+    if (r){ p.coins=(p.coins||0)+r; p.refund2=r; } p.horse=null; p.equip.acc={}; p.anim2=1; }
+  p.equip.acc=cleanEq(p.equip.acc);
   return p;
 }
 const pushT={};
