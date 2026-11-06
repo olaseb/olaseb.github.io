@@ -67,6 +67,27 @@ h1,h2,h3,.big,.q{font-family:"Baloo 2",Nunito,sans-serif;margin:0}
 .mode b{font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:20px;line-height:1.1}
 .mode span{font-size:13px;opacity:.8}
 .mode.wide{grid-column:span 2;min-height:96px}
+.lxhome{background:linear-gradient(135deg,#ffd166,#ff9f7a)}
+.lxchips{display:flex;flex-wrap:wrap;gap:6px}.lxchips button{padding:8px 11px;border-radius:12px;background:var(--bg);font-weight:800;font-size:14px;border:2px solid transparent}.lxchips button.on{background:var(--me-soft);border-color:var(--me);color:var(--me)}
+.lxit{display:flex;align-items:center;gap:10px;width:100%;padding:11px 0;border-bottom:1px solid var(--line);background:none}.lxit:last-child{border:0}.lxit b{font-size:15px}
+.lxic{width:42px;height:42px;border-radius:13px;background:var(--me-soft);display:grid;place-items:center;font-size:22px;flex:none}.lxpc{font-weight:900;font-size:14px;white-space:nowrap}
+.lxta,.lxin{width:100%;border:2px solid var(--line);border-radius:14px;padding:10px;font:inherit;font-size:16px;background:var(--card);color:var(--ink)}.lxta{resize:vertical;line-height:1.45}
+.lxtitle{width:100%;border:0;background:none;font:800 20px "Baloo 2",Nunito,sans-serif;color:var(--ink);padding:0}.lxbig{font:800 30px "Baloo 2",Nunito,sans-serif}
+.lxgames{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lxgames button{color:#fff;font-weight:800;font-size:16px;padding:16px 8px;border-radius:16px;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.lxphoto{width:100%;border-radius:12px;display:block;min-height:40px;background:var(--bg)}.lxpart{border-bottom:1px solid var(--line);padding:8px 0}.lxpart summary{cursor:pointer}.lxtxt{font-size:15px;line-height:1.5;margin:8px 0}
+.lxq{font-size:19px;font-weight:800;line-height:1.35;margin-bottom:14px}.lxprop{font-size:20px;font-weight:800;text-align:center;padding:14px;border-radius:14px;background:var(--me-soft);margin-bottom:14px}
+.lxopts{display:flex;flex-direction:column;gap:9px}.lxopts button{padding:14px;border-radius:14px;background:var(--bg);font-weight:800;font-size:17px;text-align:left;border:2px solid var(--line)}
+.lxopts.race{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 4px}.lxopts.race button{font-size:15px;text-align:center;padding:12px 6px}
+.lxopts button.good,.lxvf button.good{background:var(--ok);color:#fff;border-color:var(--ok)}.lxopts button.bad,.lxvf button.bad{background:var(--ko);color:#fff;border-color:var(--ko)}
+.lxvf{display:flex;gap:10px}.lxvf button{flex:1;color:#fff;font-weight:800;font-size:19px;padding:16px;border-radius:16px;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.lxok{color:var(--ok);font-weight:800;margin-top:12px}.lxko{color:var(--ko);font-weight:700;margin-top:12px}.lxrap{color:var(--ink);font-weight:600;background:#e8f7ff;border-radius:12px;padding:10px;margin-top:8px;font-size:14px}
+.lxpoem{font-size:18px;line-height:1.9}.lxhole{display:inline-block;min-width:60px;border-bottom:3px solid var(--line);text-align:center;color:var(--muted);font-weight:800}.lxhole.cur{border-color:var(--me);color:var(--me);background:var(--me-soft);border-radius:6px 6px 0 0}
+.lxfill{color:var(--me);font-weight:800}.lxcurl{font-weight:800;color:var(--me);background:var(--me-soft);border-radius:10px;padding:2px 8px}.lxhid{color:var(--line);letter-spacing:2px}
+.lxspk{font-size:64px;background:none}.lxflash{font:800 34px "Baloo 2",Nunito,sans-serif;padding:10px}
+.lxprompt{font-size:12px;background:var(--bg);border-radius:12px;padding:10px;max-height:150px;overflow:auto;color:var(--muted)}
+.lxschema{position:relative;border-radius:14px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}.lxschema img{width:100%;display:block}
+.lxbox{position:absolute;background:rgba(155,93,229,.85);color:#fff;font-weight:800;font-size:12px;display:grid;place-items:center;border-radius:6px;overflow:hidden;text-align:center;line-height:1.1}
+.lxbox.drag{background:rgba(255,196,61,.4);border:2px dashed #c98d00}.lxbox.cur{background:#ffc43d;color:#3a2500;box-shadow:0 0 0 3px #fff,0 0 12px #ffc43d}.lxbox.found{background:rgba(43,182,115,.9)}
 .badge{position:absolute;top:10px;right:10px;background:var(--ko);color:#fff;border-radius:99px;padding:2px 9px;font-size:13px;font-weight:800}
 
 /* Quiz */
@@ -592,7 +613,7 @@ function record(f, ok){
   save();
 }
 const fmt = f => `${f.a} × ${f.b}`;
-const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const dateFr = t => new Date(t).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"});
 
 /* ============ Sons & confettis ============ */
@@ -693,6 +714,7 @@ SCREENS.home = () => {
     <div class="week">${week.map((d,i)=>`<div class="wd ${done.has(d)?"on":""} ${d===td?"today":""}"><span>${done.has(d)?"🔥":d===td?"🎯":i===6?"🎁":""}</span>${"LMMJVSD"[i]}</div>`).join("")}</div></div>
   ${me()!=="papa" && rw?`<div class="card rwcard"><span style="font-size:30px">${rw.emoji}</span><div style="flex:1"><b>${esc(rw.label)}</b><div class="pb"><i style="width:${Math.min(100,rp/rw.goal*100)}%"></i></div><div class="muted small">${Math.min(rp,rw.goal)} / ${rw.goal} 🪙${rp>=rw.goal?" · objectif atteint ! 🎉":""}</div></div></div>`:""}
   <div class="modes">
+    <button class="mode wide lxhome" onclick="go('lecons')"><span class="ic">📚</span><b>Ma leçon</b><span>${(()=>{ const L=lecOf(me()), st=L.filter(lecStale).length; return L.length ? `${L.length} leçon${L.length>1?"s":""}${st?` · ⏰ ${st} à revoir`:""}` : "Poésie, mots, leçons : révise-les en jouant"; })()}</span></button>
     <button class="mode" style="background:#ffe8a3" onclick="go('chronoSetup')"><span class="ic">⏱️</span><b>Chrono</b><span>Seule ou en duel</span></button>
     <button class="mode" style="background:#c9f0d6" onclick="go('raceSetup')"><span class="ic">🐎</span><b>Course d'animaux</b><span>Contre l'ordi ou en famille</span></button>
     <button class="mode" style="background:#ffe0cc" onclick="go('cordeSetup')"><span class="ic">🪢</span><b>Tir à la corde</b><span>1c1, équipe ou tournoi</span></button>
@@ -852,16 +874,17 @@ function Engine(o){
     const prev=E.q; E.q={}; const cache=new Map();
     for (const role of o.roles){
       const tb=o.tables[role]||o.tables[o.roles[0]]; let q=cache.get(tb);
+      if (!q && o.lec){ const it=o.lec[(E.r-1)%o.lec.length]; q={li:(E.r-1)%o.lec.length, ans:it.r, opts:shuffle([it.r,...it.ch])}; cache.set(tb,q); }
       if (!q){ q=randFact(tb, prev[role]); if (o.kind==="vf"){ q.truth=Math.random()<.5; q.shown=q.truth?q.ans:pick(choices(q).filter(c=>c!==q.ans)); } cache.set(tb,q); }
       E.q[role]=q;
     }
-    o.emit({t:"round", r:E.r, q:Object.fromEntries(o.roles.map(r=>[r,{a:E.q[r].a, b:E.q[r].b, shown:E.q[r].shown==null?-1:E.q[r].shown}]))});
+    o.emit({t:"round", r:E.r, q:Object.fromEntries(o.roles.map(r=>[r, E.q[r].li!=null ? {li:E.q[r].li, opts:E.q[r].opts, ans:E.q[r].ans} : {a:E.q[r].a, b:E.q[r].b, shown:E.q[r].shown==null?-1:E.q[r].shown}]))});
     if (o.roles.includes("cpu")) cpuPlay();
   };
   function cpuPlay(){
     const L={facile:[5200,.8], moyen:[3600,.9], difficile:[2400,.96]}[o.cpuLevel||"moyen"], q=E.q.cpu;
-    const hard=Math.min(q.a,q.b)>=6?1.3:Math.min(q.a,q.b)<=2?.7:1, good=Math.random()<L[1];
-    const v = o.kind==="vf" ? (good?q.truth:!q.truth) : (good?q.ans:q.ans+pick([-q.a,q.b,1,-1]));
+    const hard=q.li!=null?1.4:Math.min(q.a,q.b)>=6?1.3:Math.min(q.a,q.b)<=2?.7:1, good=Math.random()<L[1];
+    const v = q.li!=null ? (good?q.ans:pick(q.opts.filter(x=>x!==q.ans))) : o.kind==="vf" ? (good?q.truth:!q.truth) : (good?q.ans:q.ans+pick([-q.a,q.b,1,-1]));
     E.timers.push(setTimeout(()=>E.answer("cpu", E.r, v), L[0]*hard*(.7+Math.random()*.6)*(o.kind==="vf"?.6:1)));
   }
   const won = k => o.kind==="corde" ? (E.pos[k]-Math.max(...keys.filter(x=>x!==k).map(x=>E.pos[x])) >= o.target) : (E.pos[k] >= o.target);
@@ -882,11 +905,11 @@ function Engine(o){
   return E;
 }
 function startCpu(kind){
-  const s=S.settings, tb=activeTables();
-  RACE = {myRole:"host", online:false};
+  const s=S.settings, tb=activeTables(), lec=LCQ; LCQ=null;
+  RACE = {myRole:"host", online:false, lec};
   go("raceView");
   RACE.engine = Engine({roles:["host","cpu"], kind, target: kind==="corde"?s.cordeLen:s.raceLen, track:myTrack(me()), tables:{host:tb, cpu:tb},
-    names:{host:me(), cpu:"cpu"}, horses:{host:horseSpec(me()), cpu:{k:HORSES[s.cpuHorse]?s.cpuHorse:"roboloup", a:{}}}, cpuLevel:s.cpuLevel, emit:ev=>raceEvent(ev)});
+    names:{host:me(), cpu:"cpu"}, horses:{host:horseSpec(me()), cpu:{k:HORSES[s.cpuHorse]?s.cpuHorse:"roboloup", a:{}}}, cpuLevel:s.cpuLevel, lec:lec?lec.items:null, emit:ev=>raceEvent(ev)});
   cleanup.push(()=>RACE&&RACE.engine&&RACE.engine.stop());
   RACE.engine.start();
 }
@@ -971,8 +994,15 @@ function raceEvent(ev){
     R.r=ev.r; R.done=false; R.locked=false;
     const rq=document.getElementById("rq"); if (rq) rq.textContent = R.tour ? `${R.tour.final?"Finale":"Match "+(R.tour.idx+1)+"/3"} · Q${ev.r}` : `Question ${ev.r}`;
     if (R.spect) return;
-    const q=ev.q[R.myRole]; R.q=fact(q.a,q.b); R.q.shown=q.shown;
-    const aa=document.getElementById("aa"); aa.classList.remove("locked");
+    const q=ev.q[R.myRole]; const aa=document.getElementById("aa"); aa.classList.remove("locked");
+    if (q.li!=null && R.lec){ const it=R.lec.items[q.li]; R.q={lec:it, ans:q.ans};
+      document.getElementById("qb").innerHTML=`<div class="q" id="q" style="font-size:19px;line-height:1.3">${esc(it.q)}</div><div class="fb" id="fb"></div>`;
+      aa.innerHTML=`<div class="lxopts race">${q.opts.map(o=>`<button data-v="${esc(o)}" onclick="submitAns(this.dataset.v,this)">${esc(o)}</button>`).join("")}</div>`;
+      answerHandler = (v, el) => { if (R.locked || R.done) return; const ok=v===R.q.ans; const L=lecGet(R.lec.id); if (L){ lecRecord(L, it.k, ok); lecSave(L); }
+        if (!ok){ R.locked=true; sndKo(); if (el) el.classList.add("bad"); feedback(false,null,"Raté ! Attends la question suivante"); aa.classList.add("locked"); } else if (el) el.classList.add("good");
+        sendAnswer(R.r, v); };
+      return; }
+    R.q=fact(q.a,q.b); R.q.shown=q.shown;
     if (R.kind==="vf"){ R.q.truth = q.shown===R.q.ans;
       document.getElementById("qb").innerHTML=`<div class="q" id="q">${fmt(R.q)} = ${q.shown}</div><div class="fb" id="fb"></div>`;
       aa.innerHTML=`<div class="vf"><button class="t" onclick="submitAns(true)">VRAI</button><button class="f" onclick="submitAns(false)">FAUX</button></div>`; }
@@ -991,7 +1021,7 @@ function raceEvent(ev){
     R.done=true; if (!R.spect) answerHandler=null; R.pos=ev.pos||{}; placeHorses(ev.winner);
     const aa=document.getElementById("aa"); if (aa) aa.classList.add("locked");
     if (R.spect){ const fb=document.getElementById("fb"); if (fb) fb.textContent = ev.winner ? `${nm(R.names[ev.winner])} marque !` : "Personne…"; return; }
-    const sol = R.q ? `${fmt(R.q)} = ${R.q.ans}` : "";
+    const sol = R.q ? (R.q.lec ? `Réponse : ${R.q.ans}` : `${fmt(R.q)} = ${R.q.ans}`) : "";
     const team = ev.winner && R.teams && ev.winner!==R.myRole && R.K(ev.winner)===R.K(R.myRole);
     if (ev.winner===R.myRole){ sndOk(); feedback(true,R.q, R.kind==="corde"?"✓ Tu tires la corde !":R.kind==="vf"?"✓ Point pour toi !":"✓ Ton animal avance !"); }
     else if (team){ sndOk(); feedback(true,R.q,`✓ ${nm(R.names[ev.winner])} tire pour ton équipe !`); }
@@ -1664,6 +1694,383 @@ SCREENS.starter = () => {
 };
 function pickStarter(k){ P().horse=k; P().picked=1; save(); toast(`🐾 Bienvenue <b>${ANIMALS[k].n}</b> !`); go("home"); }
 
+/* ================== Ma leçon ================== */
+const LKEY="tables-lecons-v1";
+let LEC={}; try { LEC=JSON.parse(localStorage.getItem(LKEY))||{}; } catch(e){ LEC={}; }
+for (const k of PROFILES) LEC[k]=LEC[k]||{};
+const persistL = () => { try { localStorage.setItem(LKEY, JSON.stringify(LEC)); } catch(e){ toast("⚠️ Mémoire du téléphone pleine"); } };
+const SUBJ = {fr:["📝","Français"], ma:["🧮","Maths"], sc:["🔬","Sciences"], hi:["🏛️","Histoire"], ge:["🌍","Géographie"], en:["🇬🇧","Anglais"], au:["📚","Autre"]};
+const LTYPES = {poesie:["📝","Poésie"], mots:["🔤","Mots"], defs:["📖","Définitions"], dates:["📅","Dates"], questions:["❓","Questions"], texte:["📄","Cours (texte)"]};
+const CLASSES = () => Object.assign({lana:"CM1", sorya:"6e", papa:"adulte"}, (S.parent||{}).classes||{});
+let LW = null; // propriétaire de la leçon ouverte
+const lw = () => LW || me();
+const lecOf = who => Object.values(LEC[who]||{}).filter(l=>l && !l.del).sort((a,b)=>(b.upd||0)-(a.upd||0));
+const lecGet = (id, who=lw()) => (LEC[who]||{})[id];
+const lid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const norm = s => String(s||"").trim().toLowerCase().replace(/\s+/g," ").replace(/[’']/g,"'");
+const hkey = s => { let h=0; for (const c of String(s)) h=(h*31+c.charCodeAt(0))|0; return "k"+(h>>>0).toString(36); };
+
+function lecSave(l, who=lw()){
+  l.upd=Date.now(); LEC[who][l.id]=l; persistL();
+  if (ROOT) try { ROOT.child("lec/"+who+"/"+l.id).set(clean(l)); } catch(e){}
+}
+function onRemoteLec(who, r){
+  r=r||{}; let ch=false;
+  for (const id in r){ const x=r[id], loc=LEC[who][id]; if (x && (!loc || (x.upd||0)>(loc.upd||0))){ LEC[who][id]=normLec(x); ch=true; } }
+  for (const id in LEC[who]){ const loc=LEC[who][id]; if (!r[id] || (loc.upd||0)>((r[id]||{}).upd||0)) try { ROOT.child("lec/"+who+"/"+id).set(clean(loc)); } catch(e){} }
+  if (ch){ persistL(); if (CUR && ["lecons","lecon"].includes(CUR.screen) && !document.querySelector("textarea:focus,input:focus")) go(CUR.screen, ...CUR.args); }
+}
+function normLec(l){
+  l.parts=(Array.isArray(l.parts)?l.parts:Object.values(l.parts||{})).filter(Boolean);
+  l.q=(Array.isArray(l.q)?l.q:Object.values(l.q||{})).filter(Boolean).map(q=>Object.assign(q,{ch:Array.isArray(q.ch)?q.ch:Object.values(q.ch||{})}));
+  l.marks=(Array.isArray(l.marks)?l.marks:Object.values(l.marks||{})).filter(Boolean);
+  l.st=l.st||{}; return l;
+}
+for (const k of PROFILES) for (const id in LEC[k]) normLec(LEC[k][id]);
+
+/* --- photos (stockées à part) --- */
+const PHK = id => "lph-"+id;
+function photoSave(id, data){ try { localStorage.setItem(PHK(id), data); } catch(e){} if (ROOT) try { ROOT.child("ph/"+id).set(data); } catch(e){} }
+async function photoGet(id){
+  let d=null; try { d=localStorage.getItem(PHK(id)); } catch(e){}
+  if (!d && ROOT){ try { d=(await ROOT.child("ph/"+id).get()).val(); if (d) try { localStorage.setItem(PHK(id), d); } catch(e){} } catch(e){} }
+  return d;
+}
+function shrinkPhoto(file, max=1280){ return new Promise((ok,ko)=>{ const img=new Image(), u=URL.createObjectURL(file);
+  img.onload=()=>{ const s=Math.min(1, max/Math.max(img.width,img.height)), c=document.createElement("canvas"); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(u); ok(c.toDataURL("image/jpeg",.62)); };
+  img.onerror=ko; img.src=u; }); }
+
+/* --- contenu → éléments à réviser --- */
+const lecText = l => (l.parts||[]).map(p=>p.x||"").join("\n");
+const lecLines = l => lecText(l).split(/\n+/).map(s=>s.trim()).filter(Boolean);
+function lecPairs(l){ return lecLines(l).map(s=>{ const m=s.match(/^(.+?)\s*(?:\s:\s|\s=\s|\s[-–—]\s|:|=)\s*(.+)$/); return m?[m[1].trim(),m[2].trim()]:null; }).filter(Boolean); }
+const lecWords = l => lecText(l).split(/[\n,;]+/).map(s=>s.trim()).filter(s=>s && s.length<40);
+const WRE = /[A-Za-zÀ-ÖØ-öø-ÿœŒæÆ'-]+/g;
+function misspell(w){
+  const out=new Set(), r=[[/([bcdfglmnprst])\1/,"$1"],[/([bcdfglmnprst])(?!\1)([aeiouéèêy])/,"$1$1$2"],[/é/,"è"],[/è/,"é"],[/s$/,""],[/([^s])$/,"$1s"],[/ph/,"f"],[/qu/,"k"],[/an/,"en"],[/en/,"an"],[/au/,"o"],[/ai/,"è"],[/c/,"ss"],[/ç/,"s"],[/e$/,""]];
+  for (const [a,b] of shuffle(r)){ const v=w.replace(a,b); if (v!==w) out.add(v); if (out.size>=3) break; }
+  return [...out];
+}
+function lecItems(l){
+  const it=[], T=l.type;
+  for (const q of l.q||[]) if (q.q && q.r) it.push({k:hkey(q.q), q:q.q, r:q.r, ch:(q.ch||[]).filter(x=>x && norm(x)!==norm(q.r)), rap:q.rap});
+  if (T==="defs"){ const P=lecPairs(l), B=P.map(p=>p[1]), A=P.map(p=>p[0]);
+    P.forEach(([a,b])=>{ it.push({k:hkey("d"+a), q:`Que veut dire « ${a} » ?`, r:b, ch:B.filter(x=>x!==b), rap:`${a} : ${b}`});
+      it.push({k:hkey("e"+a), q:`Quel mot correspond à : « ${b} » ?`, r:a, ch:A.filter(x=>x!==a), rap:`${a} : ${b}`}); }); }
+  if (T==="dates"){ const P=lecPairs(l), B=P.map(p=>p[1]), A=P.map(p=>p[0]);
+    P.forEach(([a,b])=>{ it.push({k:hkey("d"+a), q:`Que s'est-il passé en ${a} ?`, r:b, ch:B.filter(x=>x!==b), rap:`${a} : ${b}`});
+      it.push({k:hkey("e"+a), q:`Quand : « ${b} » ?`, r:a, ch:A.filter(x=>x!==a), rap:`${a} : ${b}`}); }); }
+  if (T==="questions"){ for (const s of lecLines(l)){ const m=s.match(/^(.+?\?)\s*(.+)$/)||s.match(/^(.+?)\s*\|\s*(.+)$/); if (m) it.push({k:hkey(m[1]), q:m[1], r:m[2], ch:[], rap:s}); }
+    const R=it.map(x=>x.r); it.forEach(x=>{ if (!x.ch.length) x.ch=R.filter(r=>r!==x.r); }); }
+  if (T==="mots"){ for (const w of lecWords(l)){ const m=misspell(w); if (m.length>=2) it.push({k:hkey("m"+w), q:"Quelle est la bonne orthographe ?", r:w, ch:m, rap:`On écrit : ${w}`}); } }
+  if (T==="poesie" || T==="texte" || (!it.length && lecLines(l).length)){
+    const lines=lecLines(l), all=[...new Set(lecText(l).match(WRE)||[])].filter(w=>w.length>=4);
+    lines.forEach((ln,i)=>{ const ws=(ln.match(WRE)||[]).filter(w=>w.length>=4); if (!ws.length) return; const w=ws.sort((a,b)=>b.length-a.length)[0];
+      const sim=all.filter(x=>x!==w).sort((a,b)=>Math.abs(a.length-w.length)-Math.abs(b.length-w.length)).slice(0,6);
+      it.push({k:hkey("t"+i+ln), q:ln.replace(w,"＿＿＿"), r:w, ch:sim, rap:ln, cloze:1}); });
+  }
+  for (const x of it){ x.ch=shuffle([...new Set(x.ch.filter(c=>norm(c)!==norm(x.r)))]).slice(0,3); }
+  return it.filter(x=>x.ch.length>=1);
+}
+function lecPct(l){ const it=lecItems(l); if (!it.length) return 0; let s=0;
+  for (const x of it){ const t=(l.st||{})[x.k]; if (t) s+=Math.max(0,Math.min(1,(t.ok-t.ko*0.5)/2)); }
+  let p=s/it.length; if (l.type==="poesie") p=Math.max(p, (l.lvl||0)/4); return Math.round(p*100); }
+const lecStale = l => l.last && (Date.now()-l.last > 7*864e5) && lecPct(l)<100 || (l.last && Date.now()-l.last>21*864e5);
+function lecRecord(l, k, ok){
+  l.st=l.st||{}; const t=l.st[k]=l.st[k]||{ok:0,ko:0}; ok?t.ok++:t.ko++; t.t=Date.now(); l.last=Date.now();
+  const p=P(), d=today(); p.days=p.days||{}; const day=p.days[d]=p.days[d]||{ok:0,ko:0,sec:0}; ok?day.ok++:day.ko++; day.sec+=6; p.lastPlayed=Date.now();
+  if (ok){ p.coins=(p.coins||0)+1; p.earned=(p.earned||0)+1; p.totalOk=(p.totalOk||0)+1; addXp(p,2); }
+}
+function lecPickItems(l, n){ // révision intelligente : les ratés reviennent plus souvent
+  const it=lecItems(l), w=x=>{ const t=(l.st||{})[x.k]; return t ? 1+Math.max(0,t.ko*2-t.ok)+(t.ok?0:1) : 3; };
+  const out=[], pool=it.slice(); while (out.length<Math.min(n,it.length) && pool.length){ let s=pool.reduce((a,x)=>a+w(x),0), r=Math.random()*s;
+    for (let i=0;i<pool.length;i++){ r-=w(pool[i]); if (r<=0){ out.push(pool.splice(i,1)[0]); break; } } }
+  return out;
+}
+function suggestTitle(type, sub, text){
+  const first=(text||"").split(/\n/).map(s=>s.trim()).find(Boolean)||"";
+  const w=first.replace(/[.,;:!?«»"]/g,"").split(/\s+/).slice(0,4).join(" ");
+  const pre={poesie:"Poésie", mots:"Mots", defs:"Vocabulaire", dates:"Dates", questions:(SUBJ[sub]||SUBJ.au)[1], texte:(SUBJ[sub]||SUBJ.au)[1]}[type]||"Leçon";
+  if (type==="mots") return `Mots de la semaine (${today().slice(8)}/${today().slice(5,7)})`;
+  return w ? `${pre} : ${w.charAt(0).toUpperCase()+w.slice(1)}` : pre;
+}
+
+/* --- écran : liste --- */
+let lecFilter="all";
+SCREENS.lecons = (who) => {
+  LW = who || me(); const L=lecOf(lw()).filter(l=>lecFilter==="all"||l.sub===lecFilter);
+  const subs=[...new Set(lecOf(lw()).map(l=>l.sub))];
+  app.innerHTML = hdr(`📚 ${LW===me()?"Mes leçons":"Leçons de "+NAMES[LW]}`, LW===me()?"home":"lecPapa") + `
+  <button class="btn sun block" onclick="go('lecNew')">➕ Nouvelle leçon</button>
+  ${subs.length>1?`<div class="lxchips" style="margin-top:12px"><button class="${lecFilter==="all"?"on":""}" onclick="lecFilter='all';go('lecons','${LW}')">Toutes</button>${subs.map(s=>`<button class="${lecFilter===s?"on":""}" onclick="lecFilter='${s}';go('lecons','${LW}')">${(SUBJ[s]||SUBJ.au).join(" ")}</button>`).join("")}</div>`:""}
+  <div class="card" style="margin-top:12px;padding:6px 14px">${L.length?L.map(l=>{ const p=lecPct(l), s=SUBJ[l.sub]||SUBJ.au;
+    return `<button class="lxit" onclick="go('lecon','${l.id}')"><span class="lxic">${(LTYPES[l.type]||LTYPES.texte)[0]}</span><span style="flex:1;text-align:left"><b>${esc(l.t)}</b><span class="muted small" style="display:block">${s[1]} · ${(l.parts||[]).length} partie${(l.parts||[]).length>1?"s":""} · ${new Date(l.created||l.upd).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}</span></span>${lecStale(l)?`<span class="lxpc" style="color:var(--ko)">⏰ à revoir</span>`:`<span class="lxpc" style="color:${p>=80?"var(--ok)":p>=40?"#f08a24":"var(--muted)"}">${p} %</span>`}</button>`; }).join("")
+    : `<div class="muted" style="padding:18px 4px;text-align:center">Aucune leçon pour l'instant.<br>Ajoute ta poésie, tes mots ou ta leçon du moment 📖</div>`}</div>`;
+};
+
+/* --- écran : nouvelle leçon / ajout d'un morceau --- */
+let LN = null;
+SCREENS.lecNew = (addTo) => {
+  const add = addTo ? lecGet(addTo) : null;
+  if (!LN || LN.addTo!==addTo) LN = {addTo, src:"photo", type:add?add.type:"poesie", sub:add?add.sub:"fr", text:"", title:"", photo:null, titleEdited:false};
+  const src = (k,l)=>`<button class="${LN.src===k?"on":""}" onclick="LN.src='${k}';lnKeep();go('lecNew'${addTo?`,'${addTo}'`:""})">${l}</button>`;
+  app.innerHTML = hdr(add?"➕ Ajouter un morceau":"➕ Nouvelle leçon", add?`lecon','${addTo}`:"lecons") + `
+  ${add?`<div class="card"><b>${esc(add.t)}</b><div class="muted small">Le nouveau morceau sera ajouté à la suite</div></div>`:""}
+  <div class="card"><div class="label">1. D'où vient ${add?"le morceau":"la leçon"} ?</div><div class="lxchips">${src("photo","📷 Photo (texte imprimé)")}${src("type","⌨️ Je tape")}${add?"":src("ia","📋 Coller (IA)")}</div>
+    ${LN.src==="photo"?`<label class="btn ghost block" style="margin-top:10px">📷 Prendre / choisir la photo<input type="file" accept="image/*" capture="environment" hidden onchange="lnPhoto(this)"></label><div id="ocr" class="muted small" style="margin-top:6px">${LN.photo?"✓ Photo prête":""}</div>`:""}
+    ${LN.src==="ia"?`<div class="muted small" style="margin-top:8px">Colle ici la réponse de ChatGPT ou Claude (le bloc qui commence par { ). <button class="linkbtn" onclick="go('lecPapa')">Comment faire ?</button></div>`:""}</div>
+  <div class="card"><div class="label">${LN.src==="ia"?"2. Réponse de l'IA":LN.src==="photo"?"2. Le texte lu sur la photo (corrige si besoin)":"2. Écris le contenu"}</div>
+    <textarea id="lntext" class="lxta" rows="8" placeholder="${LN.src==="ia"?"{ \"titre\": … }":esc(lnHelp())}" oninput="LN.text=this.value;lnSug()">${esc(LN.text)}</textarea></div>
+  ${LN.src==="ia"||add?"":`<div class="card"><div class="label">3. C'est quoi ?</div><div class="lxchips">${Object.entries(LTYPES).map(([k,[i,n]])=>`<button class="${LN.type===k?"on":""}" onclick="LN.type='${k}';lnKeep();go('lecNew')">${i} ${n}</button>`).join("")}</div>
+    <div class="muted small" style="margin-top:8px">${lnHelp()}</div>
+    <div class="label" style="margin-top:12px">Matière</div><div class="lxchips">${Object.entries(SUBJ).map(([k,[i,n]])=>`<button class="${LN.sub===k?"on":""}" onclick="LN.sub='${k}';lnKeep();go('lecNew')">${i} ${n}</button>`).join("")}</div></div>
+  <div class="card"><div class="label">4. Titre</div><input id="lntitle" class="lxin" value="${esc(LN.title||suggestTitle(LN.type,LN.sub,LN.text))}" oninput="LN.title=this.value;LN.titleEdited=true"><div class="muted small" style="margin-top:4px">Titre proposé, tu peux le changer</div></div>`}
+  <button class="btn block" style="background:var(--ok);color:#fff" onclick="lnCreate()">${add?"Ajouter":"Créer la leçon"}</button>`;
+};
+function lnHelp(){ return ({poesie:"Un vers par ligne.", mots:"Un mot par ligne (ou séparés par des virgules).", defs:"Une ligne par mot : mot : définition", dates:"Une ligne par date : 1789 : Révolution française", questions:"Une ligne par question : Question ? réponse", texte:"Le texte de la leçon. Des textes à trous seront créés automatiquement."})[LN.type]||""; }
+function lnKeep(){ const t=document.getElementById("lntext"); if (t) LN.text=t.value; const ti=document.getElementById("lntitle"); if (ti && LN.titleEdited) LN.title=ti.value; }
+function lnSug(){ const ti=document.getElementById("lntitle"); if (ti && !LN.titleEdited) ti.value=suggestTitle(LN.type,LN.sub,LN.text); }
+async function lnPhoto(inp){
+  const f=inp.files&&inp.files[0]; if (!f) return; const o=document.getElementById("ocr");
+  try { LN.photo=await shrinkPhoto(f); } catch(e){ o.textContent="Photo illisible"; return; }
+  o.innerHTML="⏳ Lecture du texte… (la 1re fois peut prendre 20 s)";
+  try {
+    if (!window.Tesseract) await loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js");
+    const r=await Tesseract.recognize(LN.photo, "fra", {logger:m=>{ if (m.status==="recognizing text" && o) o.textContent=`⏳ Lecture… ${Math.round(m.progress*100)} %`; }});
+    const txt=(r.data.text||"").replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+    LN.text=(LN.text?LN.text+"\n":"")+txt; const t=document.getElementById("lntext"); if (t){ t.value=LN.text; lnSug(); }
+    o.innerHTML = txt ? "✓ Texte lu. Vérifie et corrige les erreurs éventuelles." : "Je n'ai pas réussi à lire le texte. Tu peux le taper.";
+  } catch(e){ o.textContent="Lecture impossible (pas de réseau ?). La photo est gardée, tu peux taper le texte."; }
+}
+function parseIA(raw){
+  const a=raw.indexOf("{"), b=raw.lastIndexOf("}"); if (a<0||b<a) throw 0;
+  const j=JSON.parse(raw.slice(a,b+1).replace(/[“”]/g,'"'));
+  const tmap={poesie:"poesie","poésie":"poesie",mots:"mots",definitions:"defs","définitions":"defs",defs:"defs",dates:"dates",questions:"questions",texte:"texte",cours:"texte"};
+  const smap={"français":"fr",francais:"fr",maths:"ma","mathématiques":"ma",sciences:"sc",svt:"sc",histoire:"hi","géographie":"ge",geographie:"ge",geo:"ge","géo":"ge",anglais:"en"};
+  const q=(j.questions||[]).map(x=>({q:x.q||x.question, r:String(x.r!=null?x.r:x.reponse!=null?x.reponse:""), ch:(x.faux||x.choix||[]).map(String), rap:x.rappel||""})).filter(x=>x.q&&x.r);
+  return {t:j.titre||"Leçon", sub:smap[norm(j.matiere)]||"au", type:tmap[norm(j.type)]||"texte", text:String(j.texte||""), q, img:j.images||""};
+}
+function lnCreate(){
+  lnKeep(); const text=(LN.text||"").trim();
+  if (LN.addTo){ const l=lecGet(LN.addTo); if (!text && !LN.photo) return toast("Ajoute du texte ou une photo");
+    l.parts.push({x:text, at:Date.now()}); if (LN.photo && !l.photo){ l.photo=1; photoSave(l.id, LN.photo); } else if (LN.photo){ const pid=l.id+"_"+l.parts.length; photoSave(pid, LN.photo); (l.photos=l.photos||[]).push(pid); }
+    lecSave(l); LN=null; toast("✓ Morceau ajouté"); return go("lecon", l.id); }
+  let l;
+  if (LN.src==="ia"){ let d; try { d=parseIA(text); } catch(e){ return toast("Je ne reconnais pas la réponse de l'IA. Copie bien tout le bloc { … }"); }
+    l={id:lid(), t:d.t, sub:d.sub, type:d.type, parts:[{x:d.text, at:Date.now()}], q:d.q, img:d.img, created:Date.now(), st:{}, marks:[], ia:1}; }
+  else { if (!text) return toast("Le contenu est vide");
+    l={id:lid(), t:(LN.title||suggestTitle(LN.type,LN.sub,text)).trim(), sub:LN.sub, type:LN.type, parts:[{x:text, at:Date.now()}], q:[], created:Date.now(), st:{}, marks:[]}; }
+  if (LN.photo){ l.photo=1; photoSave(l.id, LN.photo); }
+  lecSave(l); LN=null; sndWin(); toast(`📚 Leçon créée : <b>${esc(l.t)}</b>`); go("lecon", l.id);
+}
+
+/* --- écran : une leçon --- */
+SCREENS.lecon = (id) => {
+  const l=lecGet(id); if (!l) return go("lecons", lw()); const p=lecPct(l), s=SUBJ[l.sub]||SUBJ.au, n=lecItems(l).length;
+  const G=[];
+  if (l.type==="poesie"||l.type==="texte") G.push(["trous","🕳️ Texte à trous","#9b5de5"],["reciter","🎤 Réciter","#00a6a6"]);
+  if (l.type==="mots") G.push(["dictee","🔊 Dictée","#00a6a6"]);
+  if (n) G.push(["quiz","❓ Quiz","#3a86ff"],["vf","✅ Vrai / faux","#2bb673"],["course","🐎 Course","#f08a24"]);
+  if (l.photo && (l.marks||[]).length>=2) G.push(["schema","🔬 Schéma à légender","#ef476f"]);
+  app.innerHTML = hdr(`${(LTYPES[l.type]||LTYPES.texte)[0]} ${(LTYPES[l.type]||LTYPES.texte)[1]}`, `lecons','${lw()}`) + `
+  <div class="card"><div class="row" style="align-items:flex-start"><div style="flex:1"><input class="lxtitle" value="${esc(l.t)}" onchange="lecRename('${id}',this.value)"><div class="muted small">${s.join(" ")} · ${n} question${n>1?"s":""} ✏️ touche le titre pour le changer</div></div><span class="lxbig" style="color:${p>=80?"var(--ok)":"var(--me)"}">${p}%</span></div></div>
+  ${l.img?`<div class="card small"><b>🖼️ Images du cours :</b> ${esc(l.img)}</div>`:""}
+  <div class="label" style="margin-left:4px">Réviser</div>
+  <div class="lxgames">${G.map(([k,lb,c])=>`<button style="background:${c}" onclick="lecPlay('${id}','${k}')">${lb}</button>`).join("")||`<div class="muted small">Ajoute plus de contenu pour débloquer les jeux.</div>`}</div>
+  ${l.photo?`<div class="card" style="margin-top:14px"><div class="label">📷 Photo du cours</div><img id="lphoto" class="lxphoto" alt="" onclick="lecZoom(this.src)"><div class="row" style="margin-top:8px"><button class="btn ghost" style="flex:1;font-size:14px" onclick="go('lecSchemaEdit','${id}')">🏷️ Cacher des légendes${(l.marks||[]).length?` (${l.marks.length})`:""}</button></div></div>`:""}
+  <div class="card" style="margin-top:14px"><div class="label">Contenu</div>${(l.parts||[]).map((pt,i)=>`<details class="lxpart"><summary><b>Partie ${i+1}</b> <span class="muted small">· ${new Date(pt.at).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}</span></summary><div class="lxtxt">${esc(pt.x).replace(/\n/g,"<br>")}</div><button class="linkbtn small" onclick="lecDelPart('${id}',${i},this)">🗑️ Supprimer cette partie</button></details>`).join("")}
+    <button class="btn ghost block" style="margin-top:10px;font-size:15px" onclick="LN=null;go('lecNew','${id}')">➕ Ajouter un morceau</button></div>
+  <button class="linkbtn small" style="margin:6px auto;display:block;color:var(--ko)" onclick="lecDel('${id}',this)">🗑️ Supprimer la leçon</button>`;
+  if (l.photo) photoGet(id).then(d=>{ const im=document.getElementById("lphoto"); if (im && d) im.src=d; else if (im) im.replaceWith(Object.assign(document.createElement("div"),{className:"muted small",textContent:"Photo pas encore disponible sur ce téléphone."})); });
+};
+function lecRename(id, v){ const l=lecGet(id); v=v.trim(); if (!v) return; l.t=v; lecSave(l); toast("✓ Titre modifié"); }
+function lecDelPart(id, i, el){ if (!el.dataset.c){ el.dataset.c=1; el.textContent="Appuie encore pour confirmer"; return; } const l=lecGet(id); l.parts.splice(i,1); lecSave(l); go("lecon",id); }
+function lecDel(id, el){ if (!el.dataset.c){ el.dataset.c=1; el.textContent="Appuie encore pour supprimer définitivement"; return; } const l=lecGet(id); l.del=1; lecSave(l); go("lecons", lw()); }
+function lecZoom(src){ if (!src) return; const o=document.createElement("div"); o.className="overlay"; o.style.overflow="auto"; o.innerHTML=`<img src="${src}" style="max-width:96vw;max-height:92vh;border-radius:12px">`; o.onclick=()=>o.remove(); document.body.appendChild(o); }
+function lecPlay(id, k){ ({trous:()=>go("lecTrous",id), reciter:()=>go("lecReciter",id), dictee:()=>go("lecDictee",id), quiz:()=>go("lecQuiz",id,"quiz"), vf:()=>go("lecQuiz",id,"vf"), course:()=>lecCourse(id), schema:()=>go("lecSchema",id)})[k](); }
+
+/* --- jeu : quiz & vrai/faux --- */
+let LQ=null;
+SCREENS.lecQuiz = (id, mode) => {
+  const l=lecGet(id); LQ={id, mode, items:lecPickItems(l, mode==="vf"?12:10), i:0, ok:0, retry:[]};
+  lqNext();
+};
+function lqNext(){
+  const l=lecGet(LQ.id);
+  if (LQ.i>=LQ.items.length){ if (LQ.retry.length){ LQ.items.push(...LQ.retry.splice(0)); } else return lecEnd(l, LQ.ok, LQ.items.length, LQ.mode==="vf"?"Vrai / faux":"Quiz", ()=>go("lecQuiz",LQ.id,LQ.mode)); }
+  const x=LQ.items[LQ.i], n=LQ.items.length;
+  let body;
+  if (LQ.mode==="vf"){ const tr=Math.random()<.5, shown=tr?x.r:pick(x.ch); LQ.cur={x, tr};
+    body=`<div class="lxq">${esc(x.q)}</div><div class="lxprop">${esc(shown)}</div><div class="lxvf"><button style="background:var(--ok)" onclick="lqAns(true,this)">✓ Vrai</button><button style="background:var(--ko)" onclick="lqAns(false,this)">✗ Faux</button></div>`; }
+  else { const opts=shuffle([x.r, ...x.ch]); LQ.cur={x};
+    body=`<div class="lxq">${esc(x.q)}</div><div class="lxopts">${opts.map(o=>`<button onclick="lqAns(this.dataset.v,this)" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>`; }
+  app.innerHTML = `<div class="top"><button class="back" onclick="go('lecon','${LQ.id}')">✕</button><h2 style="font-size:17px">${esc(l.t)}</h2><span class="pchip" style="margin-left:auto">${Math.min(LQ.i+1,n)} / ${n}</span></div>
+   <div class="card">${body}<div id="lxfb"></div></div>`;
+}
+function lqAns(v, el){
+  if (LQ.lock) return; LQ.lock=1; const l=lecGet(LQ.id), {x,tr}=LQ.cur;
+  const ok = LQ.mode==="vf" ? (v===tr) : norm(v)===norm(x.r);
+  lecRecord(l, x.k, ok); ok?(LQ.ok++,sndOk()):(sndKo(), LQ.retry.push(x));
+  if (LQ.mode!=="vf") document.querySelectorAll(".lxopts button").forEach(b=>{ if (norm(b.dataset.v)===norm(x.r)) b.classList.add("good"); else if (b===el) b.classList.add("bad"); });
+  else el.classList.add(ok?"good":"bad");
+  document.getElementById("lxfb").innerHTML = ok ? `<div class="lxok">✓ Bravo ! <b>🪙 +1</b></div>` : `<div class="lxko">✗ La bonne réponse : <b>${esc(x.r)}</b>${x.rap?`<div class="lxrap">📖 ${esc(x.rap)}</div>`:""}</div>`;
+  LQ.i++; lecSave(l); const t=setTimeout(()=>{ LQ.lock=0; lqNext(); }, ok?900:2600); cleanup.push(()=>{ clearTimeout(t); LQ.lock=0; });
+}
+function lecEnd(l, ok, n, name, again){
+  lecSave(l); save(); const pct=Math.round(100*ok/Math.max(1,n));
+  if (pct>=80){ sndWin(); confetti(60); gain(10, 10, "🎉 Leçon bien révisée !"); }
+  app.innerHTML = hdr("🏁 Terminé", `lecon','${l.id}`) + `<div class="card" style="text-align:center"><div style="font-size:60px">${pct>=80?"🏆":pct>=50?"👍":"💪"}</div><div class="lxbig">${ok} / ${n}</div><div class="muted">${name} · ${esc(l.t)}</div><div class="muted small" style="margin-top:8px">Maîtrise de la leçon : <b>${lecPct(l)} %</b></div></div>
+   <button class="btn block" id="again">🔁 Rejouer</button><button class="btn ghost block" style="margin-top:10px" onclick="go('lecon','${l.id}')">← Retour à la leçon</button>`;
+  document.getElementById("again").onclick=again;
+}
+
+/* --- jeu : texte à trous (poésie / texte) --- */
+let LT=null;
+SCREENS.lecTrous = (id) => {
+  const l=lecGet(id), lvl=Math.min(4,(l.lvl||0)+1), lines=lecLines(l).slice(0,40);
+  const toks=lines.map(ln=>ln.split(/([A-Za-zÀ-ÖØ-öø-ÿœŒæÆ'-]+)/));
+  const cand=[]; toks.forEach((t,li)=>t.forEach((w,wi)=>{ if (wi%2===1 && w.length>=(lvl>=3?3:4)) cand.push([li,wi,w]); }));
+  const want=Math.max(1,Math.round(cand.length*[0,.15,.3,.5,.8][lvl])), holes=shuffle(cand).slice(0,want).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  const all=[...new Set(cand.map(c=>c[2]))];
+  LT={id, lvl, toks, holes, i:0, ko:0}; ltDraw();
+};
+function ltDraw(){
+  const l=lecGet(LT.id), H=new Map(LT.holes.map((h,i)=>[h[0]+":"+h[1],i]));
+  const html=LT.toks.map((t,li)=>t.map((w,wi)=>{ const i=H.get(li+":"+wi); if (i==null) return esc(w); return i<LT.i?`<span class="lxfill">${esc(w)}</span>`:i===LT.i?`<span class="lxhole cur">?</span>`:`<span class="lxhole">?</span>`; }).join("")).join("<br>");
+  if (LT.i>=LT.holes.length){ const n=LT.holes.length, ok=n-LT.ko;
+    if (LT.ko<=1 && (l.lvl||0)<LT.lvl){ l.lvl=LT.lvl; toast(`⭐ Niveau ${LT.lvl}/4 débloqué !`); }
+    return lecEnd(l, ok, n, `Texte à trous · niveau ${LT.lvl}/4`, ()=>go("lecTrous",LT.id)); }
+  const w=LT.holes[LT.i][2], pool=[...new Set(LT.holes.map(h=>h[2]).concat(LT.toks.flat().filter((x,i)=>i%2&&x.length>=4)))].filter(x=>norm(x)!==norm(w));
+  const opts=shuffle([w, ...shuffle(pool).sort((a,b)=>Math.abs(a.length-w.length)-Math.abs(b.length-w.length)).slice(0,2)]);
+  app.innerHTML = `<div class="top"><button class="back" onclick="go('lecon','${LT.id}')">✕</button><h2 style="font-size:17px">🕳️ ${esc(l.t)}</h2><span class="pchip" style="margin-left:auto">niv. ${LT.lvl}/4</span></div>
+   <div class="card lxpoem">${html}</div><div class="card"><div class="label">Quel mot manque ? (${LT.i+1}/${LT.holes.length})</div><div class="lxopts">${opts.map(o=>`<button data-v="${esc(o)}" onclick="ltAns(this)">${esc(o)}</button>`).join("")}</div></div>`;
+  const c=document.querySelector(".lxhole.cur"); if (c) c.scrollIntoView({block:"center"});
+}
+function ltAns(el){
+  const l=lecGet(LT.id), w=LT.holes[LT.i][2], ok=norm(el.dataset.v)===norm(w);
+  lecRecord(l, hkey("h"+w), ok);
+  if (ok){ sndOk(); LT.i++; ltDraw(); } else { sndKo(); LT.ko++; el.classList.add("bad"); el.disabled=true; }
+}
+
+/* --- jeu : réciter --- */
+let LR=null;
+SCREENS.lecReciter = (id) => { const l=lecGet(id); LR={id, lines:lecLines(l), i:0, show:false, ok:0}; lrDraw(); };
+function lrDraw(){
+  const l=lecGet(LR.id), n=LR.lines.length;
+  if (LR.i>=n){ if (LR.ok>=n-1 && (l.lvl||0)<4){ l.lvl=4; } return lecEnd(l, LR.ok, n, "Récitation", ()=>go("lecReciter",LR.id)); }
+  app.innerHTML = `<div class="top"><button class="back" onclick="go('lecon','${LR.id}')">✕</button><h2 style="font-size:17px">🎤 ${esc(l.t)}</h2><span class="pchip" style="margin-left:auto">${LR.i+1} / ${n}</span></div>
+   <div class="card lxpoem">${LR.lines.map((ln,i)=>i<LR.i?`<div style="color:var(--ok)">${esc(ln)}</div>`:i===LR.i?(LR.show?`<div class="lxcurl">${esc(ln)}</div>`:`<div class="lxcurl">🙈 Récite cette ligne à voix haute…</div>`):`<div class="lxhid">${"▬ ".repeat(Math.min(8,Math.ceil(ln.length/6)))}</div>`).join("")}</div>
+   ${LR.show?`<div class="lxvf"><button style="background:var(--ok)" onclick="lrAns(true)">✓ Je savais</button><button style="background:var(--ko)" onclick="lrAns(false)">✗ Pas encore</button></div>`
+   :`<button class="btn block" onclick="LR.show=true;lrDraw()">👀 Vérifier</button>${LR.i>0?"":`<div class="muted small" style="text-align:center;margin-top:8px">Dis la ligne de mémoire, puis vérifie. Sois honnête 😉</div>`}`}`;
+}
+function lrAns(ok){ const l=lecGet(LR.id); lecRecord(l, hkey("r"+LR.i+LR.lines[LR.i]), ok); ok?(LR.ok++,sndOk()):sndKo(); LR.i++; LR.show=false; lrDraw(); }
+
+/* --- jeu : dictée --- */
+let LD=null;
+SCREENS.lecDictee = (id) => { const l=lecGet(id); LD={id, words:shuffle(lecWords(l)).slice(0,15), i:0, ok:0, tries:0}; ldDraw(); };
+function say(w){ try { const u=new SpeechSynthesisUtterance(w); u.lang="fr-FR"; u.rate=.85; const v=speechSynthesis.getVoices().find(v=>/^fr/i.test(v.lang)); if (v) u.voice=v; speechSynthesis.cancel(); speechSynthesis.speak(u); return true; } catch(e){ return false; } }
+function ldDraw(msg){
+  const l=lecGet(LD.id), n=LD.words.length; if (LD.i>=n) return lecEnd(l, LD.ok, n, "Dictée", ()=>go("lecDictee",LD.id));
+  const w=LD.words[LD.i], tts=!!window.speechSynthesis;
+  app.innerHTML = `<div class="top"><button class="back" onclick="go('lecon','${LD.id}')">✕</button><h2 style="font-size:17px">🔊 Dictée</h2><span class="pchip" style="margin-left:auto">${LD.i+1} / ${n}</span></div>
+   <div class="card" style="text-align:center">${tts?`<button class="lxspk" onclick="say(LD.words[LD.i])">🔊</button><div class="muted">Écoute et écris le mot</div>`:`<div class="lxflash" id="fl">${esc(w)}</div><div class="muted">Regarde bien, il va disparaître…</div>`}</div>
+   <div class="card"><input id="dw" class="lxin" style="font-size:24px;text-align:center" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="…" onkeydown="if(event.key==='Enter')ldCheck()"><div id="lxfb">${msg||""}</div><button class="btn block" style="margin-top:10px" onclick="ldCheck()">Valider</button></div>`;
+  if (tts) setTimeout(()=>{ if (CUR.screen==="lecDictee") say(w); },300); else setTimeout(()=>{ const f=document.getElementById("fl"); if (f) f.textContent="❓"; },2200);
+  setTimeout(()=>{ const i=document.getElementById("dw"); if (i) i.focus(); },350);
+}
+function ldDiff(a,b){ let o=""; for (let i=0;i<b.length;i++) o+= a[i]===b[i] ? esc(b[i]) : `<u style="color:var(--ko)">${esc(b[i])}</u>`; return o; }
+function ldCheck(){
+  const l=lecGet(LD.id), w=LD.words[LD.i], v=(document.getElementById("dw").value||"").trim();
+  if (!v) return; const ok=norm(v)===norm(w);
+  if (ok || LD.tries>=1){ lecRecord(l, hkey("m"+w), ok && LD.tries===0); if (ok && LD.tries===0){ LD.ok++; sndOk(); } else sndKo();
+    const m = ok ? `<div class="lxok">✓ ${LD.tries?"Corrigé !":"Bravo ! 🪙 +1"}</div>` : `<div class="lxko">On écrit : <b style="font-size:20px">${ldDiff(norm(v),w)}</b></div>`;
+    document.getElementById("lxfb").innerHTML=m; LD.i++; LD.tries=0; lecSave(l); const t=setTimeout(()=>ldDraw(), ok?900:2800); cleanup.push(()=>clearTimeout(t)); }
+  else { LD.tries++; sndKo(); document.getElementById("lxfb").innerHTML=`<div class="lxko">Pas tout à fait… réessaie ! Indice : <b>${esc(w[0])}${"_ ".repeat(w.length-1)}</b> (${w.length} lettres)</div>`; }
+}
+
+/* --- schéma à légender --- */
+SCREENS.lecSchemaEdit = (id) => {
+  const l=lecGet(id);
+  app.innerHTML = hdr("🏷️ Cacher des légendes", `lecon','${id}`) + `<div class="card small">Sur la photo, <b>fais glisser ton doigt</b> pour entourer une légende, puis écris le mot caché. Touche une case pour la supprimer.</div>
+  <div class="lxschema" id="sch"><img id="schimg" alt=""><div id="boxes"></div><div id="drag" class="lxbox drag" hidden></div></div>
+  <button class="btn block" style="margin-top:12px;background:var(--ok);color:#fff" onclick="go('lecon','${id}')">✓ Terminé (${(l.marks||[]).length} légendes)</button>`;
+  photoGet(id).then(d=>{ const im=document.getElementById("schimg"); if (!im) return; im.src=d||""; im.onload=()=>schDraw(id,true); });
+  const sc=document.getElementById("sch"); let st=null;
+  const pos=e=>{ const r=sc.getBoundingClientRect(), t=e.touches?e.touches[0]:e; return [(t.clientX-r.left)/r.width*100,(t.clientY-r.top)/r.height*100]; };
+  const dg=document.getElementById("drag");
+  const down=e=>{ if (e.target.closest(".lxbox:not(.drag)")) return; st=pos(e); e.preventDefault(); };
+  const move=e=>{ if (!st) return; const p=pos(e), x=Math.min(st[0],p[0]), y=Math.min(st[1],p[1]); Object.assign(dg.style,{left:x+"%",top:y+"%",width:Math.abs(p[0]-st[0])+"%",height:Math.abs(p[1]-st[1])+"%"}); dg.hidden=false; e.preventDefault(); };
+  const up=e=>{ if (!st) return; const a=st; st=null; dg.hidden=true; const p=pos(e.changedTouches?{touches:e.changedTouches}:e);
+    const b={x:Math.min(a[0],p[0]),y:Math.min(a[1],p[1]),w:Math.abs(p[0]-a[0]),h:Math.abs(p[1]-a[1])}; if (b.w<3||b.h<2) return;
+    const lab=prompt("Quel est le mot caché dans cette case ?"); if (!lab||!lab.trim()) return; b.l=lab.trim(); l.marks.push(b); lecSave(l); schDraw(id,true);
+    document.querySelector(".btn.block").textContent=`✓ Terminé (${l.marks.length} légendes)`; };
+  sc.addEventListener("touchstart",down,{passive:false}); sc.addEventListener("touchmove",move,{passive:false}); sc.addEventListener("touchend",up);
+  sc.addEventListener("mousedown",down); sc.addEventListener("mousemove",move); sc.addEventListener("mouseup",up);
+};
+function schDraw(id, edit, cur, found){
+  const l=lecGet(id), bx=document.getElementById("boxes"); if (!bx) return;
+  bx.innerHTML=(l.marks||[]).map((m,i)=>`<div class="lxbox ${i===cur?"cur":""} ${found&&found.has(i)?"found":""}" style="left:${m.x}%;top:${m.y}%;width:${m.w}%;height:${m.h}%" ${edit?`onclick="schDel('${id}',${i})"`:""}>${edit?esc(m.l):found&&found.has(i)?esc(m.l):"?"}</div>`).join("");
+}
+function schDel(id,i){ const l=lecGet(id); if (!confirm(`Supprimer « ${l.marks[i].l} » ?`)) return; l.marks.splice(i,1); lecSave(l); schDraw(id,true); }
+let LS=null;
+SCREENS.lecSchema = (id) => {
+  const l=lecGet(id); LS={id, order:shuffle(l.marks.map((_,i)=>i)), i:0, ok:0, found:new Set()};
+  app.innerHTML = `<div class="top"><button class="back" onclick="go('lecon','${id}')">✕</button><h2 style="font-size:17px">🔬 ${esc(l.t)}</h2><span class="pchip" style="margin-left:auto" id="lsc">1 / ${l.marks.length}</span></div>
+   <div class="lxschema" onclick="lecZoom(document.getElementById('schimg').src)"><img id="schimg" alt=""><div id="boxes"></div></div><div class="card" style="margin-top:12px"><div class="label">Qu'y a-t-il dans la case jaune ?</div><div class="lxopts" id="lso"></div><div id="lxfb"></div></div>`;
+  photoGet(id).then(d=>{ const im=document.getElementById("schimg"); if (im){ im.src=d||""; im.onload=lsNext; } });
+};
+function lsNext(){
+  const l=lecGet(LS.id); if (LS.i>=LS.order.length) return lecEnd(l, LS.ok, LS.order.length, "Schéma à légender", ()=>go("lecSchema",LS.id));
+  const k=LS.order[LS.i], w=l.marks[k].l, others=shuffle(l.marks.map(m=>m.l).filter(x=>norm(x)!==norm(w))).slice(0,3);
+  schDraw(LS.id,false,k,LS.found); document.getElementById("lsc").textContent=`${LS.i+1} / ${LS.order.length}`;
+  document.getElementById("lso").innerHTML=shuffle([w,...others]).map(o=>`<button data-v="${esc(o)}" onclick="lsAns(this)">${esc(o)}</button>`).join(""); document.getElementById("lxfb").innerHTML="";
+}
+function lsAns(el){
+  const l=lecGet(LS.id), k=LS.order[LS.i], w=l.marks[k].l, ok=norm(el.dataset.v)===norm(w);
+  lecRecord(l, hkey("s"+w), ok); ok?(LS.ok++,sndOk()):sndKo(); LS.found.add(k);
+  document.querySelectorAll("#lso button").forEach(b=>{ b.disabled=true; if (norm(b.dataset.v)===norm(w)) b.classList.add("good"); else if (b===el) b.classList.add("bad"); });
+  schDraw(LS.id,false,k,LS.found); LS.i++; lecSave(l); const t=setTimeout(lsNext, ok?900:2000); cleanup.push(()=>clearTimeout(t));
+}
+
+/* --- course avec les questions de la leçon (contre l'ordi) --- */
+let LCQ=null;
+function lecCourse(id){ const l=lecGet(id); LCQ={id, items:lecPickItems(l, 30)}; if (!LCQ.items.length) return toast("Pas assez de questions"); startCpu("race"); }
+
+/* --- Papa : préparer une leçon avec l'IA --- */
+let LPK="lana";
+function iaPrompt(k){ return `Tu prépares une leçon pour l'application de révision de ma fille ${NAMES[k]} (classe : ${CLASSES()[k]}).
+À partir de la photo du cours ci-jointe, réponds UNIQUEMENT avec un bloc JSON, sans aucun texte avant ou après, au format exact :
+{"titre":"titre court","matiere":"Français|Maths|Sciences|Histoire|Géographie|Anglais|Autre","type":"poesie|mots|definitions|dates|questions|texte","texte":"…","questions":[{"q":"question","r":"bonne réponse courte","faux":["mauvaise réponse 1","mauvaise réponse 2"],"rappel":"phrase du cours qui contient la réponse"}],"images":"courte description des schémas, cartes ou images du cours (ou vide)"}
+Règles :
+- "texte" = le contenu du cours recopié fidèlement, une idée ou un vers par ligne (\\n). Pour "mots" : un mot par ligne. Pour "definitions" : « mot : définition » par ligne. Pour "dates" : « date : événement » par ligne.
+- Fais 10 à 20 questions de compréhension adaptées au niveau ${CLASSES()[k]}, y compris sur les schémas, cartes ou images s'il y en a.
+- Les mauvaises réponses doivent être plausibles. Réponses courtes. Français simple.`; }
+SCREENS.lecPapa = () => {
+  app.innerHTML = hdr("📚 Préparer une leçon", "parents") + `
+  <div class="card"><div class="label">Pour qui ?</div>${seg("lpk",[["lana","🦄 Lana ("+CLASSES().lana+")"],["sorya","🐬 Sorya ("+CLASSES().sorya+")"]],LPK,"setLpk")}</div>
+  <div class="card"><div class="label">1. Copie le message pour l'IA</div><div class="lxprompt">${esc(iaPrompt(LPK)).replace(/\n/g,"<br>")}</div><button class="btn ghost block" style="margin-top:8px;font-size:15px" onclick="lpCopy(this)">📋 Copier le message</button></div>
+  <div class="card"><div class="label">2. Dans ChatGPT ou Claude</div><div class="small">📷 Envoie la photo du cours (même écrite à la main) + colle le message. L'IA répond par un bloc qui commence par <b>{</b>. Copie toute sa réponse.</div></div>
+  <div class="card"><div class="label">3. Colle la réponse ici</div><textarea id="lpta" class="lxta" rows="6" placeholder="{ &quot;titre&quot;: … }"></textarea>
+    <label class="btn ghost block" style="margin-top:8px;font-size:15px">📷 Joindre aussi la photo du cours (optionnel)<input type="file" accept="image/*" hidden onchange="lpPhoto(this)"></label><div class="muted small" id="lpph"></div>
+    <button class="btn block" style="margin-top:10px;background:var(--ok);color:#fff" onclick="lpImport()">✓ Envoyer à ${NAMES[LPK]}</button><div id="lpmsg" class="small" style="margin-top:8px"></div></div>
+  <div class="card"><div class="label">Ou sans IA</div><div class="row wrap"><button class="btn ghost" style="flex:1;font-size:15px" onclick="LN=null;LW='${LPK}';go('lecNew')">⌨️ Taper / 📷 photo</button><button class="btn ghost" style="flex:1;font-size:15px" onclick="go('lecons','${LPK}')">📚 Ses leçons (${lecOf(LPK).length})</button></div></div>
+  <div class="card"><div class="label">🎓 Classes</div><div class="row"><span style="width:70px">Lana</span><input class="lxin" value="${esc(CLASSES().lana)}" onchange="setClass('lana',this.value)"></div><div class="row" style="margin-top:6px"><span style="width:70px">Sorya</span><input class="lxin" value="${esc(CLASSES().sorya)}" onchange="setClass('sorya',this.value)"></div></div>`;
+};
+function setLpk(n,v){ LPK=v; go("lecPapa"); }
+function setClass(k,v){ S.parent.classes=Object.assign({},S.parent.classes||{},{[k]:v.trim()}); persist(); try{ fbPushParent(); }catch(e){} }
+function lpCopy(el){ const t=iaPrompt(LPK); (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{ el.textContent="✓ Copié !"; }).catch(()=>{ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); el.textContent="✓ Copié !"; }); }
+let LPP=null;
+async function lpPhoto(inp){ const f=inp.files&&inp.files[0]; if (!f) return; try { LPP=await shrinkPhoto(f); document.getElementById("lpph").textContent="✓ Photo jointe"; } catch(e){} }
+function lpImport(){
+  const raw=document.getElementById("lpta").value, m=document.getElementById("lpmsg"); let d;
+  try { d=parseIA(raw); } catch(e){ m.innerHTML=`<span style="color:var(--ko)">Je ne reconnais pas la réponse. Copie bien tout le bloc qui commence par { et finit par }.</span>`; return; }
+  const l={id:lid(), t:d.t, sub:d.sub, type:d.type, parts:[{x:d.text, at:Date.now()}], q:d.q, img:d.img, created:Date.now(), st:{}, marks:[], ia:1, by:"papa"};
+  if (LPP){ l.photo=1; photoSave(l.id, LPP); LPP=null; }
+  lecSave(l, LPK); sndWin();
+  m.innerHTML=`<span style="color:var(--ok)">✓ « ${esc(l.t)} » · ${lecItems(l).length} questions → envoyée à ${NAMES[LPK]}</span>`; document.getElementById("lpta").value="";
+}
+
 /* ================== Badges ================== */
 SCREENS.badges = () => {
   const p=P(), x=xpInfo(p), n=Object.keys(p.badges||{}).length;
@@ -1739,7 +2146,7 @@ function kidCard(k){
     <div id="rwe-${k}"></div></div>`;
 }
 SCREENS.parents = () => {
-  app.innerHTML = hdr("👨‍👧‍👧 Espace parents") + kidCard("lana") + kidCard("sorya") + papaCard() + `
+  app.innerHTML = hdr("👨‍👧‍👧 Espace parents") + `<button class="btn sun block" style="margin-bottom:14px" onclick="go('lecPapa')">📚 Préparer une leçon pour les filles</button>` + kidCard("lana") + kidCard("sorya") + papaCard() + `
   <div class="card"><div class="label">☁️ Synchronisation</div><div class="muted small">${syncText()}</div>
     ${FAM?`<div class="muted small" style="margin-top:8px">Lien pour relier un autre téléphone (à ouvrir une fois dessus) :</div><div class="famlink" id="fl">${location.origin+location.pathname}#famille=${FAM}</div><button class="btn ghost" style="font-size:14px;margin-top:6px" onclick="copyFam(this)">📋 Copier le lien</button>`:""}</div>
   <div class="card"><div class="label">🔒 Code parent</div><div class="row"><input class="codein small" id="np" inputmode="numeric" maxlength="4" placeholder="Nouveau code"><button class="btn" onclick="setPin()">OK</button></div><div class="muted small" id="pinmsg" style="margin-top:6px"></div></div>`;
@@ -1791,6 +2198,7 @@ async function fbInit(){
     DB=firebase.database(); ROOT=DB.ref("fam/"+FAM); fbState="ok";
     for (const k of PROFILES) ROOT.child("p/"+k).on("value", s=>onRemoteProfile(k, s.val()), ()=>{ fbState="err"; });
     ROOT.child("parent").on("value", s=>onRemoteParent(s.val()));
+    for (const k of PROFILES) ROOT.child("lec/"+k).on("value", s=>onRemoteLec(k, s.val()));
   } catch(e){ fbState="err"; DB=null; ROOT=null; }
   rerenderIdle();
 }
@@ -1824,7 +2232,7 @@ function onRemoteParent(r){
   if (rem>loc){ S.parent=Object.assign(defParent(), r, {rewards:objify(r.rewards), papa:Object.assign({mode:"none",head:2}, objify(r.papa))}); persist(); rerenderIdle(); }
   else if (loc>rem) fbPushParent();
 }
-function rerenderIdle(){ if (CUR && ["home","parents","badges","shop","settings"].includes(CUR.screen) && !document.querySelector(".overlay") && !document.querySelector(".rwform") && document.activeElement.tagName!=="INPUT") go(CUR.screen, ...CUR.args); }
+function rerenderIdle(){ if (CUR && ["home","parents","badges","shop","settings","lecons"].includes(CUR.screen) && !document.querySelector(".overlay") && !document.querySelector(".rwform") && document.activeElement.tagName!=="INPUT") go(CUR.screen, ...CUR.args); }
 function linkFamily(){ const v=(document.getElementById("famin").value||"").trim();
   if (!/^[A-Za-z0-9_-]{16,64}$/.test(v)){ document.getElementById("fammsg").textContent="Code famille invalide."; return; }
   FAM=v; try { localStorage.setItem(FAMKEY,FAM); } catch(e){} fbInit(); go("settings"); }
