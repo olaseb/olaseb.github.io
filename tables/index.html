@@ -376,7 +376,7 @@ body.p-papa{--me:#f08a24; --me-soft:#ffe8d1}
 </head>
 <body>
 <div id="app"></div>
-<script>const APPV="12";
+<script>const APPV="13";
 (function(){ const chk=()=>fetch(location.pathname+"?x="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{ const m=t.match(/const APPV="(\d+)"/); if (m && m[1]!==APPV){ try{ if (sessionStorage.getItem("upd")===m[1]) return; sessionStorage.setItem("upd",m[1]); }catch(e){} location.replace(location.pathname+"?v="+m[1]+location.hash); } }).catch(()=>{});
   addEventListener("load",()=>setTimeout(chk,1500)); document.addEventListener("visibilitychange",()=>{ if (document.visibilityState==="visible") chk(); }); })();</script>
 <script src="assets.js?v=1"></script>
@@ -706,7 +706,7 @@ function markQcm(el, f, ok){
 const chosenTables = () => S.settings.tables.filter(x=>allTables().includes(x));
 function tablesPicker(){
   const act = chosenTables();
-  return `<div class="label">Opération</div>${seg("op",[["mul","× Multiplications"],["div","÷ Divisions"],["mix","× et ÷"]],S.settings.op||"mul","setOpt")}<div class="label" style="margin-top:12px">Tables à travailler</div><div class="chips" id="tp">${allTables().map(t=>`<button class="${act.includes(t)?"on":""}" onclick="toggleTable(${t},this)">${t}</button>`).join("")}</div>
+  return `<div class="label">Opération</div>${seg("op",[["mul","× seulement"],["div","÷ seulement"],["mix","× et ÷"]],S.settings.op||"mul","setOpt")}<div class="label" style="margin-top:12px">Tables à travailler</div><div class="chips" id="tp">${allTables().map(t=>`<button class="${act.includes(t)?"on":""}" onclick="toggleTable(${t},this)">${t}</button>`).join("")}</div>
   <div class="row" style="justify-content:space-between;margin-top:6px"><button class="linkbtn small" onclick="setTables('all')">Toutes</button><button class="linkbtn small" onclick="setTables('none')">Aucune</button></div>`;
 }
 function toggleTable(t, el){
@@ -2471,7 +2471,7 @@ function matQ(s, t, lvl, seen){
 SCREENS.matieres = () => {
   const k=me();
   app.innerHTML = hdr("🎒 Matières") + `<div class="muted small" style="margin:-6px 0 12px">Le niveau de chaque thème s'adapte tout seul (classe : ${esc(CLASSES()[k])}).</div>
-  <div class="card"><div class="label" style="color:#7b2ff7">🧮 Maths <span class="muted small">· avec indice, étapes et correction</span></div><div class="lxgames">${Object.entries(MTH).map(([t,[i,n,c]])=>`<button style="background:${c}" onclick="go('mPlay','${t}')">${i} ${n}<span class="mtag">${MLV[mLvl(k,t)]}</span></button>`).join("")}<button style="background:#3a86ff" onclick="go('mPlay','mu')">✖️ Multiplications<span class="mtag">posées · ${MLV[mLvl(k,"ca")]}</span></button><button style="background:#06a77d" onclick="go('mPlay','dv')">➗ Divisions<span class="mtag">posées · ${MLV[mLvl(k,"ca")]}</span></button><button style="background:#7b2ff7;grid-column:span 2" onclick="go('mPlay','mix')">🎲 Mélange<span class="mtag">un peu de tout</span></button><button style="background:#ef476f;grid-column:span 2" onclick="go('pbSetup')">⚔️ Duel de problèmes en famille<span class="mtag">chacun à son niveau</span></button><button style="background:#2bb673;grid-column:span 2" onclick="go('aventure')">🗺️ L'aventure de mon animal<span class="mtag">un problème par étape · coffre au bout</span></button></div>
+  <div class="card"><div class="label" style="color:#7b2ff7">🧮 Maths <span class="muted small">· avec indice, étapes et correction</span></div><div class="lxgames">${Object.entries(MTH).map(([t,[i,n,c]])=>`<button style="background:${c}" onclick="go('mPlay','${t}')">${i} ${n}<span class="mtag">${MLV[mLvl(k,t)]}</span></button>`).join("")}<button style="background:#f4a261;grid-column:span 2" onclick="go('tablesTrain')">📋 Tables de multiplication<span class="mtag">choisis tes tables · sans chrono · avec astuces</span></button><button style="background:#3a86ff" onclick="go('mPlay','mu')">✖️ Multiplications<span class="mtag">posées · ${MLV[mLvl(k,"ca")]}</span></button><button style="background:#06a77d" onclick="go('mPlay','dv')">➗ Divisions<span class="mtag">posées · ${MLV[mLvl(k,"ca")]}</span></button><button style="background:#7b2ff7;grid-column:span 2" onclick="go('mPlay','mix')">🎲 Mélange<span class="mtag">un peu de tout</span></button><button style="background:#ef476f;grid-column:span 2" onclick="go('pbSetup')">⚔️ Duel de problèmes en famille<span class="mtag">chacun à son niveau</span></button><button style="background:#2bb673;grid-column:span 2" onclick="go('aventure')">🗺️ L'aventure de mon animal<span class="mtag">un problème par étape · coffre au bout</span></button></div>
   <button class="linkbtn small" style="margin-top:8px" onclick="go('maths')">📊 Voir mes niveaux en maths</button></div>` +
   Object.entries(MAT).map(([s,M])=>`<div class="card"><div class="label" style="color:${M.c}">${M.i} ${M.n}</div><div class="lxgames">${Object.entries(M.t).map(([t,T])=>`<button style="background:${M.c}" onclick="go('matPlay','${s}','${t}')">${T.i} ${T.n}<span class="mtag">${MLV[matSt(k,s,t).lvl]}</span></button>`).join("")}</div></div>`).join("");
 };
@@ -2580,6 +2580,47 @@ function advDone(){ const p=P(); p.adv=p.adv||{w:0,s:0}; p.adv.s++;
   if (p.adv.s>=ADV_STEPS){ p.adv.s=0; p.adv.w++; p.coins+=60; p.earned+=60; save(); chestWin(1); sndWin(); confetti(150);
     toast(`🎉 Monde terminé ! <b>🪙 +60</b> et +1 victoire pour ton coffre`); } else save();
   go("aventure"); }
+
+/* --- Entraînement des tables (sans chrono, avec astuces) --- */
+function tableTip(f){
+  const x=Math.min(f.a,f.b), y=Math.max(f.a,f.b), P_=`${x} × ${y}`, R_=x*y;
+  let t;
+  if (x===0) t="Tout nombre multiplié par 0 donne 0.";
+  else if (x===1) t="Multiplier par 1 ne change rien.";
+  else if (x===10||y===10) t=`× 10 : on ajoute un 0 → ${x===10?y:x}0.`;
+  else if (x===2||y===2) t=`× 2, c'est le double : ${x===2?y:x} + ${x===2?y:x} = ${R_}.`;
+  else if (x===9||y===9){ const n=x===9?y:x; t=`× 9 = × 10 moins une fois : ${n} × 10 − ${n} = ${n*10} − ${n} = ${R_}.`; }
+  else if (x===5||y===5){ const n=x===5?y:x; t=`× 5, c'est la moitié de × 10 : ${n} × 10 = ${n*10}, la moitié = ${R_}.`; }
+  else if (x===4||y===4){ const n=x===4?y:x; t=`× 4, c'est le double du double : ${n} → ${n*2} → ${R_}.`; }
+  else if (y===11&&x<10) t=`11 × ${x} : on écrit ${x} deux fois → ${R_}.`;
+  else if (x===8||y===8){ const n=x===8?y:x; t=`× 8 = double, double, double : ${n} → ${n*2} → ${n*4} → ${R_}.`; }
+  else t=`Pars d'un calcul que tu connais : ${x} × ${y-1} = ${x*(y-1)}, puis ajoute ${x} → ${R_}.`;
+  return f.div ? `${f.a*f.b} ÷ ${f.a} : cherche le nombre qui, multiplié par ${f.a}, donne ${f.a*f.b}. ${t.replace(/^/,"Astuce pour "+P_+" : ")}` : t;
+}
+SCREENS.tablesTrain = () => {
+  app.innerHTML = hdr("📋 Entraînement des tables","matieres") + `<div class="card">${tablesPicker()}</div>
+  <div class="card"><div class="label">Nombre de questions</div>${seg("ttN",[[10,"10"],[20,"20"],[30,"30"]],S.settings.ttN||20,"setOpt")}</div>
+  <button class="btn block" onclick="go('ttPlay')">▶️ Commencer</button>
+  <div class="muted small" style="text-align:center;margin-top:10px">Sans chrono. Une astuce s'affiche en cas d'erreur, et les calculs ratés reviennent.</div>`;
+};
+let TT=null;
+SCREENS.ttPlay = () => { TT={n:0, max:S.settings.ttN||20, ok:0, retry:[], last:null}; ttNext(); };
+function ttNext(){
+  if (TT.n>=TT.max){ const ok=TT.ok, n=TT.max; if (ok>=n*0.85){ sndWin(); confetti(70); gain(10,10,"📋 Tables bien révisées !"); chestWin(); }
+    return app.innerHTML = hdr("🏁 Terminé","tablesTrain") + `<div class="card" style="text-align:center"><div style="font-size:60px">${ok>=n*.85?"🏆":ok>=n*.6?"👍":"💪"}</div><div class="lxbig">${ok} / ${n}</div><div class="muted">du premier coup</div></div><button class="btn block" onclick="go('ttPlay')">🔁 Encore</button><button class="btn ghost block" style="margin-top:10px" onclick="go('tablesTrain')">← Choisir les tables</button>`; }
+  const f = (TT.retry.length && Math.random()<.35) ? TT.retry.shift() : smartFact(activeTables(), TT.last); TT.last=f; TT.cur=f; TT.tries=0;
+  app.innerHTML = `<div class="top"><button class="back" onclick="go('tablesTrain')">✕</button><h2 style="font-size:18px">📋 Tables</h2><span class="pchip" style="margin-left:auto">${TT.n+1} / ${TT.max}</span></div>
+  <div class="card">${petHtml()}<div class="q" style="font-size:44px;text-align:center;margin:10px 0 4px">${fmt(f)} = ?</div><div style="clear:both"></div></div>
+  <div class="card"><input id="tta" class="lxin" style="font-size:30px;text-align:center" inputmode="numeric" autocomplete="off" placeholder="?" onkeydown="if(event.key==='Enter')ttCheck()"><div id="ttfb"></div><button class="btn block" style="margin-top:10px;background:var(--ok);color:#fff" onclick="ttCheck()">Valider</button></div>`;
+  setTimeout(()=>{ const i=document.getElementById("tta"); if (i) i.focus(); },50);
+}
+function ttCheck(){
+  const i=document.getElementById("tta"), v=parseInt(i.value,10); if (isNaN(v)) return; const f=TT.cur, ok=v===f.ans;
+  if (ok){ if (TT.tries===0){ TT.ok++; record(f,true); } sndOk(); petReact(true); document.getElementById("ttfb").innerHTML=`<div class="lxok">✓ ${TT.tries?"C'est ça !":"Bravo ! 🪙 +1"}</div>`;
+    TT.n++; const tm=setTimeout(ttNext, 700); cleanup.push(()=>clearTimeout(tm)); }
+  else { if (TT.tries===0){ record(f,false); TT.retry.push(f); } TT.tries++; sndKo(); petReact(false); i.value=""; i.focus();
+    document.getElementById("ttfb").innerHTML=`<div class="lxko">✗ Pas encore${TT.tries>=2?` · la réponse est <b>${f.ans}</b>, recopie-la`:""}<div class="lxrap">💡 ${esc(tableTip(f))}</div></div>`; }
+}
 
 /* ================== Badges ================== */
 SCREENS.badges = () => {
