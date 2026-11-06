@@ -381,7 +381,7 @@ elephant:{n:"Éléphant",c:"savane",p:250,l:0,f:"R",h:[0.73, 0.05, 0.2],k:[0.68,
 rhino:{n:"Rhinocéros",c:"savane",p:250,l:0,f:"R",h:[0.78, 0.28, 0.15],k:[0.62, 0.55, 0.15],b:[0.4, 0.05],a:[0.5, 0.35, 0.3]},
 tigreblanc:{n:"Tigre blanc",c:"savane",p:400,l:0,f:"L",h:[0.17, 0.03, 0.3],k:[0.2, 0.38, 0.22],b:[0.45, 0.22],a:[0.35, 0.45, 0.3]},
 rhinofurieux:{n:"Rhino furieux",c:"savane",p:500,l:0,f:"L",h:[0.38, 0.25, 0.2],k:[0.45, 0.62, 0.18],b:[0.6, 0.12],a:[0.55, 0.4, 0.3]},
-alezan:{n:"Cheval alezan",c:"chevaux",p:100,l:0,f:"R",h:[0.88, 0.03, 0.12],k:[0.84, 0.38, 0.12],b:[0.62, 0.3],a:[0.75, 0.45, 0.2]},
+alezan:{n:"Cheval alezan",c:"depart",p:0,l:0,f:"R",h:[0.88, 0.03, 0.12],k:[0.84, 0.38, 0.12],b:[0.62, 0.3],a:[0.75, 0.45, 0.2]},
 palomino:{n:"Cheval palomino",c:"chevaux",p:150,l:0,f:"R",h:[0.88, 0.03, 0.12],k:[0.84, 0.38, 0.12],b:[0.62, 0.3],a:[0.75, 0.45, 0.2]},
 bai:{n:"Cheval bai",c:"chevaux",p:150,l:0,f:"R",h:[0.88, 0.03, 0.12],k:[0.84, 0.38, 0.12],b:[0.62, 0.3],a:[0.75, 0.45, 0.2]},
 blanc:{n:"Cheval blanc",c:"chevaux",p:200,l:0,f:"R",h:[0.88, 0.03, 0.12],k:[0.84, 0.38, 0.12],b:[0.62, 0.3],a:[0.75, 0.45, 0.2]},
@@ -1559,13 +1559,14 @@ function checkBadges(){
 const SHOP = {
   animaux: Object.entries(ANIMALS).map(([k,a])=>({id:"an:"+k, name:a.n, price:a.p, lvl:a.l, cat:a.c})),
   ailes: Object.entries(ACCS).filter(([k,a])=>a.s==="dos").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
-  tetes: Object.entries(ACCS).filter(([k,a])=>a.s==="tete").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
+  couronnes: Object.entries(ACCS).filter(([k,a])=>a.s==="tete"&&k.startsWith("c_")).map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
+  casques: Object.entries(ACCS).filter(([k,a])=>a.s==="tete"&&k.startsWith("k_")).map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
   bijoux: Object.entries(ACCS).filter(([k,a])=>a.s==="cou").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
   armures: Object.entries(ACCS).filter(([k,a])=>a.s==="corps").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
   pistes: [{id:"t:hippo", name:"Hippodrome", price:0, lvl:0},{id:"t:plage", name:"Plage", price:300, lvl:3},{id:"t:haies", name:"Course de haies", price:500, lvl:5}],
   themes: [{id:"th:classique", name:"Classique", price:0, lvl:0},{id:"th:galaxie", name:"Galaxie", price:0, lvl:0}]
 };
-const TABS = [["animaux","🐾 Animaux"],["ailes","🪽 Ailes"],["tetes","👑 Couronnes & casques"],["bijoux","📿 Colliers"],["armures","🛡️ Armures"],["pistes","🏞️ Pistes"],["themes","🎨 Thèmes"]];
+const TABS = [["animaux","🐾 Animaux"],["ailes","🪽 Ailes"],["couronnes","👑 Couronnes"],["casques","⚔️ Casques"],["bijoux","📿 Colliers"],["armures","🛡️ Armures"],["pistes","🏞️ Pistes"],["themes","🎨 Thèmes"]];
 const ALLITEMS = Object.values(SHOP).flat();
 const owns = (p,id) => { const it=ALLITEMS.find(x=>x.id===id); return it && (it.price===0 || !!(p.owned||{})[id]); };
 const myAcc = who => cleanEq(((S.profiles[who]||{}).equip||{}).acc);
