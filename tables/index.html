@@ -67,6 +67,7 @@ h1,h2,h3,.big,.q{font-family:"Baloo 2",Nunito,sans-serif;margin:0}
 .mode b{font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:20px;line-height:1.1}
 .mode span{font-size:13px;opacity:.8}
 .mode.wide{grid-column:span 2;min-height:96px}
+.mtag{display:block;font-size:11px;opacity:.85;margin-top:2px}
 .mrow{display:flex;justify-content:space-between;align-items:center;margin-top:10px}.mlv{color:#fff;font-weight:800;border-radius:99px;padding:2px 10px;font-size:13px}.mbar{height:9px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:4px}.mbar i{display:block;height:100%;border-radius:9px}
 .mq{font-size:19px;font-weight:800;line-height:1.4}.mshape{width:100%;max-height:170px;margin-top:10px;font:800 15px Nunito,sans-serif}
 .hint1,.hint2,.hint3{border-radius:14px;padding:10px;margin-top:10px;font-size:15px;line-height:1.5}.hint1{background:#fff7d6}.hint2{background:#e8f7ff}.hint3{background:#e6f9ee}
@@ -720,6 +721,7 @@ SCREENS.home = () => {
   <div class="modes">
     <button class="mode wide lxhome" onclick="go('lecons')"><span class="ic">📚</span><b>Ma leçon</b><span>${(()=>{ const L=lecOf(me()), st=L.filter(lecStale).length; return L.length ? `${L.length} leçon${L.length>1?"s":""}${st?` · ⏰ ${st} à revoir`:""}` : "Poésie, mots, leçons : révise-les en jouant"; })()}</span></button>
     <button class="mode wide" style="background:linear-gradient(135deg,#c7b5ff,#9ad8ff)" onclick="go('maths')"><span class="ic">🧮</span><b>Maths</b><span>Problèmes, calcul, géométrie · avec de l'aide</span></button>
+    <button class="mode wide" style="background:linear-gradient(135deg,#ffb3c6,#b8f0c8)" onclick="go('matieres')"><span class="ic">🎒</span><b>Matières</b><span>Français, anglais, histoire-géo, sciences</span></button>
     <button class="mode" style="background:#ffe8a3" onclick="go('chronoSetup')"><span class="ic">⏱️</span><b>Chrono</b><span>Seule ou en duel</span></button>
     <button class="mode" style="background:#c9f0d6" onclick="go('raceSetup')"><span class="ic">🐎</span><b>Course d'animaux</b><span>Contre l'ordi ou en famille</span></button>
     <button class="mode" style="background:#ffe0cc" onclick="go('cordeSetup')"><span class="ic">🪢</span><b>Tir à la corde</b><span>1c1, équipe ou tournoi</span></button>
@@ -2209,6 +2211,200 @@ function mathsParentCard(k){ const m=mathsOf(k);
   return `<div class="card"><div class="label">🧮 Maths de ${NAMES[k]} (${esc(CLASSES()[k])})</div>${Object.entries(MTH).map(([t,[i,n]])=>`<div class="row" style="justify-content:space-between;margin:6px 0"><span>${i} ${n} : <b>${MLV[mLvl(k,t)]}</b> <span class="muted small">(${m[t].ok}✓ ${m[t].ko}✗)</span></span>
     <select onchange="mForce('${k}','${t}',this.value)" class="msel"><option value="">auto</option>${MLV.map((l,i)=>`<option value="${i}" ${String(m[t].force)===String(i)?"selected":""}>${l}</option>`).join("")}</select></div>`).join("")}<div class="muted small">« auto » = le niveau s'adapte tout seul. Choisis un niveau pour le bloquer.</div></div>`; }
 function mForce(k,t,v){ const m=mathsOf(k); m[t].force = v===""?null:+v; if (v!=="") m[t].lvl=+v; S.profiles[k].updatedAt=Date.now(); persist(); try{ fbPush(k); }catch(e){} toast("✓ Niveau enregistré"); }
+
+/* ================== Matières : français, anglais, histoire-géo, sciences ================== */
+// format d'une question : {q, r, o:[mauvaises réponses], x:explication, l:niveau mini (0=CE2 … 4=5e)}
+const PRON=["je","tu","il","nous","vous","ils"];
+const IRR={
+ "être":{p:"suis es est sommes êtes sont",i:"ét",f:"ser",pp:"été",ax:"avoir"},
+ "avoir":{p:"ai as a avons avez ont",i:"av",f:"aur",pp:"eu",ax:"avoir"},
+ "aller":{p:"vais vas va allons allez vont",i:"all",f:"ir",pp:"allé",ax:"être"},
+ "faire":{p:"fais fais fait faisons faites font",i:"fais",f:"fer",pp:"fait",ax:"avoir"},
+ "dire":{p:"dis dis dit disons dites disent",i:"dis",f:"dir",pp:"dit",ax:"avoir"},
+ "venir":{p:"viens viens vient venons venez viennent",i:"ven",f:"viendr",pp:"venu",ax:"être"},
+ "prendre":{p:"prends prends prend prenons prenez prennent",i:"pren",f:"prendr",pp:"pris",ax:"avoir"},
+ "pouvoir":{p:"peux peux peut pouvons pouvez peuvent",i:"pouv",f:"pourr",pp:"pu",ax:"avoir"},
+ "vouloir":{p:"veux veux veut voulons voulez veulent",i:"voul",f:"voudr",pp:"voulu",ax:"avoir"},
+ "voir":{p:"vois vois voit voyons voyez voient",i:"voy",f:"verr",pp:"vu",ax:"avoir"},
+ "finir":{p:"finis finis finit finissons finissez finissent",i:"finiss",f:"finir",pp:"fini",ax:"avoir"},
+ "grandir":{p:"grandis grandis grandit grandissons grandissez grandissent",i:"grandiss",f:"grandir",pp:"grandi",ax:"avoir"}
+};
+const ER=["chanter","jouer","manger","parler","regarder","danser","aimer","marcher","nager","commencer","dessiner","écouter","arriver","tomber"];
+const TENSES={pr:"présent",im:"imparfait",fu:"futur",pc:"passé composé"};
+function conj(v, t, n){
+  const I=IRR[v];
+  if (t==="pc"){ const ax=(I?I.ax:(["arriver","tomber"].includes(v)?"être":"avoir")); const a=IRR[ax].p.split(" ")[n]; let pp=I?I.pp:v.slice(0,-2)+"é"; if (ax==="être" && n>=3) pp+="s"; return a+" "+pp; }
+  if (t==="fu") return (I?I.f:v)+["ai","as","a","ons","ez","ont"][n];
+  if (t==="im"){ let st=I?I.i:v.slice(0,-2), e=["ais","ais","ait","ions","iez","aient"][n]; if (!I && /g$/.test(st) && /^a/.test(e)) st+="e"; if (!I && /c$/.test(st) && /^a/.test(e)) st=st.slice(0,-1)+"ç"; return st+e; }
+  if (I) return I.p.split(" ")[n];
+  let st=v.slice(0,-2), e=["e","es","e","ons","ez","ent"][n]; if (/g$/.test(st) && e==="ons") st+="e"; if (/c$/.test(st) && e==="ons") st=st.slice(0,-1)+"ç"; return st+e;
+}
+const withPron = (n, f) => (n===0 && /^[aeéèêiouyh]/i.test(f) ? "j'" : PRON[n]+" ") + f;
+function genConj(lvl){
+  const tl = lvl<=0 ? ["pr"] : lvl===1 ? ["pr","fu","im"] : ["pr","fu","im","pc"];
+  const vl = lvl<=0 ? ["être","avoir",...ER.slice(0,8)] : lvl===1 ? ["être","avoir","aller","faire","dire","venir",...ER] : [...Object.keys(IRR),...ER];
+  const v=pick(vl), t=pick(tl), n=rnd(6), r=conj(v,t,n);
+  const wr=new Set(); for (const m of shuffle([0,1,2,3,4,5])) if (m!==n) wr.add(conj(v,t,m)); for (const t2 of Object.keys(TENSES)) if (t2!==t) wr.add(conj(v,t2,n));
+  const o=shuffle([...wr].filter(x=>x!==r)).slice(0,3);
+  const tips={pr: IRR[v] ? `« ${v} » au présent : ${[0,1,2,3,4,5].map(m=>withPron(m,conj(v,"pr",m))).join(", ")}` : "Au présent, les verbes en -er se terminent par : -e, -es, -e, -ons, -ez, -ent", im:"À l'imparfait, les terminaisons sont : -ais, -ais, -ait, -ions, -iez, -aient", fu:"Au futur, on garde l'infinitif (ou un radical spécial) + -ai, -as, -a, -ons, -ez, -ont", pc:`Au passé composé : auxiliaire ${(IRR[v]||{}).ax||(["arriver","tomber"].includes(v)?"être":"avoir")} au présent + participe passé`};
+  return {q:`Conjugue « ${v} » au ${TENSES[t]} :\n${PRON[n]==="je"?"je/j'":PRON[n]} …`, r:withPron(n,r), o:o.map(x=>withPron(n,x)), x:`${tips[t]} → ${withPron(n,r)}`};
+}
+const HOMO=[
+ ["Il ___ un chat noir.",["a","à"],"a","« a » = verbe avoir : on peut dire « il avait »."],
+ ["Je vais ___ l'école.",["à","a"],"à","« à » = petit mot invariable : on ne peut pas dire « avait »."],
+ ["Le chien ___ le chat jouent.",["et","est"],"et","« et » relie deux mots : on peut dire « et puis »."],
+ ["Ma sœur ___ très gentille.",["est","et"],"est","« est » = verbe être : on peut dire « était »."],
+ ["Les enfants ___ partis.",["sont","son"],"sont","« sont » = verbe être : on peut dire « étaient »."],
+ ["Il range ___ cartable.",["son","sont"],"son","« son » = le sien : on peut dire « mon cartable »."],
+ ["Les lions ___ faim.",["ont","on"],"ont","« ont » = verbe avoir : on peut dire « avaient »."],
+ ["___ va au parc demain.",["On","Ont"],"On","« on » = pronom : on peut le remplacer par « il »."],
+ ["Il a perdu ___ clés.",["ses","ces"],"ses","« ses » = les siennes (à lui)."],
+ ["Regarde ___ beaux oiseaux là-bas !",["ces","ses"],"ces","« ces » = ceux-là, on les montre du doigt."],
+ ["Tu préfères le chocolat ___ la vanille ?",["ou","où"],"ou","« ou » = ou bien (un choix)."],
+ ["___ habites-tu ?",["Où","Ou"],"Où","« où » avec accent = le lieu."],
+ ["Il ___ lave les mains.",["se","ce"],"se","« se » est devant un verbe : il se lave (lui-même)."],
+ ["___ gâteau est délicieux.",["Ce","Se"],"Ce","« ce » est devant un nom : ce gâteau-là."],
+ ["Pose ton sac ___.",["là","la","l'a"],"là","« là » avec accent = un lieu (ici, là)."],
+ ["Elle ___ vu hier.",["l'a","la","là"],"l'a","« l'a » = l'avait (le verbe avoir)."],
+ ["Je ___ donne un cadeau (à mes amis).",["leur","leurs"],"leur","« leur » devant un verbe ne prend jamais de s."],
+ ["Ils promènent ___ chiens.",["leurs","leur"],"leurs","« leurs » devant un nom pluriel prend un s."],
+ ["Il ___ trompé de chemin.",["s'est","c'est"],"s'est","« s'est » : il s'est trompé (lui-même), verbe pronominal."],
+ ["___ mon meilleur ami.",["C'est","S'est"],"C'est","« c'est » = cela est."],
+ ["J'ai ___ un livre.",["acheté","acheter"],"acheté","Après « avoir », on met le participe passé (-é). Astuce : remplace par « vendu »."],
+ ["Il faut ___ ses dents.",["laver","lavé"],"laver","Après « faut », l'infinitif (-er). Astuce : remplace par « mordre »."],
+ ["Elle ___ son goûter.",["mange","manges","mangent"],"mange","Avec « elle », le verbe se termine par -e au présent."],
+ ["Les élèves ___ en silence.",["travaillent","travaille","travailles"],"travaillent","Sujet pluriel (ils) → terminaison -ent."]
+];
+const PLU=[["un cheval","des chevaux","Les noms en -al font -aux au pluriel."],["un bateau","des bateaux","Les noms en -eau prennent un x."],["un genou","des genoux","Bijou, caillou, chou, genou, hibou, joujou, pou prennent un x."],["un trou","des trous","Les noms en -ou prennent un s (sauf les 7 exceptions)."],["un festival","des festivals","Exception : bal, carnaval, chacal, festival, récital, régal prennent un s."],["un travail","des travaux","Travail fait travaux."],["un jeu","des jeux","Les noms en -eu prennent un x (sauf pneu, bleu)."],["un nez","des nez","Les noms en -s, -x, -z ne changent pas."],["un œil","des yeux","Œil fait yeux."],["un journal","des journaux","-al → -aux."],["un clou","des clous","-ou → -ous (pas une exception)."],["un hibou","des hiboux","Hibou fait partie des 7 exceptions en -oux."]];
+const FEM=[["un chat gris","une chatte grise"],["un lion","une lionne"],["un acteur","une actrice"],["un boulanger","une boulangère"],["un loup","une louve"],["beau","belle"],["gentil","gentille"],["heureux","heureuse"],["vif","vive"],["blanc","blanche"],["doux","douce"],["sportif","sportive"]];
+const SYN=[["content","joyeux",["triste","fatigué"],"syn"],["rapide","vite",["lent","gros"],"syn"],["commencer","débuter",["finir","arrêter"],"syn"],["grand","petit",["immense","haut"],"ant"],["chaud","froid",["brûlant","tiède"],"ant"],["ouvrir","fermer",["pousser","entrer"],"ant"],["gentil","méchant",["aimable","doux"],"ant"],["peur","frayeur",["courage","joie"],"syn"],["maison","demeure",["jardin","rue"],"syn"],["jour","nuit",["matin","soleil"],"ant"]];
+const NAT=[["Le petit chien aboie.","chien","nom"],["Le petit chien aboie.","aboie","verbe"],["Le petit chien aboie.","petit","adjectif"],["Le petit chien aboie.","Le","déterminant"],["Elle court vite.","Elle","pronom"],["Mes amis jouent dehors.","Mes","déterminant"],["Un énorme camion passe.","énorme","adjectif"],["Nous mangeons des pommes.","mangeons","verbe"],["La mer est bleue.","bleue","adjectif"],["Il lit un livre.","livre","nom"]];
+const EN=[["🐶","dog","chien",0],["🐱","cat","chat",0],["🐴","horse","cheval",0],["🐦","bird","oiseau",0],["🐟","fish","poisson",0],["🐭","mouse","souris",0],["🦁","lion","lion",0],["🐰","rabbit","lapin",0],["🔴","red","rouge",0],["🔵","blue","bleu",0],["🟢","green","vert",0],["🟡","yellow","jaune",0],["⚫","black","noir",0],["⚪","white","blanc",0],["🍎","apple","pomme",0],["🍞","bread","pain",1],["🥛","milk","lait",1],["🧀","cheese","fromage",1],["🍌","banana","banane",0],["🏠","house","maison",1],["🏫","school","école",1],["📚","book","livre",0],["✏️","pencil","crayon",1],["👩","mother","mère",1],["👨","father","père",1],["👧","sister","sœur",1],["👦","brother","frère",1],["👋","hand","main",2],["👁️","eye","œil",2],["👂","ear","oreille",2],["🦶","foot","pied",2],["☀️","sun","soleil",1],["🌧️","rain","pluie",2],["❄️","snow","neige",2],["1️⃣","one","un",0],["3️⃣","three","trois",0],["7️⃣","seven","sept",0],["🔟","ten","dix",0],["🛏️","bed","lit",2],["🚗","car","voiture",1],["🌳","tree","arbre",2],["🐘","elephant","éléphant",1]];
+const ENDAYS=[["Monday","lundi"],["Tuesday","mardi"],["Wednesday","mercredi"],["Thursday","jeudi"],["Friday","vendredi"],["Saturday","samedi"],["Sunday","dimanche"]];
+const ENG=[
+ {q:"I ___ a student.",r:"am",o:["is","are"],x:"I am · you are · he/she/it is · we/you/they are.",l:1},
+ {q:"She ___ ten years old.",r:"is",o:["am","are"],x:"he/she/it → is.",l:1},
+ {q:"They ___ my friends.",r:"are",o:["is","am"],x:"we/you/they → are.",l:1},
+ {q:"He ___ a dog.",r:"has got",o:["have got","is"],x:"have got → he/she/it has got.",l:2},
+ {q:"We ___ two cats.",r:"have got",o:["has got","are"],x:"I/you/we/they have got.",l:2},
+ {q:"She ___ football every day.",r:"plays",o:["play","playing"],x:"Présent simple : on ajoute -s avec he/she/it.",l:3},
+ {q:"This is Tom. ___ bike is red.",r:"His",o:["Her","My"],x:"His = à lui (garçon). Her = à elle.",l:3},
+ {q:"This is Lucy. ___ cat is white.",r:"Her",o:["His","Your"],x:"Her = à elle.",l:3},
+ {q:"Comment dit-on « Je m'appelle Lana » ?",r:"My name is Lana",o:["I name is Lana","Me is Lana"],x:"My name is… = je m'appelle…",l:0},
+ {q:"« How old are you? » veut dire…",r:"Quel âge as-tu ?",o:["Comment vas-tu ?","Où habites-tu ?"],x:"How old = quel âge.",l:1},
+ {q:"« Can you swim? » veut dire…",r:"Sais-tu nager ?",o:["Aimes-tu nager ?","Où nages-tu ?"],x:"Can = savoir / pouvoir.",l:2},
+ {q:"Le pluriel de « child » est…",r:"children",o:["childs","childes"],x:"Pluriel irrégulier : child → children.",l:3},
+ {q:"The cat is ___ the table. (sous)",r:"under",o:["on","in"],x:"on = sur · in = dans · under = sous.",l:3},
+ {q:"I ___ like spiders. (je n'aime pas)",r:"don't",o:["doesn't","not"],x:"I/you/we/they don't · he/she doesn't.",l:4},
+ {q:"___ she like pizza?",r:"Does",o:["Do","Is"],x:"Question avec he/she/it → Does.",l:4}
+];
+const CAP=[["France","Paris",0],["Espagne","Madrid",0],["Italie","Rome",0],["Allemagne","Berlin",0],["Royaume-Uni","Londres",0],["Belgique","Bruxelles",1],["Suisse","Berne",2],["Portugal","Lisbonne",1],["Grèce","Athènes",2],["Pays-Bas","Amsterdam",2],["Pologne","Varsovie",3],["Autriche","Vienne",3],["États-Unis","Washington",1],["Canada","Ottawa",3],["Japon","Tokyo",1],["Chine","Pékin",2],["Égypte","Le Caire",2],["Maroc","Rabat",3],["Brésil","Brasília",3],["Russie","Moscou",2],["Australie","Canberra",4],["Inde","New Delhi",3],["Irlande","Dublin",3],["Suède","Stockholm",3],["Norvège","Oslo",4],["Argentine","Buenos Aires",4]];
+const GEOQ=[
+ {q:"Quel est le plus long fleuve de France ?",r:"La Loire",o:["La Seine","Le Rhône"],x:"La Loire mesure environ 1 000 km.",l:0},
+ {q:"Quel fleuve traverse Paris ?",r:"La Seine",o:["La Loire","La Garonne"],x:"La Seine traverse Paris puis se jette dans la Manche.",l:0},
+ {q:"Quel fleuve traverse Lyon ?",r:"Le Rhône",o:["La Seine","La Garonne"],x:"Le Rhône (avec la Saône) traverse Lyon.",l:1},
+ {q:"Quel fleuve traverse Bordeaux ?",r:"La Garonne",o:["Le Rhône","La Loire"],x:"La Garonne traverse Toulouse et Bordeaux.",l:1},
+ {q:"Quel est le plus haut sommet de France ?",r:"Le mont Blanc",o:["Le Puy de Dôme","Le Canigou"],x:"Le mont Blanc (≈ 4 806 m) est dans les Alpes.",l:0},
+ {q:"Dans quel massif se trouve le mont Blanc ?",r:"Les Alpes",o:["Les Pyrénées","Le Massif central"],x:"Le mont Blanc est dans les Alpes.",l:1},
+ {q:"Quelle mer borde le sud de la France ?",r:"La Méditerranée",o:["La Manche","La mer du Nord"],x:"Au sud : la mer Méditerranée.",l:0},
+ {q:"Quel océan borde l'ouest de la France ?",r:"L'océan Atlantique",o:["L'océan Pacifique","L'océan Indien"],x:"À l'ouest : l'océan Atlantique.",l:0},
+ {q:"Combien y a-t-il de continents (en comptant l'Antarctique) ?",r:"7",o:["5","6"],x:"Afrique, Amérique du Nord, Amérique du Sud, Antarctique, Asie, Europe, Océanie.",l:2},
+ {q:"Quel est le plus grand océan ?",r:"L'océan Pacifique",o:["L'océan Atlantique","L'océan Indien"],x:"Le Pacifique est le plus grand océan du monde.",l:1},
+ {q:"Sur quel continent se trouve l'Égypte ?",r:"L'Afrique",o:["L'Asie","L'Europe"],x:"L'Égypte est au nord-est de l'Afrique.",l:2},
+ {q:"Quelle chaîne de montagnes sépare la France de l'Espagne ?",r:"Les Pyrénées",o:["Les Alpes","Le Jura"],x:"Les Pyrénées sont à la frontière avec l'Espagne.",l:1},
+ {q:"Quelle est la plus grande ville de France après Paris ?",r:"Marseille",o:["Lyon","Toulouse"],x:"Marseille est la 2e ville de France.",l:2},
+ {q:"Quel est le plus long fleuve du monde (avec l'Amazone) ?",r:"Le Nil",o:["La Seine","Le Danube"],x:"Le Nil et l'Amazone dépassent 6 000 km.",l:3},
+ {q:"Comment appelle-t-on la ligne imaginaire qui coupe la Terre en deux hémisphères ?",r:"L'équateur",o:["Le méridien","Le tropique"],x:"L'équateur sépare l'hémisphère Nord et l'hémisphère Sud.",l:3}
+];
+const DATES=[["La construction de Lascaux (peintures préhistoriques)","vers −17 000",1],["L'invention de l'écriture","vers −3300",2],["La fondation de Rome (légende)","−753",3],["La défaite de Vercingétorix à Alésia","−52",1],["Le baptême de Clovis","vers 496",1],["Charlemagne devient empereur","800",1],["Christophe Colomb arrive en Amérique","1492",1],["La victoire de François Ier à Marignan","1515",1],["Le début de la Révolution française (prise de la Bastille)","1789",0],["Napoléon devient empereur","1804",1],["L'abolition de l'esclavage en France","1848",2],["L'école gratuite, laïque et obligatoire (Jules Ferry)","1881-1882",2],["La Première Guerre mondiale","1914-1918",0],["La Seconde Guerre mondiale","1939-1945",0],["Le premier homme marche sur la Lune","1969",1],["Le droit de vote des femmes en France","1944",3]];
+const HISQ=[
+ {q:"Qui étaient les pharaons ?",r:"Les rois de l'Égypte ancienne",o:["Des soldats romains","Des dieux grecs"],x:"Le pharaon gouvernait l'Égypte et était considéré comme un dieu.",l:3},
+ {q:"Dans quelle cité grecque est née la démocratie ?",r:"Athènes",o:["Sparte","Rome"],x:"Athènes, vers −500.",l:3},
+ {q:"Qui était le chef gaulois face à Jules César ?",r:"Vercingétorix",o:["Clovis","Charlemagne"],x:"Vercingétorix a été vaincu à Alésia en −52.",l:1},
+ {q:"Quel roi est surnommé le « Roi-Soleil » ?",r:"Louis XIV",o:["Louis XVI","François Ier"],x:"Louis XIV a fait construire Versailles.",l:1},
+ {q:"Quel roi a été guillotiné pendant la Révolution ?",r:"Louis XVI",o:["Louis XIV","Henri IV"],x:"Louis XVI a été exécuté en 1793.",l:2},
+ {q:"Quelle est la devise de la République française ?",r:"Liberté, Égalité, Fraternité",o:["Travail, Famille, Patrie","Paix et Justice"],x:"Elle date de la Révolution.",l:0},
+ {q:"Qu'est-ce que la préhistoire ?",r:"La période avant l'invention de l'écriture",o:["La période des rois","La période des châteaux forts"],x:"L'histoire commence avec l'écriture (vers −3300).",l:1}
+];
+const SCI=[
+ {q:"Dans quel organe les aliments sont-ils broyés et mélangés au suc gastrique ?",r:"L'estomac",o:["Le cœur","Les poumons"],x:"L'estomac malaxe les aliments.",l:1},
+ {q:"Où se termine la digestion ?",r:"Dans l'intestin grêle",o:["Dans la bouche","Dans le gros intestin"],x:"Les nutriments passent dans le sang au niveau de l'intestin grêle.",l:2},
+ {q:"Quel organe pompe le sang dans tout le corps ?",r:"Le cœur",o:["Le foie","L'estomac"],x:"Le cœur est un muscle qui fait circuler le sang.",l:0},
+ {q:"Avec quels organes respire-t-on ?",r:"Les poumons",o:["Les reins","L'estomac"],x:"L'air entre dans les poumons, l'oxygène passe dans le sang.",l:0},
+ {q:"Combien d'os a environ un adulte ?",r:"206",o:["52","1 000"],x:"Le squelette adulte compte environ 206 os.",l:2},
+ {q:"Combien de dents a un adulte ?",r:"32",o:["20","28"],x:"32 dents définitives (20 dents de lait chez l'enfant).",l:1},
+ {q:"Un animal qui mange de la viande et des plantes est…",r:"omnivore",o:["herbivore","carnivore"],x:"Omnivore = mange de tout.",l:0},
+ {q:"Un animal qui ne mange que des plantes est…",r:"herbivore",o:["carnivore","omnivore"],x:"Herbivore = mange de l'herbe et des plantes.",l:0},
+ {q:"Les animaux qui ont une colonne vertébrale sont les…",r:"vertébrés",o:["invertébrés","insectes"],x:"Poissons, amphibiens, reptiles, oiseaux, mammifères sont des vertébrés.",l:2},
+ {q:"Combien de pattes a un insecte ?",r:"6",o:["8","4"],x:"Les insectes ont 6 pattes ; les araignées en ont 8 (ce ne sont pas des insectes).",l:0},
+ {q:"La baleine est un…",r:"mammifère",o:["poisson","reptile"],x:"Elle respire de l'air et allaite ses petits.",l:1},
+ {q:"Quelle est la planète la plus proche du Soleil ?",r:"Mercure",o:["Vénus","Mars"],x:"Mercure, Vénus, Terre, Mars, Jupiter, Saturne, Uranus, Neptune.",l:1},
+ {q:"Quelle est la plus grande planète du système solaire ?",r:"Jupiter",o:["Saturne","La Terre"],x:"Jupiter est une géante gazeuse.",l:1},
+ {q:"Combien de temps met la Terre pour tourner autour du Soleil ?",r:"1 an",o:["1 jour","1 mois"],x:"Environ 365 jours. Elle tourne sur elle-même en 1 jour.",l:1},
+ {q:"À quelle température l'eau gèle-t-elle ?",r:"0 °C",o:["100 °C","10 °C"],x:"L'eau devient solide (glace) à 0 °C et bout à 100 °C.",l:0},
+ {q:"L'eau existe sous 3 états : solide, liquide et…",r:"gazeux",o:["mou","froid"],x:"Solide (glace), liquide (eau), gazeux (vapeur).",l:1},
+ {q:"De quoi une plante a-t-elle besoin pour fabriquer sa nourriture ?",r:"De lumière, d'eau et d'air",o:["De sucre seulement","De terre seulement"],x:"C'est la photosynthèse, grâce à la lumière.",l:2},
+ {q:"Comment s'appelle la transformation de la chenille en papillon ?",r:"La métamorphose",o:["La germination","La digestion"],x:"Œuf → chenille → chrysalide → papillon.",l:1},
+ {q:"Quelle est la source d'énergie de la Terre ?",r:"Le Soleil",o:["La Lune","Le vent"],x:"Le Soleil apporte lumière et chaleur.",l:0},
+ {q:"Un aimant attire…",r:"le fer",o:["le bois","le plastique"],x:"Les aimants attirent certains métaux comme le fer.",l:1}
+];
+const fromPairs = (A, qf, rf, of, xf) => A.map((p,i)=>({q:qf(p), r:rf(p), o:shuffle(A.filter((_,j)=>j!==i).map(rf)).slice(0,3), x:xf?xf(p):"", l:p[p.length-1]|0}));
+const MAT = {
+ fr:{n:"Français", i:"📖", c:"#ef476f", t:{
+   conj:{n:"Conjugaison", i:"🔤", g:l=>genConj(l)},
+   homo:{n:"Homophones", i:"🎯", b:()=>HOMO.map(([s,o,r,x])=>({q:`Complète : ${s}`, r, o:o.filter(z=>z!==r), x, l:0}))},
+   acc:{n:"Pluriels & féminins", i:"👫", b:()=>[...PLU.map(([a,b,x])=>({q:`Le pluriel de « ${a} » ?`, r:b, o:[...new Set([b.replace(/x$/,"s"),b.replace(/aux$/,"als").replace(/s$/,"x"),b+"s"])].filter(z=>z!==b).slice(0,2), x, l:1})), ...FEM.map(([a,b])=>({q:`Le féminin de « ${a} » ?`, r:b, o:shuffle(FEM.map(f=>f[1]).filter(z=>z!==b)).slice(0,2), x:`${a} → ${b}`, l:0}))]},
+   voc:{n:"Vocabulaire", i:"💬", b:()=>[...SYN.map(([a,b,o,k])=>({q:`${k==="syn"?"Un synonyme (même sens)":"Le contraire"} de « ${a} » ?`, r:b, o, x:`${a} ${k==="syn"?"≈":"≠"} ${b}`, l:0})), ...NAT.map(([s,w,r])=>({q:`Dans « ${s} », quelle est la nature de « ${w} » ?`, r, o:["nom","verbe","adjectif","déterminant","pronom"].filter(z=>z!==r).slice(0,3), x:`« ${w} » est un ${r}.`, l:1}))]}
+ }},
+ en:{n:"Anglais", i:"🇬🇧", c:"#3a86ff", t:{
+   voc:{n:"Vocabulaire", i:"🐶", b:()=>[...EN.map(([e,en,frr,l],i)=>({q:`${e}  Comment dit-on « ${frr} » en anglais ?`, r:en, o:shuffle(EN.filter((_,j)=>j!==i).map(x=>x[1])).slice(0,3), x:`${frr} = ${en}`, l})), ...EN.map(([e,en,frr,l],i)=>({q:`Que veut dire « ${en} » ?`, r:frr, o:shuffle(EN.filter((_,j)=>j!==i).map(x=>x[2])).slice(0,3), x:`${en} = ${frr} ${e}`, l})), ...fromPairs(ENDAYS.map(d=>[...d,1]), p=>`« ${p[1]} » en anglais ?`, p=>p[0], null, p=>`${p[1]} = ${p[0]}`)]},
+   gram:{n:"Grammaire", i:"✍️", b:()=>ENG}
+ }},
+ hg:{n:"Histoire-Géo", i:"🌍", c:"#2bb673", t:{
+   cap:{n:"Capitales", i:"🏙️", b:()=>fromPairs(CAP, p=>`Quelle est la capitale : ${p[0]} ?`, p=>p[1], null, p=>`La capitale de ${p[0]} est ${p[1]}.`)},
+   geo:{n:"Géographie", i:"🗺️", b:()=>GEOQ},
+   dat:{n:"Dates d'histoire", i:"📅", b:()=>fromPairs(DATES, p=>`Quand : ${p[0]} ?`, p=>p[1], null, p=>`${p[0]} : ${p[1]}`).concat(HISQ)}
+ }},
+ sc:{n:"Sciences", i:"🔬", c:"#f08a24", t:{
+   sci:{n:"Corps, animaux, Terre", i:"🧬", b:()=>SCI}
+ }}
+};
+function matSt(k, s, t){ const p=S.profiles[k]; p.mat=p.mat||{}; const key=s+"_"+t; p.mat[key]=Object.assign({lvl:Math.max(0,clsIdx(k)-1), run:0, bad:0, ok:0, ko:0}, p.mat[key]||{}); return p.mat[key]; }
+function matQ(s, t, lvl, seen){
+  const T=MAT[s].t[t];
+  if (T.g){ const x=T.g(lvl); x.k=hkey(x.q+x.r); return x; }
+  const B=T.b(), pool=B.filter(x=>(x.l|0)<=lvl && !seen.has(x.q)), near=pool.filter(x=>(x.l|0)>=lvl-1);
+  const x=Object.assign({}, pick(near.length?near:pool.length?pool:B)); x.k=hkey(x.q); return x;
+}
+SCREENS.matieres = () => {
+  const k=me();
+  app.innerHTML = hdr("🎒 Matières") + `<div class="muted small" style="margin:-6px 0 12px">Le niveau de chaque thème s'adapte tout seul (classe : ${esc(CLASSES()[k])}).</div>` +
+  Object.entries(MAT).map(([s,M])=>`<div class="card"><div class="label" style="color:${M.c}">${M.i} ${M.n}</div><div class="lxgames">${Object.entries(M.t).map(([t,T])=>`<button style="background:${M.c}" onclick="go('matPlay','${s}','${t}')">${T.i} ${T.n}<span class="mtag">${MLV[matSt(k,s,t).lvl]}</span></button>`).join("")}</div></div>`).join("");
+};
+let MQ=null;
+SCREENS.matPlay = (s, t) => { MQ={s, t, n:0, max:10, ok:0, seen:new Set(), retry:[]}; mqNext(); };
+function mqNext(){
+  if (MQ.n>=MQ.max){ const ok=MQ.ok; if (ok>=8){ sndWin(); confetti(60); gain(10,10,"🎒 Bravo, belle série !"); }
+    return app.innerHTML = hdr("🏁 Terminé","matieres") + `<div class="card" style="text-align:center"><div style="font-size:60px">${ok>=8?"🏆":ok>=5?"👍":"💪"}</div><div class="lxbig">${ok} / ${MQ.max}</div><div class="muted">${MAT[MQ.s].t[MQ.t].n} · niveau ${MLV[matSt(me(),MQ.s,MQ.t).lvl]}</div></div><button class="btn block" onclick="go('matPlay','${MQ.s}','${MQ.t}')">🔁 Encore</button><button class="btn ghost block" style="margin-top:10px" onclick="go('matieres')">← Matières</button>`; }
+  const st=matSt(me(),MQ.s,MQ.t), x = (MQ.retry.length && Math.random()<.4) ? MQ.retry.shift() : matQ(MQ.s,MQ.t,st.lvl,MQ.seen);
+  MQ.seen.add(x.q); MQ.cur=x; MQ.fifty=false;
+  const M=MAT[MQ.s], T=M.t[MQ.t], opts=shuffle([x.r, ...x.o.slice(0,3)]);
+  app.innerHTML = `<div class="top"><button class="back" onclick="go('matieres')">✕</button><h2 style="font-size:17px">${T.i} ${T.n}</h2><span class="pchip" style="margin-left:auto">${MLV[st.lvl]} · ${MQ.n+1}/${MQ.max}</span></div>
+   <div class="card"><div class="lxq" style="white-space:pre-line">${esc(x.q)}</div><div class="lxopts" id="mo">${opts.map(o=>`<button data-v="${esc(o)}" onclick="mqAns(this)">${esc(o)}</button>`).join("")}</div>
+   <div id="lxfb"></div>${opts.length>2?`<button class="linkbtn small" style="margin-top:10px" id="ff" onclick="mqFifty()">💡 Aide : enlever une mauvaise réponse</button>`:""}</div>`;
+}
+function mqFifty(){ if (MQ.fifty) return; MQ.fifty=true; const x=MQ.cur, b=[...document.querySelectorAll("#mo button")].filter(b=>b.dataset.v!==x.r); const w=pick(b); if (w){ w.disabled=true; w.style.opacity=.3; } document.getElementById("ff").remove(); }
+function mqAns(el){
+  if (MQ.lock) return; MQ.lock=true; const x=MQ.cur, ok=el.dataset.v===x.r, st=matSt(me(),MQ.s,MQ.t), ci=clsIdx(me());
+  document.querySelectorAll("#mo button").forEach(b=>{ b.disabled=true; if (b.dataset.v===x.r) b.classList.add("good"); else if (b===el) b.classList.add("bad"); });
+  const p=P(), d=today(); p.days=p.days||{}; const day=p.days[d]=p.days[d]||{ok:0,ko:0,sec:0}; ok?day.ok++:day.ko++; day.sec+=8; p.lastPlayed=Date.now();
+  if (ok){ sndOk(); st.ok++; st.run++; st.bad=0; if (!MQ.fifty){ MQ.ok++; p.coins=(p.coins||0)+2; p.earned=(p.earned||0)+2; p.totalOk=(p.totalOk||0)+1; addXp(p,3); }
+    if (st.run>=4 && st.lvl<Math.min(4,ci+1)){ st.lvl++; st.run=0; toast(`📈 Niveau <b>${MLV[st.lvl]}</b> !`); } }
+  else { sndKo(); st.ko++; st.bad++; st.run=0; MQ.retry.push(x); if (st.bad>=3 && st.lvl>0){ st.lvl--; st.bad=0; } }
+  save();
+  document.getElementById("lxfb").innerHTML = ok ? `<div class="lxok">✓ Bravo !${MQ.fifty?"":" 🪙 +2"}</div>${x.x?`<div class="lxrap" style="margin-top:6px">${esc(x.x)}</div>`:""}` : `<div class="lxko">✗ La bonne réponse : <b>${esc(x.r)}</b>${x.x?`<div class="lxrap">💡 ${esc(x.x)}</div>`:""}</div>`;
+  const tm=setTimeout(()=>{ MQ.lock=false; MQ.n++; mqNext(); }, ok?1300:3200); cleanup.push(()=>{ clearTimeout(tm); MQ.lock=false; });
+}
 
 /* ================== Badges ================== */
 SCREENS.badges = () => {
