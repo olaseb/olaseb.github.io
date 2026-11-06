@@ -68,6 +68,9 @@ h1,h2,h3,.big,.q{font-family:"Baloo 2",Nunito,sans-serif;margin:0}
 .mode span{font-size:13px;opacity:.8}
 .mode.wide{grid-column:span 2;min-height:96px}
 .mtag{display:block;font-size:11px;opacity:.85;margin-top:2px}
+.invrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.invrow:last-child{border:0}
+.invst{border-radius:99px;padding:7px 12px;font-weight:800;font-size:13px;background:var(--me);color:#fff}.invst.wait{background:#fff3c4;color:#8a6a00}.invst.ok{background:#d8f5e5;color:#147a46}.invst.no{background:#ffe3e9;color:#b3133b}.invst.late{background:var(--bg);color:var(--ink)}
+.invban{position:fixed;top:calc(10px + env(safe-area-inset-top));left:10px;right:10px;z-index:80;background:#2b2340;color:#fff;border-radius:22px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:tin .35s}
 .mrow{display:flex;justify-content:space-between;align-items:center;margin-top:10px}.mlv{color:#fff;font-weight:800;border-radius:99px;padding:2px 10px;font-size:13px}.mbar{height:9px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:4px}.mbar i{display:block;height:100%;border-radius:9px}
 .mq{font-size:19px;font-weight:800;line-height:1.4}.mshape{width:100%;max-height:170px;margin-top:10px;font:800 15px Nunito,sans-serif}
 .hint1,.hint2,.hint3{border-radius:14px;padding:10px;margin-top:10px;font-size:15px;line-height:1.5}.hint1{background:#fff7d6}.hint2{background:#e8f7ff}.hint3{background:#e6f9ee}
@@ -360,7 +363,7 @@ body.p-papa{--me:#f08a24; --me-soft:#ffe8d1}
 </head>
 <body>
 <div id="app"></div>
-<script>const APPV="9";
+<script>const APPV="10";
 (function(){ const chk=()=>fetch(location.pathname+"?x="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{ const m=t.match(/const APPV="(\d+)"/); if (m && m[1]!==APPV){ try{ if (sessionStorage.getItem("upd")===m[1]) return; sessionStorage.setItem("upd",m[1]); }catch(e){} location.replace(location.pathname+"?v="+m[1]+location.hash); } }).catch(()=>{});
   addEventListener("load",()=>setTimeout(chk,1500)); document.addEventListener("visibilitychange",()=>{ if (document.visibilityState==="visible") chk(); }); })();</script>
 <script src="assets.js?v=1"></script>
@@ -842,7 +845,7 @@ const GAMES = {race:["🐎","Course d'animaux","raceSetup"], corde:["🪢","Tir 
 function familyCard(game, extra=""){
   return `<div class="card"><div class="label">👨‍👧‍👧 En famille (2 ou 3, chacun sur son téléphone)</div>${extra}
     <div class="row"><button class="btn sun" style="flex:1" onclick="go('lobby','${game}')">Créer</button><button class="btn ghost" style="flex:1" onclick="go('join')">Rejoindre</button></div>
-    <div class="muted small" style="margin-top:8px">${FAM?"Une personne crée la partie et donne le code, les autres le tapent dans « Rejoindre ».":"⚠️ Relie d'abord ce téléphone à la famille (Paramètres) pour jouer ensemble."}</div></div>`;
+    <div class="muted small" style="margin-top:8px">${FAM?"Une personne crée la partie et invite les autres (ou leur donne le code à taper dans « Rejoindre »).":"⚠️ Relie d'abord ce téléphone à la famille (Paramètres) pour jouer ensemble."}</div></div>`;
 }
 function setOptR(n,v,el){ setOpt(n,v,el); go(CUR.screen, ...CUR.args); }
 const cordeHelp = () => ({duel:"Deux joueurs face à face.", equipe:"Les bonnes réponses de Lana et Sorya tirent ensemble contre celles de Papa.", tournoi:"Chacun affronte les deux autres (Papa–Sorya, Papa–Lana, Lana–Sorya), puis finale entre les deux meilleurs : le plus de victoires, puis le temps le plus rapide."})[S.settings.cordeMode]||"";
@@ -1153,7 +1156,41 @@ function lobbyCheck(){
   return "";
 }
 const plistHtml = players => Object.entries(players||{}).map(([r,p])=>`<span class="pl" style="border-color:${CLOTH[p.who]||"#ccc"}">${AV[p.who]||"?"} ${NAMES[p.who]||p.who}${NET&&r===NET.myRole?" (toi)":""}</span>`).join("");
-function lobbyRefresh(){
+const INVL = {none:"📨 Inviter", wait:"⏳ Invitation envoyée…", ok:"✓ A accepté", no:"✗ A refusé", late:"⌛ Pas de réponse · réinviter"};
+function invButtons(){ return PROFILES.filter(k=>k!==me()).map(k=>{ const st=(NET&&NET.inv&&NET.inv[k])||"none", inGame=NET&&Object.values(NET.players).some(p=>p.who===k);
+  return `<div class="invrow"><b>${AV[k]} ${NAMES[k]}</b>${inGame?`<span class="invst ok">✓ Dans la partie</span>`:`<button class="invst ${st}" ${st==="wait"?"disabled":""} onclick="invSend('${k}')">${INVL[st]}</button>`}</div>`; }).join(""); }
+function invDraw(){ const d=document.getElementById("invs"); if (d) d.innerHTML=invButtons(); }
+function invSend(k){
+  if (!NET || !NET.host || !ROOT) return; NET.inv=NET.inv||{}; NET.inv[k]="wait"; invDraw();
+  const G=GAMES[NET.game]||GAMES.race, ref=ROOT.child("inv/"+k);
+  ref.set({from:me(), code:NET.code, game:NET.game, label:`${G[0]} ${G[1]}`, at:Date.now()});
+  ref.onDisconnect().remove();
+  if (!NET.invOn) NET.invOn={};
+  if (!NET.invOn[k]){ NET.invOn[k]=1; const cb=ref.on("value", sn=>{ const v=sn.val(); if (!NET||!NET.inv) return; if (v && v.code===NET.code && v.st){ NET.inv[k]=v.st; invDraw(); if (v.st!=="wait") setTimeout(()=>{ ref.once("value",x=>{ const y=x.val(); if (y && y.code===(NET&&NET.code) && y.st) ref.remove(); }); },3000); } });
+    NET.offs.push(()=>{ ref.off("value",cb); ref.once("value",x=>{ const y=x.val(); if (y && !y.st) ref.remove(); }); ref.onDisconnect().cancel(); }); }
+  const tm=setTimeout(()=>{ if (NET && NET.inv && NET.inv[k]==="wait"){ NET.inv[k]="late"; invDraw(); ref.remove(); } }, 120000); NET.offs.push(()=>clearTimeout(tm));
+}
+/* bannière d'invitation reçue (sur tous les écrans) */
+let INVC=null;
+function invListen(){ if (!ROOT) return; ROOT.child("inv").on("value", sn=>{ const all=sn.val()||{}, v=all[me()];
+  if (!v || v.st || Date.now()-(v.at||0)>120000 || (NET && NET.code===v.code)){ invHide(); return; }
+  if (INVC===v.code+v.at) return; INVC=v.code+v.at; invShow(v); }); }
+function invShow(v){
+  invHide(); const b=document.createElement("div"); b.className="invban"; b.id="invban";
+  b.innerHTML=`<div style="font-weight:900;font-size:17px">${AV[v.from]||"👋"} ${NAMES[v.from]||v.from} t'invite !</div><div style="margin:4px 0 12px;font-size:15px">${esc(v.label||"Une partie")}</div>
+   <div class="row"><button class="btn" style="flex:1;background:var(--ok);color:#fff;font-size:17px;padding:12px" onclick="invReply(true)">✅ Accepter</button><button class="btn ghost" style="flex:1;font-size:17px;padding:12px" onclick="invReply(false)">❌ Refuser</button></div>`;
+  b.dataset.code=v.code; document.body.appendChild(b); beep(880,.12); setTimeout(()=>beep(1175,.15),160); try{ navigator.vibrate&&navigator.vibrate([120,80,120]); }catch(e){}
+  setTimeout(()=>{ if (document.getElementById("invban")===b) invHide(); }, Math.max(5000, 120000-(Date.now()-(v.at||0))));
+}
+function invHide(){ const b=document.getElementById("invban"); if (b) b.remove(); }
+function invReply(yes){
+  const b=document.getElementById("invban"); if (!b || !ROOT) return; const code=b.dataset.code; invHide();
+  ROOT.child("inv/"+me()+"/st").set(yes?"ok":"no");
+  if (!yes) return;
+  if (RACE && RACE.engine){ try{ RACE.engine.stop(); }catch(e){} } RACE=null; CHR=null; clearOv();
+  go("join"); const ci=document.getElementById("ci"); if (ci){ ci.value=code; joinGo(); }
+}
+function lobbyRefresh(){ invDraw();
   const pl=document.getElementById("pl"); if (pl) pl.innerHTML=plistHtml(NET.players);
   const msg=lobbyCheck(), b=document.getElementById("go"), nd=document.getElementById("need");
   if (b) b.disabled=!!msg; if (nd) nd.textContent=msg;
@@ -1164,6 +1201,7 @@ SCREENS.lobby = (game="race") => {
   app.innerHTML = hdr(`${G[0]} ${G[1]}`, G[2]) + `
     <div class="card" style="text-align:center"><div class="muted">Code à donner aux autres</div><div class="code" id="code">····</div>
       <div class="status" id="st"><span class="dot"></span>Préparation…</div><div class="plist" id="pl"></div></div>
+    <div class="card"><div class="label">📨 Inviter (sans code)</div><div id="invs">${invButtons()}</div><div class="muted small" style="margin-top:6px">L'invitation apparaît sur son téléphone si l'appli est ouverte.</div></div>
     <div class="card small muted">${gameInfo(g)}</div>
     <button class="btn block" id="go" disabled onclick="lobbyStart()">Départ !</button><div class="muted small" id="need" style="text-align:center;margin-top:8px"></div>`;
   cleanup.push(()=>{ if (!RACE && !CHR) netClose(); });
@@ -1213,7 +1251,7 @@ async function joinGo(){
     NET={host:false, code, room, myRole:slot, game:h.val().game, players:{}, offs:[]};
     listen(room.child("to/"+slot), guestMsg);
     const href=room.child("host"); href.on("value", s=>{ if (!s.exists() && NET && NET.room===room) showLost("La partie a été fermée."); }); NET.offs.push(()=>href.off());
-    const G=GAMES[NET.game]||GAMES.race; setStatus(`Connecté${gEnd(me())} ! ${G[0]} ${G[1]} · attends le départ…`, true); beep(880,.15);
+    const G=GAMES[NET.game]||GAMES.race; setStatus(`Connecté${gEnd(me())} ! ${G[0]} ${G[1]} · attends le départ…`, true); beep(880,.15); const jb=document.querySelector("#ci")&&document.querySelector("#ci").parentElement.querySelector(".btn.block"); if (jb) jb.style.display="none";
   } catch(e){ setStatus("Problème de connexion. Vérifie Internet."); }
 }
 function listen(ref, fn){ ref.on("child_added", s=>{ const v=s.val(); s.ref.remove(); try { fn(v); } catch(e){ console.log("msg error: "+(e&&e.stack||e)); } }); NET.offs.push(()=>ref.off()); }
@@ -2538,6 +2576,7 @@ async function fbInit(){
     for (const k of PROFILES) ROOT.child("p/"+k).on("value", s=>onRemoteProfile(k, s.val()), ()=>{ fbState="err"; });
     ROOT.child("parent").on("value", s=>onRemoteParent(s.val()));
     for (const k of PROFILES) ROOT.child("lec/"+k).on("value", s=>onRemoteLec(k, s.val()));
+    invListen();
   } catch(e){ fbState="err"; DB=null; ROOT=null; }
   rerenderIdle();
 }
