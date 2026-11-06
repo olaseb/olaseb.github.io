@@ -71,6 +71,11 @@ h1,h2,h3,.big,.q{font-family:"Baloo 2",Nunito,sans-serif;margin:0}
 .invrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.invrow:last-child{border:0}
 .invst{border-radius:99px;padding:7px 12px;font-weight:800;font-size:13px;background:var(--me);color:#fff}.invst.wait{background:#fff3c4;color:#8a6a00}.invst.ok{background:#d8f5e5;color:#147a46}.invst.no{background:#ffe3e9;color:#b3133b}.invst.late{background:var(--bg);color:var(--ink)}
 .invban{position:fixed;top:calc(10px + env(safe-area-inset-top));left:10px;right:10px;z-index:80;background:#2b2340;color:#fff;border-radius:22px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:tin .35s}
+.petcorner{position:fixed;right:8px;bottom:calc(14px + env(safe-area-inset-bottom));width:64px;height:50px;z-index:5;pointer-events:none;float:none;margin:0;opacity:.95}
+.petmini svg{animation:breathe 3.2s ease-in-out infinite;transform-origin:50% 100%}.petc .petmini{animation:hop 7s infinite}
+@keyframes breathe{50%{transform:scale(1.04,0.97)}}@keyframes hop{0%,88%,100%{transform:none}92%{transform:translateY(-12px) rotate(-5deg)}96%{transform:translateY(0)}}
+.vdance{position:fixed;left:50%;bottom:28%;width:190px;height:150px;margin-left:-95px;z-index:95;pointer-events:none;animation:dance 2.6s ease-in-out forwards}.vdance svg{width:100%;height:100%;overflow:visible}
+@keyframes dance{0%{transform:scale(.2) translateY(60px);opacity:0}12%{transform:scale(1.1);opacity:1}24%{transform:rotate(-12deg) translateY(-20px)}36%{transform:rotate(12deg)}48%{transform:rotate(-12deg) translateY(-24px)}60%{transform:rotate(10deg)}72%{transform:scale(1.15) translateY(-30px)}88%{transform:scale(1);opacity:1}100%{transform:scale(.6) translateY(-80px);opacity:0}}
 .pet{float:right;width:70px;height:54px;margin:-4px -4px 4px 8px}.pet svg{width:100%;height:100%;overflow:visible}
 .pet.jump{animation:pjump .6s}.pet.sad{animation:psad .7s}
 @keyframes pjump{30%{transform:translateY(-16px) rotate(-6deg)}60%{transform:translateY(0)}80%{transform:translateY(-6px)}}
@@ -376,7 +381,7 @@ body.p-papa{--me:#f08a24; --me-soft:#ffe8d1}
 </head>
 <body>
 <div id="app"></div>
-<script>const APPV="13";
+<script>const APPV="14";
 (function(){ const chk=()=>fetch(location.pathname+"?x="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{ const m=t.match(/const APPV="(\d+)"/); if (m && m[1]!==APPV){ try{ if (sessionStorage.getItem("upd")===m[1]) return; sessionStorage.setItem("upd",m[1]); }catch(e){} location.replace(location.pathname+"?v="+m[1]+location.hash); } }).catch(()=>{});
   addEventListener("load",()=>setTimeout(chk,1500)); document.addEventListener("visibilitychange",()=>{ if (document.visibilityState==="visible") chk(); }); })();</script>
 <script src="assets.js?v=1"></script>
@@ -654,8 +659,8 @@ function beep(freq, dur=0.12, type="sine", when=0){
     o.connect(g).connect(AC.destination); o.start(t); o.stop(t+dur);
   } catch(e){}
 }
-const sndOk = () => { beep(660,.1); beep(990,.14,"sine",.08); };
-const sndKo = () => beep(180,.25,"triangle");
+const sndOk = () => { beep(660,.1); beep(990,.14,"sine",.08); try{ petReact(true); }catch(e){} };
+const sndKo = () => { beep(180,.25,"triangle"); try{ petReact(false); }catch(e){} };
 const sndWin = () => [523,659,784,1047].forEach((f,i)=>beep(f,.18,"sine",i*.12));
 function confetti(n=80){
   const cols=["#9b5de5","#00a6a6","#ffc43d","#ef476f","#2bb673","#ff8c42"];
@@ -668,7 +673,9 @@ function confetti(n=80){
 let cleanup = [];
 function clearAll(){ cleanup.forEach(fn=>{try{fn()}catch(e){}}); cleanup=[]; answerHandler=null; }
 let CUR=null;
-function go(screen, ...args){ CUR={screen, args}; clearAll(); document.body.className = "p-"+me()+" th-"+S.settings.theme; app.className=""; const tc=document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = S.settings.theme==="galaxie" ? "#100f2e" : "#fff6ec"; SCREENS[screen](...args); window.scrollTo(0,0); }
+function go(screen, ...args){ CUR={screen, args}; clearAll(); document.body.className = "p-"+me()+" th-"+S.settings.theme; app.className=""; const tc=document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = S.settings.theme==="galaxie" ? "#100f2e" : "#fff6ec"; SCREENS[screen](...args); window.scrollTo(0,0);
+  if (PETC.has(screen) && !document.getElementById("pet")) try{ app.insertAdjacentHTML("beforeend", `<div class="pet petcorner" id="pet">${animalSVG(myHorse(me()), myAcc(me()))}</div>`); }catch(e){} }
+const PETC = new Set(["chrono","dailyPlay","defiPlay","errorsPlay","memory","balloonsPlay","vfPlay"]);
 const hdr = (title, back="home") => `<div class="top"><button class="back" onclick="go('${back}')" aria-label="Retour">←</button><h2>${title}</h2></div>`;
 
 /* ============ Zone de réponse (clavier ou 4 choix) ============ */
@@ -2508,7 +2515,8 @@ function petReact(ok){ const p=document.getElementById("pet"); if (!p) return; p
 
 /* --- coffre surprise --- */
 const CHEST_N = 3;
-function chestWin(n=1){ const p=P(); p.chest=p.chest||{w:0, opened:0}; const before=p.chest.w; p.chest.w=Math.min(CHEST_N, p.chest.w+n);
+function victoryDance(){ try{ const d=document.createElement("div"); d.className="vdance"; d.innerHTML=animalSVG(myHorse(me()), myAcc(me())); document.body.appendChild(d); setTimeout(()=>d.remove(),2700); }catch(e){} }
+function chestWin(n=1){ victoryDance(); const p=P(); p.chest=p.chest||{w:0, opened:0}; const before=p.chest.w; p.chest.w=Math.min(CHEST_N, p.chest.w+n);
   if (before<CHEST_N && p.chest.w>=CHEST_N) setTimeout(()=>toast("🎁 Ton coffre surprise est prêt ! Va sur l'accueil pour l'ouvrir"),1200); save(); }
 const chestImg = k => { const m=IMG[k]; return m?`<img src="${m[0]}" alt="" class="chimg">`:"🎁"; };
 function chestCard(){ const c=(P().chest)||{w:0}, ready=c.w>=CHEST_N;
