@@ -67,6 +67,10 @@ h1,h2,h3,.big,.q{font-family:"Baloo 2",Nunito,sans-serif;margin:0}
 .mode b{font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:20px;line-height:1.1}
 .mode span{font-size:13px;opacity:.8}
 .mode.wide{grid-column:span 2;min-height:96px}
+.mrow{display:flex;justify-content:space-between;align-items:center;margin-top:10px}.mlv{color:#fff;font-weight:800;border-radius:99px;padding:2px 10px;font-size:13px}.mbar{height:9px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:4px}.mbar i{display:block;height:100%;border-radius:9px}
+.mq{font-size:19px;font-weight:800;line-height:1.4}.mshape{width:100%;max-height:170px;margin-top:10px;font:800 15px Nunito,sans-serif}
+.hint1,.hint2,.hint3{border-radius:14px;padding:10px;margin-top:10px;font-size:15px;line-height:1.5}.hint1{background:#fff7d6}.hint2{background:#e8f7ff}.hint3{background:#e6f9ee}
+.msel{border:2px solid var(--line);border-radius:10px;padding:6px;font:inherit;background:var(--card);color:var(--ink)}
 .lxhome{background:linear-gradient(135deg,#ffd166,#ff9f7a)}
 .lxchips{display:flex;flex-wrap:wrap;gap:6px}.lxchips button{padding:8px 11px;border-radius:12px;background:var(--bg);font-weight:800;font-size:14px;border:2px solid transparent}.lxchips button.on{background:var(--me-soft);border-color:var(--me);color:var(--me)}
 .lxit{display:flex;align-items:center;gap:10px;width:100%;padding:11px 0;border-bottom:1px solid var(--line);background:none}.lxit:last-child{border:0}.lxit b{font-size:15px}
@@ -715,6 +719,7 @@ SCREENS.home = () => {
   ${me()!=="papa" && rw?`<div class="card rwcard"><span style="font-size:30px">${rw.emoji}</span><div style="flex:1"><b>${esc(rw.label)}</b><div class="pb"><i style="width:${Math.min(100,rp/rw.goal*100)}%"></i></div><div class="muted small">${Math.min(rp,rw.goal)} / ${rw.goal} 🪙${rp>=rw.goal?" · objectif atteint ! 🎉":""}</div></div></div>`:""}
   <div class="modes">
     <button class="mode wide lxhome" onclick="go('lecons')"><span class="ic">📚</span><b>Ma leçon</b><span>${(()=>{ const L=lecOf(me()), st=L.filter(lecStale).length; return L.length ? `${L.length} leçon${L.length>1?"s":""}${st?` · ⏰ ${st} à revoir`:""}` : "Poésie, mots, leçons : révise-les en jouant"; })()}</span></button>
+    <button class="mode wide" style="background:linear-gradient(135deg,#c7b5ff,#9ad8ff)" onclick="go('maths')"><span class="ic">🧮</span><b>Maths</b><span>Problèmes, calcul, géométrie · avec de l'aide</span></button>
     <button class="mode" style="background:#ffe8a3" onclick="go('chronoSetup')"><span class="ic">⏱️</span><b>Chrono</b><span>Seule ou en duel</span></button>
     <button class="mode" style="background:#c9f0d6" onclick="go('raceSetup')"><span class="ic">🐎</span><b>Course d'animaux</b><span>Contre l'ordi ou en famille</span></button>
     <button class="mode" style="background:#ffe0cc" onclick="go('cordeSetup')"><span class="ic">🪢</span><b>Tir à la corde</b><span>1c1, équipe ou tournoi</span></button>
@@ -2071,6 +2076,140 @@ function lpImport(){
   m.innerHTML=`<span style="color:var(--ok)">✓ « ${esc(l.t)} » · ${lecItems(l).length} questions → envoyée à ${NAMES[LPK]}</span>`; document.getElementById("lpta").value="";
 }
 
+/* ================== Maths (problèmes, calcul, géométrie) ================== */
+const MLV = ["CE2","CM1","CM2","6e","5e"];
+const MTH = {pb:["📖","Problèmes","#9b5de5"], ca:["➗","Calcul","#00a6a6"], ge:["📐","Géométrie","#f08a24"]};
+const clsIdx = k => { const c=String(CLASSES()[k]||"").toLowerCase(); const i=MLV.findIndex(x=>x.toLowerCase()===c); return i>=0?i:(/adulte|4e|3e|lyc/.test(c)?4:2); };
+function mathsOf(k=me()){ const p=S.profiles[k]; p.maths=p.maths||{}; const ci=clsIdx(k);
+  for (const t in MTH){ p.maths[t]=Object.assign({lvl:Math.max(0,ci-1), run:0, bad:0, ok:0, ko:0, force:null}, p.maths[t]||{}); } return p.maths; }
+const mLvl = (k,t) => { const m=mathsOf(k)[t]; return m.force!=null&&m.force!=="" ? +m.force : m.lvl; };
+const R_ = (a,b) => a+rnd(b-a+1);
+const fr = n => String(Math.round(n*1000)/1000).replace(".",",");
+const eur = n => (Math.round(n*100)%100 ? (Math.round(n*100)/100).toFixed(2).replace(".",",") : String(Math.round(n)))+" €";
+const ANI = ["le panda","le renard","le lion","la girafe","le zèbre","le tigre","l'éléphant","le T-rex","la licorne"];
+const pickA = () => pick(ANI), Cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+
+/* chaque générateur renvoie {q, r, u, h (indice), st (étapes), ex (correction), svg?} */
+const GEN = {
+ ca: [
+  () => { const a=R_(120,899), b=R_(100,a-10), add=Math.random()<.5; return add?{q:`${a} + ${b} = ?`, r:a+b, h:"Pose l'addition en colonnes : unités, dizaines, centaines.", st:[`Unités : ${a%10} + ${b%10}`,`N'oublie pas les retenues`], ex:`${a} + ${b} = ${a+b}`}
+     :{q:`${a} − ${b} = ?`, r:a-b, h:"Pose la soustraction en colonnes, en commençant par les unités.", st:[`Unités : ${a%10} − ${b%10} (emprunte une dizaine si besoin)`], ex:`${a} − ${b} = ${a-b}`}; },
+  () => { const a=R_(12,98), b=R_(2,9); return {q:`${a} × ${b} = ?`, r:a*b, h:`Décompose : ${a} = ${Math.floor(a/10)*10} + ${a%10}`, st:[`${Math.floor(a/10)*10} × ${b} = ${Math.floor(a/10)*10*b}`,`${a%10} × ${b} = ${a%10*b}`,`On additionne les deux`], ex:`${a} × ${b} = ${Math.floor(a/10)*10*b} + ${a%10*b} = ${a*b}`}; },
+  () => { const b=R_(3,9), q=R_(6,25), a=b*q; return {q:`${a} ÷ ${b} = ?`, r:q, h:`Cherche combien de fois ${b} dans ${a} : ${b} × ? = ${a}`, st:[`${b} × 10 = ${b*10}`,`Il reste ${a-b*10} à partager`], ex:`${b} × ${q} = ${a}, donc ${a} ÷ ${b} = ${q}`}; },
+  () => { const a=R_(11,49)/10, b=R_(11,49)/10; return {q:`${fr(a)} + ${fr(b)} = ?`, r:+(a+b).toFixed(1), h:"Aligne les virgules, puis additionne comme des entiers.", st:[`Dixièmes : ${Math.round(a*10)%10} + ${Math.round(b*10)%10}`], ex:`${fr(a)} + ${fr(b)} = ${fr(a+b)}`}; },
+  () => { const b=R_(2,9), q=R_(12,99), r0=R_(1,b-1), a=b*q+r0; return {q:`Dans ${a} ÷ ${b}, quel est le quotient ?`, r:q, h:`Trouve le plus grand nombre de fois que ${b} rentre dans ${a}.`, st:[`${b} × ${q} = ${b*q}`,`Il reste ${r0} (plus petit que ${b})`], ex:`${a} = ${b} × ${q} + ${r0} → quotient ${q}, reste ${r0}`}; },
+  () => { const d=pick([2,4,5,10,3]), n=R_(1,d-1), t=d*R_(2,12); return {q:`Combien font ${n}/${d} de ${t} ?`, r:t/d*n, h:`D'abord 1/${d} de ${t} : on divise par ${d}.`, st:[`1/${d} de ${t} = ${t} ÷ ${d} = ${t/d}`,`${n}/${d} = ${n} × ${t/d}`], ex:`${t} ÷ ${d} × ${n} = ${t/d*n}`}; },
+  () => { const a=R_(11,999)/10, m=pick([10,100,1000]); return {q:`${fr(a)} × ${m} = ?`, r:+(a*m).toFixed(2), h:`Multiplier par ${m}, c'est décaler la virgule de ${String(m).length-1} rang(s) vers la droite.`, st:[`${fr(a)} → déplace la virgule`], ex:`${fr(a)} × ${m} = ${fr(a*m)}`}; },
+  () => { const a=R_(2,9), b=R_(2,9), c=R_(2,20); return {q:`${c} + ${a} × ${b} = ?`, r:c+a*b, h:"Priorité : la multiplication se fait AVANT l'addition.", st:[`${a} × ${b} = ${a*b}`,`${c} + ${a*b}`], ex:`${c} + ${a} × ${b} = ${c} + ${a*b} = ${c+a*b}`}; },
+  () => { const a=R_(12,95)/10, b=R_(2,9); return {q:`${fr(a)} × ${b} = ?`, r:+(a*b).toFixed(2), h:`Calcule ${Math.round(a*10)} × ${b} sans la virgule, puis remets-la.`, st:[`${Math.round(a*10)} × ${b} = ${Math.round(a*10)*b}`,`1 chiffre après la virgule`], ex:`${fr(a)} × ${b} = ${fr(a*b)}`}; },
+  () => { const a=R_(2,9), b=R_(2,9), c=R_(2,9); return {q:`(${a} + ${b}) × ${c} = ?`, r:(a+b)*c, h:"Les parenthèses se calculent en premier.", st:[`${a} + ${b} = ${a+b}`,`${a+b} × ${c}`], ex:`(${a} + ${b}) × ${c} = ${a+b} × ${c} = ${(a+b)*c}`}; },
+  () => { const a=R_(-9,9)||3, b=R_(-9,9)||-4; return {q:`(${a}) + (${b}) = ?`, r:a+b, h:"Signes différents : on fait la différence et on garde le signe du plus « grand » sans le signe.", st:[`Distance à zéro : ${Math.abs(a)} et ${Math.abs(b)}`], ex:`(${a}) + (${b}) = ${a+b}`}; },
+ ],
+ pb: [
+  () => { const A=pickA(), a=R_(25,89), b=R_(8,a-5); return {q:`${Cap(A)} a ${a} bambous. Il en mange ${b}. Combien lui en reste-t-il ?`, r:a-b, h:"Il en a MOINS à la fin : c'est une soustraction.", st:[`On part de ${a}`,`On enlève ${b}`], ex:`${a} − ${b} = ${a-b} bambous`}; },
+  () => { const A=pickA(), a=R_(15,60), b=R_(12,60); return {q:`${Cap(A)} ramasse ${a} pommes le matin et ${b} l'après-midi. Combien en a-t-il en tout ?`, r:a+b, h:"« En tout » : on rassemble les deux quantités.", st:[`Matin : ${a}`,`Après-midi : ${b}`], ex:`${a} + ${b} = ${a+b} pommes`}; },
+  () => { const n=R_(3,9), p=R_(4,15); return {q:`Une boîte contient ${p} carottes. Combien de carottes dans ${n} boîtes ?`, r:n*p, h:"Plusieurs fois la même quantité : multiplication.", st:[`1 boîte = ${p}`,`${n} boîtes = ${n} × ${p}`], ex:`${n} × ${p} = ${n*p} carottes`}; },
+  () => { const g=R_(3,8), each=R_(4,12), t=g*each; return {q:`On partage ${t} graines entre ${g} oiseaux, chacun en reçoit autant. Combien chacun en reçoit-il ?`, r:each, h:"Partager équitablement : division.", st:[`${t} ÷ ${g}`,`Vérifie : ${g} × ? = ${t}`], ex:`${t} ÷ ${g} = ${each} graines chacun`}; },
+  () => { const n=R_(2,4), pr=R_(3,9)+pick([0,.5,.25,.75]), tot=n*pr, bil=[10,20,50].find(x=>x>tot+1)||100; return {q:`${Cap(pickA())} achète ${n} paquets à ${eur(pr)} chacun. Il paie avec un billet de ${bil} €. Combien la marchande lui rend-elle ?`, r:+(bil-tot).toFixed(2), u:"€", h:"Deux étapes : d'abord le prix total, ensuite la monnaie.", st:[`Prix total : ${n} × ${eur(pr)} = ?`,`Monnaie : ${bil} € − le prix total`], ex:`${n} × ${eur(pr)} = ${eur(tot)} · ${bil} − ${fr(tot)} = ${eur(bil-tot)}`}; },
+  () => { const t=R_(13,17)*60+pick([0,10,15,20,30,40,45]), d=pick([35,45,50,65,75,90,105]), f=t+d, h=x=>`${Math.floor(x/60)} h ${String(x%60).padStart(2,"0")}`; return {q:`Le film commence à ${h(t)} et se termine à ${h(f)}. Combien de minutes dure-t-il ?`, r:d, u:"min", h:"Compte d'abord jusqu'à l'heure pile, puis ajoute le reste.", st:[`De ${h(t)} à ${Math.floor(t/60)+1} h 00 : ${60-t%60} min`,`Puis jusqu'à ${h(f)}`], ex:`${60-t%60} + ${d-(60-t%60)} = ${d} minutes`}; },
+  () => { const d=pick([2,3,4,5]), tot=d*R_(4,20), n=R_(1,d-1); return {q:`Dans un zoo de ${tot} animaux, ${n}/${d} sont des oiseaux. Combien y a-t-il d'oiseaux ?`, r:tot/d*n, h:`Commence par trouver 1/${d} de ${tot}.`, st:[`1/${d} de ${tot} = ${tot/d}`,`${n}/${d} = ${n} × ${tot/d}`], ex:`${tot} ÷ ${d} × ${n} = ${tot/d*n} oiseaux`}; },
+  () => { const n=R_(3,6), p=R_(2,9)*n, m=R_(7,12); return {q:`${n} gâteaux coûtent ${p} €. Combien coûtent ${m} gâteaux ?`, r:p/n*m, u:"€", h:"Proportionnalité : cherche d'abord le prix d'UN gâteau.", st:[`1 gâteau = ${p} ÷ ${n} = ${p/n} €`,`${m} gâteaux = ${m} × ${p/n}`], ex:`${p} ÷ ${n} × ${m} = ${eur(p/n*m)}`}; },
+  () => { const pr=R_(4,30)*10, pc=pick([10,20,25,50]); return {q:`Un jouet coûte ${pr} €. Il est soldé à −${pc} %. Quel est le nouveau prix ?`, r:pr*(100-pc)/100, u:"€", h:`${pc} % de ${pr}, c'est ${pr} × ${pc} ÷ 100.`, st:[`Réduction : ${pr} × ${pc} ÷ 100 = ${pr*pc/100} €`,`Nouveau prix : ${pr} − réduction`], ex:`${pr} − ${pr*pc/100} = ${eur(pr*(100-pc)/100)}`}; },
+  () => { const v=pick([4,5,6,12,15,60,80,90]), h=R_(2,5); return {q:`${Cap(pickA())} court à ${v} km/h pendant ${h} heures. Quelle distance parcourt-il (en km) ?`, r:v*h, h:"Vitesse en km/h = distance parcourue en 1 heure.", st:[`1 h → ${v} km`,`${h} h → ${h} × ${v}`], ex:`${h} × ${v} = ${v*h} km`}; },
+ ],
+ ge: [
+  () => { const c=R_(3,15); return {q:`Quel est le périmètre d'un carré de ${c} cm de côté ?`, r:4*c, u:"cm", h:"Le périmètre, c'est le tour de la figure : 4 côtés égaux.", st:[`4 × ${c}`], ex:`4 × ${c} = ${4*c} cm`, svg:shp("rect",c,c)}; },
+  () => { const a=R_(1,9), u=pick([["m","cm",100],["km","m",1000],["cm","mm",10]]); return {q:`${a} ${u[0]} = combien de ${u[1]} ?`, r:a*u[2], u:u[1], h:`1 ${u[0]} = ${u[2]} ${u[1]}`, st:[`${a} × ${u[2]}`], ex:`${a} ${u[0]} = ${a*u[2]} ${u[1]}`}; },
+  () => { const L=R_(5,20), l=R_(2,L-1); return {q:`Construis l'enclos ! Combien de mètres de clôture pour un rectangle de ${L} m sur ${l} m ?`, r:2*(L+l), u:"m", h:"Le périmètre fait le tour : 2 longueurs + 2 largeurs.", st:[`2 × ${L} = ${2*L}`,`2 × ${l} = ${2*l}`,`On additionne`], ex:`2 × (${L} + ${l}) = ${2*(L+l)} m`, svg:shp("rect",L,l,"m",1)}; },
+  () => { const L=R_(4,15), l=R_(2,L-1); return {q:`Combien de m² d'herbe faut-il pour couvrir un enclos de ${L} m sur ${l} m ?`, r:L*l, u:"m²", h:"L'aire d'un rectangle = longueur × largeur.", st:[`${L} × ${l}`], ex:`${L} × ${l} = ${L*l} m²`, svg:shp("rect",L,l,"m",2)}; },
+  () => { const a=R_(1,9)*pick([1,1.5,2.5]), u=pick([["kg","g",1000],["L","cL",100],["L","mL",1000]]); return {q:`${fr(a)} ${u[0]} = combien de ${u[1]} ?`, r:a*u[2], u:u[1], h:`1 ${u[0]} = ${u[2]} ${u[1]}`, st:[`${fr(a)} × ${u[2]}`], ex:`${fr(a)} ${u[0]} = ${fr(a*u[2])} ${u[1]}`}; },
+  () => { const a=R_(25,80), b=R_(25,150-a); return {q:`Dans un triangle, deux angles mesurent ${a}° et ${b}°. Combien mesure le troisième ?`, r:180-a-b, u:"°", h:"La somme des angles d'un triangle fait toujours 180°.", st:[`${a} + ${b} = ${a+b}`,`180 − ${a+b}`], ex:`180 − ${a} − ${b} = ${180-a-b}°`, svg:shp("tri",a,b)}; },
+  () => { const b=R_(2,12)*2, h=R_(2,12); return {q:`Quelle est l'aire d'un triangle rectangle dont les côtés de l'angle droit mesurent ${b} cm et ${h} cm ?`, r:b*h/2, u:"cm²", h:"C'est la moitié d'un rectangle : (côté × côté) ÷ 2.", st:[`${b} × ${h} = ${b*h}`,`÷ 2`], ex:`${b} × ${h} ÷ 2 = ${b*h/2} cm²`, svg:shp("rtri",b,h)}; },
+  () => { const r=R_(2,10); return {q:`Quel est le périmètre d'un cercle de rayon ${r} cm ? (prends π ≈ 3,14)`, r:+(2*3.14*r).toFixed(2), u:"cm", h:"Périmètre du cercle = 2 × π × rayon.", st:[`2 × ${r} = ${2*r}`,`${2*r} × 3,14`], ex:`2 × 3,14 × ${r} = ${fr(2*3.14*r)} cm`, svg:shp("circ",r)}; },
+  () => { const r=R_(2,10); return {q:`Quelle est l'aire d'un disque de rayon ${r} cm ? (π ≈ 3,14)`, r:+(3.14*r*r).toFixed(2), u:"cm²", h:"Aire du disque = π × rayon × rayon.", st:[`${r} × ${r} = ${r*r}`,`${r*r} × 3,14`], ex:`3,14 × ${r} × ${r} = ${fr(3.14*r*r)} cm²`, svg:shp("circ",r)}; },
+  () => { const a=R_(15,75); return {q:`Deux angles sont complémentaires (ils font 90° ensemble). L'un mesure ${a}°. Combien mesure l'autre ?`, r:90-a, u:"°", h:"Complémentaires = somme de 90°.", st:[`90 − ${a}`], ex:`90 − ${a} = ${90-a}°`}; },
+ ]
+};
+// générateurs disponibles par niveau (index dans GEN[t])
+const GLV = {
+ ca:[[0,1],[1,2,3],[3,4,5,6],[5,6,7,8],[7,8,9,10]],
+ pb:[[0,1,2],[1,2,3],[3,4,5],[4,5,6,7],[6,7,8,9]],
+ ge:[[0,1],[0,1,2,3],[2,3,4],[3,5,6,7],[5,7,8,9]]
+};
+function shp(k,a,b,u="cm",fill){
+  if (k==="rect"){ const W=Math.min(220,40+a*12), H=Math.min(140,30+b*10), x=(260-W)/2, y=(170-H)/2;
+    return `<svg viewBox="0 0 260 170" class="mshape"><rect x="${x}" y="${y}" width="${W}" height="${H}" fill="${fill===2?"#7cc95a":fill?"#c9f0d6":"#e8e1ff"}" stroke="${fill?"#8b5a2b":"#9b5de5"}" stroke-width="5" ${fill===1?'stroke-dasharray="12 5"':""} rx="3"/><text x="130" y="${y-7}" text-anchor="middle">${a} ${u}</text><text x="${x+W+6}" y="${y+H/2+5}">${b} ${u}</text>${fill?`<text x="130" y="${y+H/2+10}" text-anchor="middle" font-size="30">🐾</text>`:""}</svg>`; }
+  if (k==="tri") return `<svg viewBox="0 0 260 170" class="mshape"><path d="M30 150 L230 150 L110 25 Z" fill="#ffe9c7" stroke="#f08a24" stroke-width="5"/><text x="48" y="140">${a}°</text><text x="190" y="140">${b}°</text><text x="104" y="60">?</text></svg>`;
+  if (k==="rtri") return `<svg viewBox="0 0 260 170" class="mshape"><path d="M60 150 L220 150 L60 30 Z" fill="#d7f3f7" stroke="#00a6a6" stroke-width="5"/><rect x="60" y="134" width="16" height="16" fill="none" stroke="#00a6a6" stroke-width="2"/><text x="130" y="166">${a} cm</text><text x="14" y="95">${b} cm</text></svg>`;
+  if (k==="circ") return `<svg viewBox="0 0 260 170" class="mshape"><circle cx="130" cy="85" r="70" fill="#fde2ff" stroke="#9b5de5" stroke-width="5"/><line x1="130" y1="85" x2="200" y2="85" stroke="#9b5de5" stroke-width="3"/><circle cx="130" cy="85" r="4"/><text x="150" y="78">r = ${a} cm</text></svg>`;
+  return "";
+}
+function mGen(t, lvl){ const list=GLV[t][Math.max(0,Math.min(4,lvl))]; let g; for (let i=0;i<5;i++){ g=GEN[t][pick(list)](); if (g && isFinite(g.r)) break; } g.gi=list; return g; }
+const mNum = v => { const s=String(v).replace(/\s/g,"").replace(",",".").replace(/[^\d.\-]/g,""); return s===""||s==="-"?NaN:+s; };
+
+/* --- écrans --- */
+SCREENS.maths = () => {
+  const m=mathsOf(), k=me();
+  app.innerHTML = hdr("🧮 Maths") + `
+  <div class="card"><div class="label">${AV[k]} ${NAMES[k]} · classe ${esc(CLASSES()[k])}</div><div class="muted small">Ton niveau réel dans chaque thème. Il monte quand tu réussis 3 fois de suite.</div>
+  ${Object.entries(MTH).map(([t,[i,n,c]])=>{ const L=mLvl(k,t), sub=m[t].run; return `<div class="mrow"><b>${i} ${n}</b><span class="mlv" style="background:${c}">${MLV[L]}${m[t].force!=null&&m[t].force!==""?" 🔒":""}</span></div><div class="mbar"><i style="width:${(L*20+Math.min(3,sub)*6.6)}%;background:${c}"></i></div>`; }).join("")}</div>
+  <div class="modes">${Object.entries(MTH).map(([t,[i,n,c]])=>`<button class="mode" style="background:${c}22" onclick="go('mPlay','${t}')"><span class="ic">${i}</span><b>${n}</b><span>Niveau ${MLV[mLvl(k,t)]}</span></button>`).join("")}
+  <button class="mode" style="background:#ffe9c7" onclick="go('mPlay','mix')"><span class="ic">🎲</span><b>Mélange</b><span>Un peu de tout</span></button></div>
+  <div class="muted small" style="text-align:center;margin-top:12px">💡 Bloquée ? Appuie sur « Aide » : indice, puis étapes, puis correction.</div>`;
+};
+let MP=null;
+SCREENS.mPlay = (t) => { MP={t, n:0, ok:0, max:10, aid:0, tries:0}; mNext(); };
+function mNext(twin){
+  if (MP.n>=MP.max) return mEnd();
+  const t = MP.t==="mix" ? pick(Object.keys(MTH)) : MP.t, lvl=mLvl(me(),t);
+  MP.cur = twin && MP.cur ? Object.assign(mGen(MP.cur.tt, MP.cur.lvl), {tt:MP.cur.tt, lvl:MP.cur.lvl, twin:1}) : Object.assign(mGen(t,lvl), {tt:t, lvl});
+  MP.aid=0; MP.tries=0; mDraw();
+}
+function mDraw(msg){
+  const c=MP.cur, [ic,nm_,col]=MTH[c.tt];
+  app.innerHTML = `<div class="top"><button class="back" onclick="go('maths')">✕</button><h2 style="font-size:18px">${ic} ${nm_}</h2><span class="pchip" style="margin-left:auto">${MLV[c.lvl]} · ${MP.n+1}/${MP.max}</span></div>
+  <div class="card">${c.twin?`<div class="muted small" style="margin-bottom:6px">🔁 Un autre du même type pour vérifier</div>`:""}<div class="mq">${esc(c.q)}</div>${c.svg||""}</div>
+  <div class="card"><div class="row"><input id="mans" class="lxin" style="font-size:24px;text-align:center;flex:1" inputmode="decimal" autocomplete="off" placeholder="?" onkeydown="if(event.key==='Enter')mCheck()">${c.u?`<b style="font-size:20px">${c.u}</b>`:""}</div>
+   <div id="mfb">${msg||""}</div>
+   ${mAidHtml()}
+   <div class="row" style="margin-top:12px"><button class="btn ghost" style="flex:1" onclick="mAid()" ${MP.aid>=3?"disabled":""}>💡 Aide ${MP.aid<3?MP.aid+1+"/3":""}</button><button class="btn" style="flex:1;background:var(--ok);color:#fff" onclick="mCheck()">Valider</button></div></div>`;
+  setTimeout(()=>{ const i=document.getElementById("mans"); if (i) i.focus(); },50);
+}
+function mAidHtml(){ const c=MP.cur; let h="";
+  if (MP.aid>=1) h+=`<div class="hint1">💡 <b>Indice :</b> ${esc(c.h)}</div>`;
+  if (MP.aid>=2) h+=`<div class="hint2">🧩 <b>Étapes :</b><br>${c.st.map((s,i)=>`${i+1}. ${esc(s)}`).join("<br>")}</div>`;
+  if (MP.aid>=3) h+=`<div class="hint3">✅ <b>Correction :</b> ${esc(c.ex)}<br><span class="muted small">Recopie la réponse pour continuer, puis tu auras un exercice du même type.</span></div>`;
+  return h; }
+function mAid(){ if (MP.aid<3){ MP.aid++; const v=(document.getElementById("mans")||{}).value; mDraw(); document.getElementById("mans").value=v||""; } }
+function mStat(t, ok){
+  const m=mathsOf()[t], ci=clsIdx(me()); ok?(m.ok++,m.run++,m.bad=0):(m.ko++,m.bad++,m.run=0);
+  if (m.run>=3 && m.lvl<Math.min(4,ci+1)){ m.lvl++; m.run=0; toast(`📈 ${MTH[t][1]} : niveau <b>${MLV[m.lvl]}</b> !`); sndWin(); }
+  if (m.bad>=2 && m.lvl>0){ m.lvl--; m.bad=0; toast(`On revoit un niveau plus simple (${MLV[m.lvl]}) 💪`); }
+}
+function mCheck(){
+  const c=MP.cur, v=mNum((document.getElementById("mans")||{}).value); if (isNaN(v)) return;
+  const ok=Math.abs(v-c.r)<0.011;
+  const p=P(), d=today(); p.days=p.days||{}; const day=p.days[d]=p.days[d]||{ok:0,ko:0,sec:0}; ok?day.ok++:day.ko++; day.sec+=20; p.lastPlayed=Date.now();
+  if (ok){
+    const clean_ = MP.aid===0 && MP.tries===0; sndOk(); if (clean_){ MP.ok++; p.coins=(p.coins||0)+3; p.earned=(p.earned||0)+3; p.totalOk=(p.totalOk||0)+1; addXp(p,5); }
+    if (!c.twin) mStat(c.tt, clean_); save();
+    const needTwin = MP.aid>=2 && !c.twin;
+    document.getElementById("mfb").innerHTML=`<div class="lxok">✓ ${clean_?"Bravo ! 🪙 +3":"C'est juste !"}</div>`;
+    const tm=setTimeout(()=>{ if (needTwin) mNext(true); else { MP.n++; mNext(); } }, 1100); cleanup.push(()=>clearTimeout(tm));
+  } else {
+    sndKo(); MP.tries++;
+    if (MP.tries===1 && MP.aid===0){ MP.aid=1; mDraw(`<div class="lxko">✗ Pas encore. Voici un indice 👇</div>`); }
+    else { if (MP.aid<3) MP.aid++; if (!c.twin && MP.tries===2) mStat(c.tt,false); save(); mDraw(`<div class="lxko">✗ Regarde l'aide ci-dessous 👇</div>`); }
+  }
+}
+function mEnd(){ const ok=MP.ok, n=MP.max; if (ok>=8){ sndWin(); confetti(60); gain(15,15,"🧮 Super série de maths !"); }
+  app.innerHTML = hdr("🏁 Terminé","maths") + `<div class="card" style="text-align:center"><div style="font-size:60px">${ok>=8?"🏆":ok>=5?"👍":"💪"}</div><div class="lxbig">${ok} / ${n}</div><div class="muted">réussis du premier coup sans aide</div></div>
+  <button class="btn block" onclick="go('mPlay','${MP.t}')">🔁 Encore</button><button class="btn ghost block" style="margin-top:10px" onclick="go('maths')">← Maths</button>`; }
+function mathsParentCard(k){ const m=mathsOf(k);
+  return `<div class="card"><div class="label">🧮 Maths de ${NAMES[k]} (${esc(CLASSES()[k])})</div>${Object.entries(MTH).map(([t,[i,n]])=>`<div class="row" style="justify-content:space-between;margin:6px 0"><span>${i} ${n} : <b>${MLV[mLvl(k,t)]}</b> <span class="muted small">(${m[t].ok}✓ ${m[t].ko}✗)</span></span>
+    <select onchange="mForce('${k}','${t}',this.value)" class="msel"><option value="">auto</option>${MLV.map((l,i)=>`<option value="${i}" ${String(m[t].force)===String(i)?"selected":""}>${l}</option>`).join("")}</select></div>`).join("")}<div class="muted small">« auto » = le niveau s'adapte tout seul. Choisis un niveau pour le bloquer.</div></div>`; }
+function mForce(k,t,v){ const m=mathsOf(k); m[t].force = v===""?null:+v; if (v!=="") m[t].lvl=+v; S.profiles[k].updatedAt=Date.now(); persist(); try{ fbPush(k); }catch(e){} toast("✓ Niveau enregistré"); }
+
 /* ================== Badges ================== */
 SCREENS.badges = () => {
   const p=P(), x=xpInfo(p), n=Object.keys(p.badges||{}).length;
@@ -2146,7 +2285,7 @@ function kidCard(k){
     <div id="rwe-${k}"></div></div>`;
 }
 SCREENS.parents = () => {
-  app.innerHTML = hdr("👨‍👧‍👧 Espace parents") + `<button class="btn sun block" style="margin-bottom:14px" onclick="go('lecPapa')">📚 Préparer une leçon pour les filles</button>` + kidCard("lana") + kidCard("sorya") + papaCard() + `
+  app.innerHTML = hdr("👨‍👧‍👧 Espace parents") + `<button class="btn sun block" style="margin-bottom:14px" onclick="go('lecPapa')">📚 Préparer une leçon pour les filles</button>` + kidCard("lana") + mathsParentCard("lana") + kidCard("sorya") + mathsParentCard("sorya") + papaCard() + `
   <div class="card"><div class="label">☁️ Synchronisation</div><div class="muted small">${syncText()}</div>
     ${FAM?`<div class="muted small" style="margin-top:8px">Lien pour relier un autre téléphone (à ouvrir une fois dessus) :</div><div class="famlink" id="fl">${location.origin+location.pathname}#famille=${FAM}</div><button class="btn ghost" style="font-size:14px;margin-top:6px" onclick="copyFam(this)">📋 Copier le lien</button>`:""}</div>
   <div class="card"><div class="label">🔒 Code parent</div><div class="row"><input class="codein small" id="np" inputmode="numeric" maxlength="4" placeholder="Nouveau code"><button class="btn" onclick="setPin()">OK</button></div><div class="muted small" id="pinmsg" style="margin-top:6px"></div></div>`;
