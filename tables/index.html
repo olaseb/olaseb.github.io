@@ -335,6 +335,7 @@ body.p-papa{--me:#f08a24; --me-soft:#ffe8d1}
 <body>
 <div id="app"></div>
 <script src="assets.js"></script>
+<script src="assets2.js"></script>
 <script>
 "use strict";
 /* ============ Données ============ */
@@ -447,13 +448,41 @@ n_diamant:{wf: 0.6, at: [0.5, 0.1], n: "Pendentif diamant", s: "cou", p: 350},
 a_tunique:{wf: 1.0, n: "Tunique de cuir", s: "corps", p: 200},
 a_bronze:{wf: 1.0, n: "Plastron de bronze", s: "corps", p: 350},
 a_acier:{wf: 1.0, n: "Plastron d'acier", s: "corps", p: 450},
-a_chaos:{wf: 1.1, n: "Armure du chaos", s: "corps", p: 600}
+a_chaos:{wf: 1.1, n: "Armure du chaos", s: "corps", p: 600},
+c_dia_rubis:{"wf": 1.35, "at": [0.5, 0.9], "dy": 0.14, "n": "Diadème rubis", "s": "tete", "p": 300},
+c_dia_coq:{"wf": 1.35, "at": [0.5, 0.9], "dy": 0.14, "n": "Diadème coquillage", "s": "tete", "p": 250},
+c_dia_turq:{"wf": 1.35, "at": [0.5, 0.9], "dy": 0.14, "n": "Diadème turquoise", "s": "tete", "p": 350},
+c_dia_emer:{"wf": 1.35, "at": [0.5, 0.9], "dy": 0.14, "n": "Diadème émeraude", "s": "tete", "p": 300},
+c_tiare_rose:{"wf": 1.35, "at": [0.5, 0.9], "dy": 0.14, "n": "Tiare rose", "s": "tete", "p": 450},
+c_tiare_cristal:{"wf": 1.35, "at": [0.5, 0.9], "dy": 0.14, "n": "Tiare de cristal", "s": "tete", "p": 400},
+h_hautforme:{"wf": 0.95, "at": [0.5, 0.92], "dy": 0.15, "n": "Haut-de-forme", "s": "tete", "p": 200},
+h_melon:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Chapeau melon", "s": "tete", "p": 150},
+h_cowboy:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Chapeau de cowboy", "s": "tete", "p": 200},
+h_sherif:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Chapeau de shérif", "s": "tete", "p": 250},
+h_pirate:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Chapeau de pirate", "s": "tete", "p": 250},
+h_capitaine:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Bicorne de capitaine", "s": "tete", "p": 300},
+h_sorciere:{"wf": 0.95, "at": [0.5, 0.92], "dy": 0.15, "n": "Chapeau de sorcière", "s": "tete", "p": 250},
+h_magicien:{"wf": 0.95, "at": [0.5, 0.92], "dy": 0.15, "n": "Chapeau de magicien", "s": "tete", "p": 250},
+h_citrouille:{"wf": 0.95, "at": [0.5, 0.92], "dy": 0.15, "n": "Chapeau citrouille", "s": "tete", "p": 200},
+h_mousquetaire:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Chapeau à plume", "s": "tete", "p": 250},
+h_sherlock:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Chapeau de détective", "s": "tete", "p": 200},
+h_aventurier:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Chapeau d'aventurier", "s": "tete", "p": 200},
+h_capeline:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Capeline à ruban", "s": "tete", "p": 150},
+h_fleur:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Chapeau à fleur", "s": "tete", "p": 200},
+h_noeud:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Capeline à nœud", "s": "tete", "p": 200},
+h_beret:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Béret", "s": "tete", "p": 100},
+h_canotier:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Canotier", "s": "tete", "p": 150},
+h_fez:{"wf": 0.95, "at": [0.5, 0.92], "dy": 0.15, "n": "Fez", "s": "tete", "p": 150},
+h_bob:{"wf": 1.3, "at": [0.5, 0.85], "dy": 0.2, "n": "Bob", "s": "tete", "p": 100},
+s_selle:{"wf": 1.5, "at": [0.5, 0.5], "n": "Selle de cavalier", "s": "selle", "p": 200},
+s_tapis:{"wf": 1.5, "at": [0.5, 0.45], "n": "Tapis de selle", "s": "selle", "p": 150}
 };
 const HORSES = ANIMALS;
 const CATS = [["depart","🐾 Au départ"],["savane","🦒 Savane"],["chevaux","🐴 Chevaux"],["mythiques","🦄 Mythiques"],["dinos","🦖 Dinosaures"],["robots","🤖 Robots"]];
-const SLOTS = {tete:"👑 Tête", cou:"📿 Cou", dos:"🪽 Dos", corps:"🛡️ Corps"};
+const SLOTS = {tete:"👑 Tête", cou:"📿 Cou", dos:"🪽 Dos", selle:"🐴 Selle", corps:"🛡️ Corps"};
 const DEF_HORSE = {papa:"lion"};
 const CLOTH = {lana:"#9b5de5", sorya:"#00a6a6", papa:"#f08a24", cpu:"#6c757d"};
+const SADDLE = {alezan:[.47,.33,.30],palomino:[.47,.33,.30],bai:[.47,.33,.30],blanc:[.47,.33,.30],licorne:[.46,.46,.28],pegase:[.47,.49,.28],zebre:[.60,.40,.30],lion:[.42,.30,.28],tigre:[.55,.36,.25],tigreblanc:[.58,.30,.26]};
 const IMG = {};
 (function(){ const A=window.ASSETS||{}; for (const k in A){ try{ const b64=A[k][0].split(",")[1], bin=atob(b64), u=new Uint8Array(bin.length);
   for (let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); IMG[k]=[URL.createObjectURL(new Blob([u],{type:"image/webp"})),A[k][1],A[k][2]]; }catch(e){ IMG[k]=A[k]; } } })();
@@ -471,6 +500,8 @@ function animalSVG(id, eq, mode){
     return o.rot ? `<g transform="rotate(${-o.rot} ${px.toFixed(1)} ${py.toFixed(1)})">${img}</g>` : img; };
   let back="", front="";
   if (eq.dos){ const p=ACCS[eq.dos]; back=put(eq.dos, fx(A.b[0])*W, A.b[1]*H, p.wf*.5*Math.sqrt(W*H), p.at, p); }
+  if (eq.selle){ const p=ACCS[eq.selle], sd=SADDLE[id]; front+= sd ? put(eq.selle, fx(sd[0])*W, sd[1]*H, sd[2]*W*(p.wf/1.5), p.at)
+    : put(eq.selle, fx(A.b[0]*.6+A.a[0]*.4)*W, A.b[1]*H+A.a[2]*W*.12, p.wf*A.a[2]*W, p.at); }
   if (eq.corps){ const p=ACCS[eq.corps]; front+=put(eq.corps, fx(A.a[0])*W, A.a[1]*H, p.wf*A.a[2]*W, [.5,.5]); }
   if (eq.cou){ const p=ACCS[eq.cou]; front+=put(eq.cou, fx(A.k[0])*W, A.k[1]*H, p.wf*A.k[2]*W, p.at); }
   if (eq.tete){ const p=ACCS[eq.tete], hw=A.h[2]*W; front+=put(eq.tete, fx(A.h[0])*W, A.h[1]*H+p.dy*hw, p.wf*hw, p.at); }
@@ -1560,13 +1591,15 @@ const SHOP = {
   animaux: Object.entries(ANIMALS).map(([k,a])=>({id:"an:"+k, name:a.n, price:a.p, lvl:a.l, cat:a.c})),
   ailes: Object.entries(ACCS).filter(([k,a])=>a.s==="dos").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
   couronnes: Object.entries(ACCS).filter(([k,a])=>a.s==="tete"&&k.startsWith("c_")).map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
+  chapeaux: Object.entries(ACCS).filter(([k,a])=>a.s==="tete"&&k.startsWith("h_")).map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
+  selles: Object.entries(ACCS).filter(([k,a])=>a.s==="selle").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
   casques: Object.entries(ACCS).filter(([k,a])=>a.s==="tete"&&k.startsWith("k_")).map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
   bijoux: Object.entries(ACCS).filter(([k,a])=>a.s==="cou").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
   armures: Object.entries(ACCS).filter(([k,a])=>a.s==="corps").map(([k,a])=>({id:"x:"+k, name:a.n, price:a.p, lvl:0})),
   pistes: [{id:"t:hippo", name:"Hippodrome", price:0, lvl:0},{id:"t:plage", name:"Plage", price:300, lvl:3},{id:"t:haies", name:"Course de haies", price:500, lvl:5}],
   themes: [{id:"th:classique", name:"Classique", price:0, lvl:0},{id:"th:galaxie", name:"Galaxie", price:0, lvl:0}]
 };
-const TABS = [["animaux","🐾 Animaux"],["ailes","🪽 Ailes"],["couronnes","👑 Couronnes"],["casques","⚔️ Casques"],["bijoux","📿 Colliers"],["armures","🛡️ Armures"],["pistes","🏞️ Pistes"],["themes","🎨 Thèmes"]];
+const TABS = [["animaux","🐾 Animaux"],["ailes","🪽 Ailes"],["couronnes","👑 Couronnes"],["chapeaux","🎩 Chapeaux"],["casques","⚔️ Casques"],["selles","🐴 Selles"],["bijoux","📿 Colliers"],["armures","🛡️ Armures"],["pistes","🏞️ Pistes"],["themes","🎨 Thèmes"]];
 const ALLITEMS = Object.values(SHOP).flat();
 const owns = (p,id) => { const it=ALLITEMS.find(x=>x.id===id); return it && (it.price===0 || !!(p.owned||{})[id]); };
 const myAcc = who => cleanEq(((S.profiles[who]||{}).equip||{}).acc);
