@@ -1,22 +1,13 @@
 {
-  "name": "Les Tables de Lana & Sorya",
-  "short_name": "Les Tables",
+  "name": "Lana & Sorya Academy",
+  "short_name": "L&S Academy",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#100f2e",
   "theme_color": "#100f2e",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
   ]
 }

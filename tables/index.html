@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Tables">
+<meta name="apple-mobile-web-app-title" content="L&S Academy">
 <meta name="theme-color" content="#fff6ec">
-<title>Les Tables de Lana & Sorya</title>
+<title>Lana & Sorya Academy</title>
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.json">
@@ -360,7 +360,7 @@ body.p-papa{--me:#f08a24; --me-soft:#ffe8d1}
 </head>
 <body>
 <div id="app"></div>
-<script>const APPV="8";
+<script>const APPV="9";
 (function(){ const chk=()=>fetch(location.pathname+"?x="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{ const m=t.match(/const APPV="(\d+)"/); if (m && m[1]!==APPV){ try{ if (sessionStorage.getItem("upd")===m[1]) return; sessionStorage.setItem("upd",m[1]); }catch(e){} location.replace(location.pathname+"?v="+m[1]+location.hash); } }).catch(()=>{});
   addEventListener("load",()=>setTimeout(chk,1500)); document.addEventListener("visibilitychange",()=>{ if (document.visibilityState==="visible") chk(); }); })();</script>
 <script src="assets.js?v=1"></script>
@@ -567,7 +567,7 @@ const HAIES = `<svg class="bg" viewBox="0 0 390 250" preserveAspectRatio="none" 
   ${[[120,140],[240,140],[120,226],[240,226]].map(([x,y])=>`<g transform="translate(${x} ${y})"><rect x="-14" y="-18" width="4" height="22" fill="#fff"/><rect x="10" y="-18" width="4" height="22" fill="#fff"/><rect x="-16" y="-16" width="32" height="5" rx="2" fill="#ef476f"/><rect x="-16" y="-7" width="32" height="5" rx="2" fill="#fff"/></g>`).join("")}
   <g transform="translate(350 84)"><rect width="5" height="160" fill="#fff"/><rect x="25" width="5" height="160" fill="#fff"/><rect width="30" height="16" fill="#9b5de5"/><text x="15" y="12" font-size="10" text-anchor="middle" fill="#fff" font-weight="800">FIN</text></g></svg>`;
 const SCENES = {hippo:HIPPO, plage:PLAGE, haies:HAIES};
-const LOGO = `<svg class="logo" viewBox="0 0 260 260" role="img" aria-label="Les Tables">
+const LOGO = `<svg class="logo" viewBox="0 0 260 260" role="img" aria-label="Lana & Sorya Academy">
   <defs><radialGradient id="pl" cx=".35" cy=".3"><stop offset="0" stop-color="#e3b8ff"/><stop offset="1" stop-color="#7b2ff7"/></radialGradient>
   <filter id="lg"><feGaussianBlur stdDeviation="3" result="b"/><feFlood flood-color="#c77dff"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
   <rect width="260" height="260" rx="56" fill="#100f2e"/>
@@ -576,7 +576,7 @@ const LOGO = `<svg class="logo" viewBox="0 0 260 260" role="img" aria-label="Les
   <circle cx="130" cy="118" r="56" fill="url(#pl)"/>
   <path d="M38 136 A104 26 -18 0 0 222 100" fill="none" stroke="#29e0d0" stroke-width="7"/>
   <g transform="translate(130 118)"><rect x="-7" y="-28" width="14" height="56" rx="7" fill="#fff" transform="rotate(45)"/><rect x="-7" y="-28" width="14" height="56" rx="7" fill="#fff" transform="rotate(-45)"/></g>
-  <text x="130" y="222" text-anchor="middle" font-family="Baloo 2,Nunito,sans-serif" font-weight="800" font-size="38" fill="#fff" filter="url(#lg)">Les Tables</text></svg>`;
+  <text x="130" y="208" text-anchor="middle" font-family="Baloo 2,Nunito,sans-serif" font-weight="800" font-size="27" fill="#fff" filter="url(#lg)">Lana &amp; Sorya</text><text x="130" y="240" text-anchor="middle" font-family="Baloo 2,Nunito,sans-serif" font-weight="800" font-size="30" fill="#29e0d0" letter-spacing="2" filter="url(#lg)">ACADEMY</text></svg>`;
 
 /* ============ Outils ============ */
 const app = document.getElementById("app");
@@ -723,8 +723,7 @@ SCREENS.home = () => {
   ${me()!=="papa" && rw?`<div class="card rwcard"><span style="font-size:30px">${rw.emoji}</span><div style="flex:1"><b>${esc(rw.label)}</b><div class="pb"><i style="width:${Math.min(100,rp/rw.goal*100)}%"></i></div><div class="muted small">${Math.min(rp,rw.goal)} / ${rw.goal} 🪙${rp>=rw.goal?" · objectif atteint ! 🎉":""}</div></div></div>`:""}
   <div class="modes">
     <button class="mode wide lxhome" onclick="go('lecons')"><span class="ic">📚</span><b>Ma leçon</b><span>${(()=>{ const L=lecOf(me()), st=L.filter(lecStale).length; return L.length ? `${L.length} leçon${L.length>1?"s":""}${st?` · ⏰ ${st} à revoir`:""}` : "Poésie, mots, leçons : révise-les en jouant"; })()}</span></button>
-    <button class="mode wide" style="background:linear-gradient(135deg,#c7b5ff,#9ad8ff)" onclick="go('maths')"><span class="ic">🧮</span><b>Maths</b><span>Problèmes, calcul, géométrie · avec de l'aide</span></button>
-    <button class="mode wide" style="background:linear-gradient(135deg,#ffb3c6,#b8f0c8)" onclick="go('matieres')"><span class="ic">🎒</span><b>Matières</b><span>Français, anglais, histoire-géo, sciences</span></button>
+    <button class="mode wide" style="background:linear-gradient(135deg,#ffb3c6,#b8f0c8)" onclick="go('matieres')"><span class="ic">🎒</span><b>Matières</b><span>Maths, français, anglais, histoire-géo, sciences</span></button>
     <button class="mode" style="background:#ffe8a3" onclick="go('chronoSetup')"><span class="ic">⏱️</span><b>Chrono</b><span>Seule ou en duel</span></button>
     <button class="mode" style="background:#c9f0d6" onclick="go('raceSetup')"><span class="ic">🐎</span><b>Course d'animaux</b><span>Contre l'ordi ou en famille</span></button>
     <button class="mode" style="background:#ffe0cc" onclick="go('cordeSetup')"><span class="ic">🪢</span><b>Tir à la corde</b><span>1c1, équipe ou tournoi</span></button>
@@ -2155,7 +2154,7 @@ const mNum = v => { const s=String(v).replace(/\s/g,"").replace(",",".").replace
 /* --- écrans --- */
 SCREENS.maths = () => {
   const m=mathsOf(), k=me();
-  app.innerHTML = hdr("🧮 Maths") + `
+  app.innerHTML = hdr("🧮 Maths","matieres") + `
   <div class="card"><div class="label">${AV[k]} ${NAMES[k]} · classe ${esc(CLASSES()[k])}</div><div class="muted small">Ton niveau réel dans chaque thème. Il monte quand tu réussis 3 fois de suite.</div>
   ${Object.entries(MTH).map(([t,[i,n,c]])=>{ const L=mLvl(k,t), sub=m[t].run; return `<div class="mrow"><b>${i} ${n}</b><span class="mlv" style="background:${c}">${MLV[L]}${m[t].force!=null&&m[t].force!==""?" 🔒":""}</span></div><div class="mbar"><i style="width:${(L*20+Math.min(3,sub)*6.6)}%;background:${c}"></i></div>`; }).join("")}</div>
   <div class="modes">${Object.entries(MTH).map(([t,[i,n,c]])=>`<button class="mode" style="background:${c}22" onclick="go('mPlay','${t}')"><span class="ic">${i}</span><b>${n}</b><span>Niveau ${MLV[mLvl(k,t)]}</span></button>`).join("")}
@@ -2172,7 +2171,7 @@ function mNext(twin){
 }
 function mDraw(msg){
   const c=MP.cur, [ic,nm_,col]=MTH[c.tt];
-  app.innerHTML = `<div class="top"><button class="back" onclick="go('maths')">✕</button><h2 style="font-size:18px">${ic} ${nm_}</h2><span class="pchip" style="margin-left:auto">${MLV[c.lvl]} · ${MP.n+1}/${MP.max}</span></div>
+  app.innerHTML = `<div class="top"><button class="back" onclick="go('matieres')">✕</button><h2 style="font-size:18px">${ic} ${nm_}</h2><span class="pchip" style="margin-left:auto">${MLV[c.lvl]} · ${MP.n+1}/${MP.max}</span></div>
   <div class="card">${c.twin?`<div class="muted small" style="margin-bottom:6px">🔁 Un autre du même type pour vérifier</div>`:""}<div class="mq">${esc(c.q)}</div>${c.svg||""}</div>
   <div class="card"><div class="row"><input id="mans" class="lxin" style="font-size:24px;text-align:center;flex:1" inputmode="decimal" autocomplete="off" placeholder="?" onkeydown="if(event.key==='Enter')mCheck()">${c.u?`<b style="font-size:20px">${c.u}</b>`:""}</div>
    <div id="mfb">${msg||""}</div>
@@ -2208,8 +2207,8 @@ function mCheck(){
   }
 }
 function mEnd(){ const ok=MP.ok, n=MP.max; if (ok>=8){ sndWin(); confetti(60); gain(15,15,"🧮 Super série de maths !"); }
-  app.innerHTML = hdr("🏁 Terminé","maths") + `<div class="card" style="text-align:center"><div style="font-size:60px">${ok>=8?"🏆":ok>=5?"👍":"💪"}</div><div class="lxbig">${ok} / ${n}</div><div class="muted">réussis du premier coup sans aide</div></div>
-  <button class="btn block" onclick="go('mPlay','${MP.t}')">🔁 Encore</button><button class="btn ghost block" style="margin-top:10px" onclick="go('maths')">← Maths</button>`; }
+  app.innerHTML = hdr("🏁 Terminé","matieres") + `<div class="card" style="text-align:center"><div style="font-size:60px">${ok>=8?"🏆":ok>=5?"👍":"💪"}</div><div class="lxbig">${ok} / ${n}</div><div class="muted">réussis du premier coup sans aide</div></div>
+  <button class="btn block" onclick="go('mPlay','${MP.t}')">🔁 Encore</button><button class="btn ghost block" style="margin-top:10px" onclick="go('matieres')">← Matières</button>`; }
 function mathsParentCard(k){ const m=mathsOf(k);
   return `<div class="card"><div class="label">🧮 Maths de ${NAMES[k]} (${esc(CLASSES()[k])})</div>${Object.entries(MTH).map(([t,[i,n]])=>`<div class="row" style="justify-content:space-between;margin:6px 0"><span>${i} ${n} : <b>${MLV[mLvl(k,t)]}</b> <span class="muted small">(${m[t].ok}✓ ${m[t].ko}✗)</span></span>
     <select onchange="mForce('${k}','${t}',this.value)" class="msel"><option value="">auto</option>${MLV.map((l,i)=>`<option value="${i}" ${String(m[t].force)===String(i)?"selected":""}>${l}</option>`).join("")}</select></div>`).join("")}<div class="muted small">« auto » = le niveau s'adapte tout seul. Choisis un niveau pour le bloquer.</div></div>`; }
@@ -2381,7 +2380,9 @@ function matQ(s, t, lvl, seen){
 }
 SCREENS.matieres = () => {
   const k=me();
-  app.innerHTML = hdr("🎒 Matières") + `<div class="muted small" style="margin:-6px 0 12px">Le niveau de chaque thème s'adapte tout seul (classe : ${esc(CLASSES()[k])}).</div>` +
+  app.innerHTML = hdr("🎒 Matières") + `<div class="muted small" style="margin:-6px 0 12px">Le niveau de chaque thème s'adapte tout seul (classe : ${esc(CLASSES()[k])}).</div>
+  <div class="card"><div class="label" style="color:#7b2ff7">🧮 Maths <span class="muted small">· avec indice, étapes et correction</span></div><div class="lxgames">${Object.entries(MTH).map(([t,[i,n,c]])=>`<button style="background:${c}" onclick="go('mPlay','${t}')">${i} ${n}<span class="mtag">${MLV[mLvl(k,t)]}</span></button>`).join("")}<button style="background:#7b2ff7" onclick="go('mPlay','mix')">🎲 Mélange<span class="mtag">un peu de tout</span></button></div>
+  <button class="linkbtn small" style="margin-top:8px" onclick="go('maths')">📊 Voir mes niveaux en maths</button></div>` +
   Object.entries(MAT).map(([s,M])=>`<div class="card"><div class="label" style="color:${M.c}">${M.i} ${M.n}</div><div class="lxgames">${Object.entries(M.t).map(([t,T])=>`<button style="background:${M.c}" onclick="go('matPlay','${s}','${t}')">${T.i} ${T.n}<span class="mtag">${MLV[matSt(k,s,t).lvl]}</span></button>`).join("")}</div></div>`).join("");
 };
 let MQ=null;
