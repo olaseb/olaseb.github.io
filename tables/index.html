@@ -376,7 +376,7 @@ body.p-papa{--me:#f08a24; --me-soft:#ffe8d1}
 </head>
 <body>
 <div id="app"></div>
-<script>const APPV="11";
+<script>const APPV="12";
 (function(){ const chk=()=>fetch(location.pathname+"?x="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{ const m=t.match(/const APPV="(\d+)"/); if (m && m[1]!==APPV){ try{ if (sessionStorage.getItem("upd")===m[1]) return; sessionStorage.setItem("upd",m[1]); }catch(e){} location.replace(location.pathname+"?v="+m[1]+location.hash); } }).catch(()=>{});
   addEventListener("load",()=>setTimeout(chk,1500)); document.addEventListener("visibilitychange",()=>{ if (document.visibilityState==="visible") chk(); }); })();</script>
 <script src="assets.js?v=1"></script>
@@ -2190,6 +2190,11 @@ const GEN = {
   () => { const a=R_(12,95)/10, b=R_(2,9); return {q:`${fr(a)} × ${b} = ?`, r:+(a*b).toFixed(2), h:`Calcule ${Math.round(a*10)} × ${b} sans la virgule, puis remets-la.`, st:[`${Math.round(a*10)} × ${b} = ${Math.round(a*10)*b}`,`1 chiffre après la virgule`], ex:`${fr(a)} × ${b} = ${fr(a*b)}`}; },
   () => { const a=R_(2,9), b=R_(2,9), c=R_(2,9); return {q:`(${a} + ${b}) × ${c} = ?`, r:(a+b)*c, h:"Les parenthèses se calculent en premier.", st:[`${a} + ${b} = ${a+b}`,`${a+b} × ${c}`], ex:`(${a} + ${b}) × ${c} = ${a+b} × ${c} = ${(a+b)*c}`}; },
   () => { const a=R_(-9,9)||3, b=R_(-9,9)||-4; return {q:`(${a}) + (${b}) = ?`, r:a+b, h:"Signes différents : on fait la différence et on garde le signe du plus « grand » sans le signe.", st:[`Distance à zéro : ${Math.abs(a)} et ${Math.abs(b)}`], ex:`(${a}) + (${b}) = ${a+b}`}; },
+  () => { const a=R_(12,49), b=R_(12,39); return {q:`${a} × ${b} = ?`, r:a*b, h:`Pose la multiplication : ${a} × ${b%10}, puis ${a} × ${Math.floor(b/10)*10}.`, st:[`${a} × ${b%10} = ${a*(b%10)}`,`${a} × ${Math.floor(b/10)*10} = ${a*Math.floor(b/10)*10}`,`On additionne les deux lignes`], ex:`${a*(b%10)} + ${a*Math.floor(b/10)*10} = ${a*b}`}; },
+  () => { const a=R_(105,489), b=R_(12,48); return {q:`${a} × ${b} = ?`, r:a*b, h:`Pose la multiplication en deux lignes : × ${b%10} puis × ${Math.floor(b/10)*10}.`, st:[`${a} × ${b%10} = ${a*(b%10)}`,`${a} × ${Math.floor(b/10)*10} = ${a*Math.floor(b/10)*10}`,`On additionne`], ex:`${a*(b%10)} + ${a*Math.floor(b/10)*10} = ${a*b}`}; },
+  () => { const a=R_(11,49)/10, b=R_(11,29)/10; return {q:`${fr(a)} × ${fr(b)} = ?`, r:+(a*b).toFixed(2), h:`Calcule ${Math.round(a*10)} × ${Math.round(b*10)} sans virgule, puis mets 2 chiffres après la virgule.`, st:[`${Math.round(a*10)} × ${Math.round(b*10)} = ${Math.round(a*10)*Math.round(b*10)}`,`1 + 1 = 2 chiffres après la virgule`], ex:`${fr(a)} × ${fr(b)} = ${fr(a*b)}`}; },
+  () => { const b=R_(3,9), q=R_(21,99), a=b*q; return {q:`${a} ÷ ${b} = ?`, r:q, h:`Pose la division : combien de fois ${b} dans ${String(a).slice(0,String(a).length-1)} ?`, st:[`${b} × ${Math.floor(q/10)*10} = ${b*Math.floor(q/10)*10}`,`Il reste ${a-b*Math.floor(q/10)*10} à partager`], ex:`${b} × ${q} = ${a}, donc ${a} ÷ ${b} = ${q}`}; },
+  () => { const b=pick([2,4,5]), q=R_(11,99)/10*(b===4?1:1), a=+(b*q).toFixed(2); return {q:`${fr(a)} ÷ ${b} = ?`, r:+q.toFixed(2), h:`Divise comme d'habitude et place la virgule quand tu « descends » le chiffre après la virgule.`, st:[`${Math.round(a*10)} ÷ ${b} = ${fr(Math.round(a*10)/b)} dixièmes`], ex:`${fr(a)} ÷ ${b} = ${fr(q)}`}; },
  ],
  pb: [
   () => { const A=pickA(), a=R_(25,89), b=R_(8,a-5); return {q:`${Cap(A)} a ${a} bambous. Il en mange ${b}. Combien lui en reste-t-il ?`, r:a-b, h:"Il en a MOINS à la fin : c'est une soustraction.", st:[`On part de ${a}`,`On enlève ${b}`], ex:`${a} − ${b} = ${a-b} bambous`}; },
@@ -2218,7 +2223,7 @@ const GEN = {
 };
 // générateurs disponibles par niveau (index dans GEN[t])
 const GLV = {
- ca:[[0,1],[1,2,3],[3,4,5,6],[5,6,7,8],[7,8,9,10]],
+ ca:[[0,1,2],[1,2,3,11],[3,4,5,6,11,12],[5,6,7,8,12,13],[7,8,9,10,12,13]],
  pb:[[0,1,2],[1,2,3],[3,4,5],[4,5,6,7],[6,7,8,9]],
  ge:[[0,1],[0,1,2,3],[2,3,4],[3,5,6,7],[5,7,8,9]]
 };
@@ -2245,14 +2250,17 @@ SCREENS.maths = () => {
 };
 let MP=null;
 SCREENS.mPlay = (t) => { MP={t, n:0, ok:0, max:10, aid:0, tries:0}; mNext(); };
+const MSUB = {mu:{n:"Multiplications", i:"✖️", l:[[1],[1,11],[11,12],[12,13,8],[12,13,8]]}, dv:{n:"Divisions", i:"➗", l:[[2],[2,4],[4,14],[4,14,15],[14,15]]}};
+function mGen2(sub, lvl){ const L=MSUB[sub].l[Math.max(0,Math.min(4,lvl))]; return GEN.ca[pick(L)](); }
 function mNext(twin){
   if (MP.n>=MP.max) return mEnd();
-  const t = MP.t==="mix" ? pick(Object.keys(MTH)) : MP.t, lvl=mLvl(me(),t);
-  MP.cur = twin && MP.cur ? Object.assign(mGen(MP.cur.tt, MP.cur.lvl), {tt:MP.cur.tt, lvl:MP.cur.lvl, twin:1}) : Object.assign(mGen(t,lvl), {tt:t, lvl});
+  const sub = MSUB[MP.t] ? MP.t : null, t = sub ? "ca" : MP.t==="mix" ? pick(Object.keys(MTH)) : MP.t, lvl=mLvl(me(),t);
+  const gen = (tt,lv) => sub ? mGen2(sub, lv) : mGen(tt, lv);
+  MP.cur = twin && MP.cur ? Object.assign(gen(MP.cur.tt, MP.cur.lvl), {tt:MP.cur.tt, lvl:MP.cur.lvl, twin:1}) : Object.assign(gen(t,lvl), {tt:t, lvl});
   MP.aid=0; MP.tries=0; mDraw();
 }
 function mDraw(msg){
-  const c=MP.cur, [ic,nm_,col]=MTH[c.tt];
+  const c=MP.cur, [ic,nm_,col] = MSUB[MP.t] ? [MSUB[MP.t].i, MSUB[MP.t].n] : MTH[c.tt];
   app.innerHTML = `<div class="top"><button class="back" onclick="go(MP.adv?'aventure':'matieres')">✕</button><h2 style="font-size:18px">${ic} ${nm_}</h2><span class="pchip" style="margin-left:auto">${MLV[c.lvl]} · ${MP.n+1}/${MP.max}</span></div>
   <div class="card">${petHtml()}${c.twin?`<div class="muted small" style="margin-bottom:6px">🔁 Un autre du même type pour vérifier</div>`:""}<div class="mq">${esc(c.q)}</div>${c.svg||""}</div>
   <div class="card"><div class="row"><input id="mans" class="lxin" style="font-size:24px;text-align:center;flex:1" inputmode="decimal" autocomplete="off" placeholder="?" onkeydown="if(event.key==='Enter')mCheck()">${c.u?`<b style="font-size:20px">${c.u}</b>`:""}</div>
@@ -2463,7 +2471,7 @@ function matQ(s, t, lvl, seen){
 SCREENS.matieres = () => {
   const k=me();
   app.innerHTML = hdr("🎒 Matières") + `<div class="muted small" style="margin:-6px 0 12px">Le niveau de chaque thème s'adapte tout seul (classe : ${esc(CLASSES()[k])}).</div>
-  <div class="card"><div class="label" style="color:#7b2ff7">🧮 Maths <span class="muted small">· avec indice, étapes et correction</span></div><div class="lxgames">${Object.entries(MTH).map(([t,[i,n,c]])=>`<button style="background:${c}" onclick="go('mPlay','${t}')">${i} ${n}<span class="mtag">${MLV[mLvl(k,t)]}</span></button>`).join("")}<button style="background:#7b2ff7" onclick="go('mPlay','mix')">🎲 Mélange<span class="mtag">un peu de tout</span></button><button style="background:#ef476f;grid-column:span 2" onclick="go('pbSetup')">⚔️ Duel de problèmes en famille<span class="mtag">chacun à son niveau</span></button><button style="background:#2bb673;grid-column:span 2" onclick="go('aventure')">🗺️ L'aventure de mon animal<span class="mtag">un problème par étape · coffre au bout</span></button></div>
+  <div class="card"><div class="label" style="color:#7b2ff7">🧮 Maths <span class="muted small">· avec indice, étapes et correction</span></div><div class="lxgames">${Object.entries(MTH).map(([t,[i,n,c]])=>`<button style="background:${c}" onclick="go('mPlay','${t}')">${i} ${n}<span class="mtag">${MLV[mLvl(k,t)]}</span></button>`).join("")}<button style="background:#3a86ff" onclick="go('mPlay','mu')">✖️ Multiplications<span class="mtag">posées · ${MLV[mLvl(k,"ca")]}</span></button><button style="background:#06a77d" onclick="go('mPlay','dv')">➗ Divisions<span class="mtag">posées · ${MLV[mLvl(k,"ca")]}</span></button><button style="background:#7b2ff7;grid-column:span 2" onclick="go('mPlay','mix')">🎲 Mélange<span class="mtag">un peu de tout</span></button><button style="background:#ef476f;grid-column:span 2" onclick="go('pbSetup')">⚔️ Duel de problèmes en famille<span class="mtag">chacun à son niveau</span></button><button style="background:#2bb673;grid-column:span 2" onclick="go('aventure')">🗺️ L'aventure de mon animal<span class="mtag">un problème par étape · coffre au bout</span></button></div>
   <button class="linkbtn small" style="margin-top:8px" onclick="go('maths')">📊 Voir mes niveaux en maths</button></div>` +
   Object.entries(MAT).map(([s,M])=>`<div class="card"><div class="label" style="color:${M.c}">${M.i} ${M.n}</div><div class="lxgames">${Object.entries(M.t).map(([t,T])=>`<button style="background:${M.c}" onclick="go('matPlay','${s}','${t}')">${T.i} ${T.n}<span class="mtag">${MLV[matSt(k,s,t).lvl]}</span></button>`).join("")}</div></div>`).join("");
 };
