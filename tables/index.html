@@ -118,6 +118,7 @@ h1,h2,h3,.big,.q{font-family:"Baloo 2",Nunito,sans-serif;margin:0}
 
 /* Quiz */
 .hud{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.pzb{font-size:18px;flex:none}.top .pzb{margin-left:auto}.top .pchip+.pzb,.top [style*="margin-left:auto"]+.pzb{margin-left:0}.hud .pzb{margin-right:auto}.pzcard{width:min(90vw,380px)}
 .pill{background:var(--card);border-radius:99px;padding:6px 14px;font-weight:800;box-shadow:0 2px 0 var(--line)}
 .bar{height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin-bottom:10px}
 .bar i{display:block;height:100%;background:var(--me);border-radius:99px;transition:width .25s linear}
@@ -322,6 +323,11 @@ html:has(body.th-galaxie){background:#100f2e}
 .stabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.stabs button{flex:1 1 28%;padding:9px 2px;border-radius:12px;background:var(--card);font-weight:800;font-size:12px;box-shadow:0 2px 0 var(--line)}
 .stabs button.on{background:var(--me);color:#fff}
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stry{width:100%;position:relative;display:block;background:none;padding:0}.stry>svg{width:100%;height:96px;overflow:visible;display:block}.stry .tprev{pointer-events:none}.tryb{position:absolute;right:2px;bottom:0;font-style:normal;font-size:11px;font-weight:800;background:var(--me);color:#fff;border-radius:10px;padding:2px 7px;opacity:.9}
+.trysheet{width:min(92vw,400px);max-height:88vh;overflow-y:auto}.trypv{height:210px;margin:6px 0}.trypv>svg{display:block;width:100%;height:210px;overflow:visible}.trypv .tprev{height:150px;margin-top:30px}.trypv.arm,.trypv.arm>svg{height:170px}.trypv.z{background:var(--bg,#f4eefc);border-radius:18px}.trypv.z>svg{overflow:hidden}
+.seg2{display:flex;gap:6px;justify-content:center;margin:4px 0}.seg2 button{flex:1;padding:9px;border-radius:12px;font-weight:800;background:var(--card);box-shadow:0 0 0 2px var(--line)}.seg2 button.on{background:var(--me);color:#fff;box-shadow:none}
+.arow{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 6px;scrollbar-width:none}.arow button{flex:none;width:84px;padding:6px 4px;border-radius:14px;background:var(--card);box-shadow:0 0 0 2px var(--line);display:flex;flex-direction:column;align-items:center;gap:2px}
+.arow button.on{box-shadow:0 0 0 3px var(--ok);background:rgba(43,182,115,.1)}.arow svg{width:74px;height:56px;overflow:visible}.arow i{font-style:normal;font-size:11px;font-weight:800;line-height:1.1;max-height:2.2em;overflow:hidden}.anone{height:56px;display:grid;place-items:center;font-size:30px;color:var(--muted)}
 .sitem{background:var(--card);border-radius:18px;padding:8px 8px 10px;text-align:center;box-shadow:0 3px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:4px}
 .sitem>svg{width:100%;height:96px;overflow:visible}.shead{grid-column:1/-1;font-weight:900;font-size:16px;margin:10px 2px 0;color:var(--me)}
 .mypet{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:8px 12px;margin-bottom:10px;box-shadow:0 3px 0 var(--line)}.mypet>svg{width:120px;height:90px;flex:none;overflow:visible}
@@ -381,7 +387,7 @@ body.p-papa{--me:#f08a24; --me-soft:#ffe8d1}
 </head>
 <body>
 <div id="app"></div>
-<script>const APPV="14";
+<script>const APPV="15";
 (function(){ const chk=()=>fetch(location.pathname+"?x="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{ const m=t.match(/const APPV="(\d+)"/); if (m && m[1]!==APPV){ try{ if (sessionStorage.getItem("upd")===m[1]) return; sessionStorage.setItem("upd",m[1]); }catch(e){} location.replace(location.pathname+"?v="+m[1]+location.hash); } }).catch(()=>{});
   addEventListener("load",()=>setTimeout(chk,1500)); document.addEventListener("visibilitychange",()=>{ if (document.visibilityState==="visible") chk(); }); })();</script>
 <script src="assets.js?v=1"></script>
@@ -560,6 +566,11 @@ function animalSVG(id, eq, mode){
   if (eq.tete){ const p=ACCS[eq.tete], hw=A.h[2]*W; front+=put(eq.tete, fx(A.h[0])*W, A.h[1]*H+p.dy*hw, p.wf*hw, p.at); }
   const body=`<image href="${u}" x="0" y="0" width="${W}" height="${H}"${L?` transform="translate(${W} 0) scale(-1 1)"`:""}/>`;
   let vb;
+  if (mode && mode.zoom){ const z=mode.zoom, hw=A.h[2]*W;
+    const pt = z==="tete" ? [fx(A.h[0])*W, A.h[1]*H-hw*.35, hw*3.4] : z==="cou" ? [fx(A.k[0])*W, A.k[1]*H, Math.max(A.k[2]*W*3.4, hw*3)]
+      : z==="dos" ? [fx(A.b[0])*W, A.b[1]*H-W*.1, W*.8] : [fx(A.a[0])*W, A.a[1]*H, W*.75];
+    vb=[pt[0]-pt[2]/2, pt[1]-pt[2]/2, pt[2], pt[2]];
+    return `<svg viewBox="${vb.map(v=>v.toFixed(1)).join(" ")}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${back}${body}${front}</svg>`; }
   if (mode==="race"){ const bw=W*1.15, bh=Math.max(H*1.15, bw*.75); vb=[-(bw-W)/2, H-bh+H*.02, bw, bh]; }
   else { const pw=(x1-x0)*.04, ph=(y1-y0)*.04; vb=[x0-pw, y0-ph, x1-x0+2*pw, y1-y0+2*ph]; }
   return `<svg viewBox="${vb.map(v=>v.toFixed(1)).join(" ")}" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><ellipse cx="${W/2}" cy="${H*.985}" rx="${W*.38}" ry="${H*.03}" fill="rgba(0,0,0,.16)"/>${back}${body}${front}</svg>`;
@@ -671,11 +682,51 @@ function confetti(n=80){
 
 /* ============ Navigation ============ */
 let cleanup = [];
-function clearAll(){ cleanup.forEach(fn=>{try{fn()}catch(e){}}); cleanup=[]; answerHandler=null; }
+function clearAll(){ cleanup.forEach(fn=>{try{fn()}catch(e){}}); cleanup=[]; answerHandler=null; pzReset(); }
 let CUR=null;
 function go(screen, ...args){ CUR={screen, args}; clearAll(); document.body.className = "p-"+me()+" th-"+S.settings.theme; app.className=""; const tc=document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = S.settings.theme==="galaxie" ? "#100f2e" : "#fff6ec"; SCREENS[screen](...args); window.scrollTo(0,0);
   if (PETC.has(screen) && !document.getElementById("pet")) try{ app.insertAdjacentHTML("beforeend", `<div class="pet petcorner" id="pet">${animalSVG(myHorse(me()), myAcc(me()))}</div>`); }catch(e){} }
 const PETC = new Set(["chrono","dailyPlay","defiPlay","errorsPlay","memory","balloonsPlay","vfPlay"]);
+/* ---- Pause ---- */
+let PZ=0, PZT=0, PZH=null;
+const gnow = () => (PZ||Date.now()) - PZT;
+const PZS = new Set(["chrono","dailyPlay","defiPlay","errorsPlay","memory","balloonsPlay","vfPlay","raceView","duel","mPlay","matPlay","ttPlay","lecQuiz","lecTrous","lecReciter","lecDictee","lecSchema"]);
+const pzOn = () => CUR && PZS.has(CUR.screen) && !(NET && !NET.host) && !(RACE && RACE.tour);
+function pzReset(){ PZ=0; PZT=0; PZH=null; const o=document.getElementById("pzov"); if (o) o.remove(); }
+function pzBtn(){
+  if (!pzOn() || document.getElementById("pzb")) return;
+  const b='<button class="back pzb" id="pzb" onclick="pauseGame()" aria-label="Pause">⏸️</button>', h=app.querySelector(".hud"), t=app.querySelector(".top");
+  if (h){ const f=h.querySelector(".back"); f ? f.insertAdjacentHTML("afterend", b) : h.insertAdjacentHTML("afterbegin", b); }
+  else if (t) t.insertAdjacentHTML("beforeend", b);
+}
+new MutationObserver(()=>{ try{ pzBtn(); }catch(e){} }).observe(app, {childList:true, subtree:true});
+function pauseGame(remote){
+  if (PZ || !CUR || !PZS.has(CUR.screen)) return;
+  if (!remote && NET && !NET.host) return;
+  PZ=Date.now();
+  try{ if (RACE && RACE.engine && RACE.engine.pause) RACE.engine.pause(); }catch(e){}
+  try{ PZH && PZH.pause && PZH.pause(); }catch(e){}
+  if (NET && NET.host && !remote) try{ bcast({t:"pz", on:1}); }catch(e){}
+  const guest=!!remote, solo=!NET, canRe=solo && !["raceView","duel"].includes(CUR.screen);
+  const hw=NET && NET.players && NET.players.host && NET.players.host.who;
+  const o=document.createElement("div"); o.className="overlay"; o.id="pzov";
+  o.innerHTML=`<div class="card result pzcard"><div style="font-size:56px;line-height:1.1">⏸️</div><h2>Pause</h2>
+    <div class="muted" style="margin-bottom:12px">${guest?`${hw?nm(hw):"La partie"} a mis la partie en pause. Elle reprendra toute seule.`:"Le temps est arrêté. Rien n'est perdu."}</div>
+    ${guest?"":`<button class="btn block" style="background:var(--ok);color:#fff" onclick="resumeGame()">▶️ Reprendre</button>
+    ${canRe?`<button class="btn ghost block" style="margin-top:8px" onclick="pzRestart()">🔄 Recommencer</button>`:""}
+    <button class="btn ghost block" style="margin-top:8px" onclick="pzQuit()">✕ Quitter${NET?" la partie":""}</button>`}</div>`;
+  document.body.appendChild(o);
+}
+function resumeGame(remote){
+  if (!PZ) return; if (!remote && NET && !NET.host) return;
+  PZT+=Date.now()-PZ; PZ=0; const o=document.getElementById("pzov"); if (o) o.remove();
+  try{ if (RACE && RACE.engine && RACE.engine.resume) RACE.engine.resume(); }catch(e){}
+  try{ PZH && PZH.resume && PZH.resume(); }catch(e){}
+  if (NET && NET.host && !remote) try{ bcast({t:"pz", on:0}); }catch(e){}
+}
+function pzQuit(){ const b=app.querySelector(".hud .back:not(.pzb), .top .back:not(.pzb)"); pzReset(); if (b) b.click(); else go("home"); }
+function pzRestart(){ const c=CUR; pzReset(); go(c.screen, ...(c.args||[])); }
+document.addEventListener("visibilitychange", ()=>{ if (document.visibilityState==="hidden") try{ if (pzOn()) pauseGame(); }catch(e){} });
 const hdr = (title, back="home") => `<div class="top"><button class="back" onclick="go('${back}')" aria-label="Retour">←</button><h2>${title}</h2></div>`;
 
 /* ============ Zone de réponse (clavier ou 4 choix) ============ */
@@ -828,7 +879,7 @@ SCREENS.chronoSetup = () => {
   </div>`;
 };
 SCREENS.chrono = () => {
-  const dur=S.settings.chronoDur, tables=activeTables(), total=dur*60000, end=Date.now()+total;
+  const dur=S.settings.chronoDur, tables=activeTables(), total=dur*60000, end=gnow()+total;
   let score=0, errs=0, f=null, busy=false;
   app.className="play";
   app.innerHTML = `<div class="hud"><button class="back" onclick="go('chronoSetup')">✕</button><span class="pill" id="time">${dur}:00</span><span class="pill">✅ <span id="sc">0</span></span></div>
@@ -840,7 +891,7 @@ SCREENS.chrono = () => {
     else { errs++; sndKo(); feedback(false,f); busy=true; setTimeout(next, 1400); }
   };
   const iv = setInterval(()=>{
-    const left=Math.max(0,end-Date.now()), s=Math.ceil(left/1000);
+    const left=Math.max(0,end-gnow()), s=Math.ceil(left/1000);
     document.getElementById("time").textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
     document.getElementById("tb").style.width = (left/total*100)+"%";
     if (left<=0){ clearInterval(iv); finish(); }
@@ -948,6 +999,9 @@ function Engine(o){
     }
   };
   E.stop = () => { clearT(); E.over=true; };
+  E.pause = () => { if (E.over || E.pz) return; clearT(); E.pz=Date.now(); };
+  E.resume = () => { if (!E.pz) return; const d=Date.now()-E.pz; E.pz=0; if (E.over) return; if (E.t0) E.t0+=d;
+    if (E.r===0 || E.done) E.timers.push(setTimeout(E.round, 900)); else if (o.roles.includes("cpu") && !E.locked.cpu) cpuPlay(); };
   return E;
 }
 function startCpu(kind){
@@ -1313,7 +1367,7 @@ function playerLeft(r){
   if (RACE || CHR){ if (RACE && RACE.engine) RACE.engine.stop(); showLost(`${nm(who)} a quitté la partie.`); }
 }
 function showLost(msg){
-  if (RACE && RACE.engine) RACE.engine.stop(); answerHandler=null; clearOv();
+  if (RACE && RACE.engine) RACE.engine.stop(); answerHandler=null; clearOv(); pzReset();
   const o=document.createElement("div"); o.className="overlay"; o.id="ov";
   o.innerHTML=`<div class="card result" style="width:min(90vw,400px)"><div style="font-size:60px">📡</div><h2>Partie interrompue</h2><div class="muted" style="margin:8px 0 16px">${msg}</div><button class="btn" onclick="quitAny()">OK</button></div>`;
   document.body.appendChild(o);
@@ -1350,6 +1404,7 @@ function guestMsg(d){
   if (d.t==="cstart"){ RACE=null; chronoRun(d); return; }
   if (d.t==="cscores"){ chronoScores(d.scores); return; }
   if (d.t==="cend"){ chronoEnd(d); return; }
+  if (d.t==="pz"){ d.on ? pauseGame(true) : resumeGame(true); return; }
   if (RACE) raceEvent(d);
 }
 
@@ -1378,8 +1433,8 @@ function chronoRun(ev){
     else { sndKo(); feedback(false,f); setTimeout(next, 1300); }
   };
   countdown();
-  const t0=setTimeout(()=>{ end=Date.now()+total; next();
-    const iv=setInterval(()=>{ const left=Math.max(0,end-Date.now()), sc=Math.ceil(left/1000);
+  const t0=setTimeout(()=>{ end=gnow()+total; next();
+    const iv=setInterval(()=>{ const left=Math.max(0,end-gnow()), sc=Math.ceil(left/1000);
       const te=document.getElementById("time"); if (te) te.textContent=`${Math.floor(sc/60)}:${String(sc%60).padStart(2,"0")}`;
       const tb=document.getElementById("tb"); if (tb) tb.style.width=(left/total*100)+"%";
       if (left<=0){ clearInterval(iv); answerHandler=null;
@@ -1463,11 +1518,11 @@ SCREENS.defi = () => {
 };
 SCREENS.defiPlay = (t) => {
   const list = shuffle([...Array(11).keys()]).map(m=>Math.random()<.5?fact(t,m):fact(m,t));
-  let i=0, errs=0, busy=false; const t0=Date.now();
+  let i=0, errs=0, busy=false; const t0=gnow();
   app.className="play";
   app.innerHTML = `<div class="hud"><button class="back" onclick="go('defi')">✕</button><span class="pill">Table de ${t}</span><span class="pill" id="tm">0 s</span></div>
     <div class="bar"><i id="pb" style="width:0%"></i></div><div class="qbox" id="qb"></div><div id="aa"></div>`;
-  const iv=setInterval(()=>{ const e=document.getElementById("tm"); if(e) e.textContent=Math.floor((Date.now()-t0)/1000)+" s"; },250); cleanup.push(()=>clearInterval(iv));
+  const iv=setInterval(()=>{ const e=document.getElementById("tm"); if(e) e.textContent=Math.floor((gnow()-t0)/1000)+" s"; },250); cleanup.push(()=>clearInterval(iv));
   const show = () => { busy=false; const f=list[i]; document.getElementById("pb").style.width=(i/11*100)+"%";
     document.getElementById("qb").innerHTML=qHtml(f); document.getElementById("aa").innerHTML=answerArea(f); };
   answerHandler = (v, el) => {
@@ -1476,7 +1531,7 @@ SCREENS.defiPlay = (t) => {
     setTimeout(()=>{ i++; if (i<11) show(); else end(); }, ok?300:1500);
   };
   function end(){
-    clearAll(); const sec=Math.round((Date.now()-t0)/1000), n = errs===0&&sec<=45 ? 3 : errs<=1 ? 2 : errs<=3 ? 1 : 0;
+    const sec=Math.round((gnow()-t0)/1000); clearAll(); const n = errs===0&&sec<=45 ? 3 : errs<=1 ? 2 : errs<=3 ? 1 : 0;
     const old=P().stars[t]||0; if (n>old){ P().stars[t]=n; save(); if (n===3) gain(30,30,"⭐ 3 étoiles !"); else gain(10,10,"⭐ Nouvelle étoile !"); }
     if (n===3){ sndWin(); confetti(); } else if (n>0) sndOk();
     app.innerHTML = hdr("⭐ Table de "+t,"defi") + `<div class="card result"><div style="font-size:44px">${stars(n)}</div>
@@ -1507,7 +1562,7 @@ SCREENS.memory = () => {
     if (!used.has(f.ans)){ used.add(f.ans); facts.push(f); }
   }
   const cards = shuffle(facts.flatMap((f,i)=>[{p:i,l:fmt(f)},{p:i,l:String(f.ans)}]));
-  let open=[], moves=0, found=0, lock=false; const t0=Date.now();
+  let open=[], moves=0, found=0, lock=false; const t0=gnow();
   app.innerHTML = `<div class="hud"><button class="back" onclick="go('memorySetup')">✕</button><span class="pill">Coups : <span id="mv">0</span></span><span class="pill">Paires : <span id="fd">0</span>/6</span></div>
     <div class="mgrid">${cards.map((c,i)=>`<div class="mcard" id="c${i}" onclick="memFlip(${i})"><div class="cb">?</div><div class="face" style="${c.l.length>4?"font-size:24px":""}">${c.l}</div></div>`).join("")}</div>`;
   window.memFlip = i => {
@@ -1521,7 +1576,7 @@ SCREENS.memory = () => {
     }
   };
   function end(){
-    const sec=Math.round((Date.now()-t0)/1000), b=P().memory, old=b[memT], rec=!old||moves<old;
+    const sec=Math.round((gnow()-t0)/1000), b=P().memory, old=b[memT], rec=!old||moves<old;
     if (rec){ b[memT]=moves; save(); } gain(10,10, rec?"🃏 Record !":"🃏 Bravo !");
     setTimeout(()=>{ sndWin(); confetti();
       app.innerHTML = hdr("🃏 Bravo !","memorySetup") + `<div class="card result"><div style="font-size:70px">🃏</div><h2>${rec?"🏆 Nouveau record !":"Toutes les paires trouvées !"}</h2>
@@ -1556,10 +1611,10 @@ SCREENS.balloonsPlay = () => {
       el.onpointerdown = e=>{ e.preventDefault(); hit(it); };
       sky.appendChild(el); items.push(it);
     });
-    t0=performance.now(); cancelAnimationFrame(raf); raf=requestAnimationFrame(loop);
+    t0=gnow(); cancelAnimationFrame(raf); raf=requestAnimationFrame(loop);
   }
-  function loop(now){
-    const H=sky.clientHeight; let escaped=false;
+  function loop(){
+    const now=gnow(), H=sky.clientHeight; let escaped=false;
     for (const it of items){ const p=Math.max(0,(now-t0-it.delay)/D);
       it.el.style.top = (H - p*(H+150)) + "px"; it.el.style.marginLeft = (-39 + Math.sin(now/400+it.wob)*8)+"px";
       if (it.v===f.ans && p>=1) escaped=true; }
@@ -1597,7 +1652,7 @@ SCREENS.vf = () => {
   <div class="muted" style="text-align:center;margin-top:14px">🏆 Record de ${NAMES[me()]} : <b>${P().vf}</b></div>`;
 };
 SCREENS.vfPlay = () => {
-  const tables=activeTables(); let end=Date.now()+60000, score=0, f=null, shown=0, truth=true, busy=false, streak=0;
+  const tables=activeTables(); let end=gnow()+60000, score=0, f=null, shown=0, truth=true, busy=false, streak=0;
   app.innerHTML = `<div class="hud"><button class="back" onclick="go('vf')">✕</button><span class="pill" id="time">60 s</span><span class="pill">✅ <span id="sc">0</span></span></div>
     <div class="bar"><i id="tb" style="width:100%"></i></div>
     <div class="qbox"><div class="q" id="q"></div><div class="fb" id="fb"></div></div>
@@ -1609,7 +1664,7 @@ SCREENS.vfPlay = () => {
     if (ok){ score++; streak++; sndOk(); document.getElementById("sc").textContent=score; feedback(true,f, streak>=5?`🔥 ${streak} d'affilée !`:"Oui !"); next(); }
     else { streak=0; sndKo(); end-=2000; busy=true; feedback(false,f); setTimeout(next, 1100); }
   };
-  const iv=setInterval(()=>{ const left=Math.max(0,end-Date.now()); document.getElementById("time").textContent=Math.ceil(left/1000)+" s";
+  const iv=setInterval(()=>{ const left=Math.max(0,end-gnow()); document.getElementById("time").textContent=Math.ceil(left/1000)+" s";
     document.getElementById("tb").style.width=(left/600)+"%"; if (left<=0){ clearInterval(iv); fin(); } },150);
   cleanup.push(()=>clearInterval(iv));
   document.addEventListener("keydown", kd); cleanup.push(()=>document.removeEventListener("keydown", kd));
@@ -1726,7 +1781,7 @@ const SHOP = {
   pistes: [{id:"t:hippo", name:"Hippodrome", price:0, lvl:0},{id:"t:plage", name:"Plage", price:300, lvl:3},{id:"t:haies", name:"Course de haies", price:500, lvl:5}],
   themes: [{id:"th:classique", name:"Classique", price:0, lvl:0},{id:"th:galaxie", name:"Galaxie", price:0, lvl:0}]
 };
-const TABS = [["animaux","🐾 Animaux"],["ailes","🪽 Ailes"],["couronnes","👑 Couronnes"],["chapeaux","🎩 Chapeaux"],["casques","⚔️ Casques"],["selles","🐴 Selles"],["rares","✨ Rares"],["bijoux","📿 Colliers"],["armures","🛡️ Armures"],["pistes","🏞️ Pistes"],["themes","🎨 Thèmes"]];
+const TABS = [["armoire","🧺 Mon armoire"],["animaux","🐾 Animaux"],["ailes","🪽 Ailes"],["couronnes","👑 Couronnes"],["chapeaux","🎩 Chapeaux"],["casques","⚔️ Casques"],["selles","🐴 Selles"],["rares","✨ Rares"],["bijoux","📿 Colliers"],["armures","🛡️ Armures"],["pistes","🏞️ Pistes"],["themes","🎨 Thèmes"]];
 const ALLITEMS = Object.values(SHOP).flat();
 const owns = (p,id) => { const it=ALLITEMS.find(x=>x.id===id); return it && ((it.price===0 && !it.rare) || !!(p.owned||{})[id]); };
 const myAcc = who => cleanEq(((S.profiles[who]||{}).equip||{}).acc);
@@ -1739,7 +1794,7 @@ function isEquipped(p, id){
 }
 let shopTab="animaux";
 SCREENS.shop = (tab) => {
-  if (tab) shopTab=tab; if (!SHOP[shopTab]) shopTab="animaux"; const p=P(), L=lvlOf(p), mine=myHorse(me()), acc=myAcc(me());
+  if (tab) shopTab=tab; if (!SHOP[shopTab] && shopTab!=="armoire") shopTab="animaux"; const p=P(), L=lvlOf(p), mine=myHorse(me()), acc=myAcc(me());
   const prev = it => { const [c,k]=it.id.split(":");
     if (c==="an") return animalSVG(k, isEquipped(p,it.id)?acc:{});
     if (c==="x"){ const m=IMG[k]; return m ? `<svg viewBox="0 0 ${m[1]} ${m[2]}" aria-hidden="true"><image href="${m[0]}" width="${m[1]}" height="${m[2]}"/></svg>` : ""; }
@@ -1752,14 +1807,15 @@ SCREENS.shop = (tab) => {
       : it.rare ? `<span class="price">🎁 Dans les coffres</span>`
       : lock ? `<span class="price">🔒 Niveau ${it.lvl}</span>`
       : `<button class="price ${poor?"poor":""}" onclick="buy('${it.id}',this)">🪙 ${it.price}</button>`;
-    return `<div class="sitem ${lock?"lock":""}">${prev(it)}<b>${it.name}</b>${btn}</div>`; };
-  const list = shopTab==="animaux"
+    return `<div class="sitem ${lock?"lock":""}"><button class="stry" onclick="shopTry('${it.id}')" aria-label="Essayer ${esc(it.name)}">${prev(it)}${it.id.startsWith("x:")||it.id.startsWith("an:")?`<i class="tryb">👀 Essayer</i>`:""}</button><b>${it.name}</b>${btn}</div>`; };
+  const list = shopTab==="armoire" ? armoireHtml(p)
+    : shopTab==="animaux"
     ? CATS.map(([c,l])=>`<div class="shead">${l}${c==="mythiques"?" · niveau 4":c==="dinos"?" · niveau 5":c==="robots"?" · niveau 6":""}</div>`+SHOP.animaux.filter(it=>it.cat===c).map(card).join("")).join("")
     : SHOP[shopTab].map(card).join("");
   app.innerHTML = hdr("🛍️ Boutique") + `<div class="coinsrow"><span class="pchip">🪙 ${p.coins||0}</span></div>
   <div class="mypet">${animalSVG(mine, acc)}<div><b>${ANIMALS[mine].n}</b><div class="muted small">${Object.keys(acc).length?Object.keys(acc).map(s=>ACCS[acc[s]].n).join(" · "):"Aucun accessoire"}</div></div></div>
   <div class="stabs">${TABS.map(([k,l])=>`<button class="${shopTab===k?"on":""}" onclick="go('shop','${k}')">${l}</button>`).join("")}</div>
-  <div class="sgrid">${list}</div>
+  ${shopTab==="armoire"?list:`<div class="sgrid">${list}</div>`}
   <div class="muted small" style="text-align:center;margin-top:12px">Chaque bonne réponse rapporte 🪙 1. Les victoires, records et défis en rapportent plus !</div>
   <div class="muted small" style="text-align:center;margin-top:8px;opacity:.7">Illustrations : Graphics RF, Surya Ali Zaidan, Mastuti Mastuti (Vecteezy) · Freepik</div>`;
 };
@@ -1767,8 +1823,65 @@ function buy(id, el){
   const p=P(), it=ALLITEMS.find(x=>x.id===id); if (!it) return;
   if ((p.coins||0) < it.price){ toast(`Il te manque <b>🪙 ${it.price-(p.coins||0)}</b>`); return; }
   if (!el.dataset.c){ el.dataset.c=1; el.textContent="Acheter ?"; el.classList.add("confirm"); setTimeout(()=>{ if (el.isConnected){ delete el.dataset.c; el.textContent=`🪙 ${it.price}`; el.classList.remove("confirm"); } },3000); return; }
-  p.coins-=it.price; p.owned=p.owned||{}; p.owned[id]=Date.now(); sndWin(); confetti(50);
-  toast(`🛍️ <b>${it.name}</b> est à toi !`); equip(id, true);
+  purchase(id);
+}
+function purchase(id){
+  const p=P(), it=ALLITEMS.find(x=>x.id===id); if (!it || owns(p,id)) return;
+  if ((p.coins||0) < it.price){ toast(`Il te manque <b>🪙 ${it.price-(p.coins||0)}</b>`); return; }
+  p.coins-=it.price; p.owned=p.owned||{}; p.owned[id]=Date.now(); save(); sndWin(); confetti(50);
+  const [c]=id.split(":"), verb = c==="an"?"Le choisir maintenant":c==="x"?"L'équiper maintenant":"L'utiliser maintenant";
+  shopSheet(`<div style="font-size:15px;font-weight:800;color:var(--muted)">🛍️ Acheté !</div><div class="trypv">${tryPreview(id)}</div><h2 style="margin:4px 0 2px">${it.name} est à toi !</h2>
+    <div class="muted small" style="margin-bottom:12px">Tu le retrouves dans 🧺 Mon armoire.</div>
+    <button class="btn block" style="background:var(--ok);color:#fff" onclick="shopClose();equip('${id}',true)">✓ ${verb}</button>
+    <button class="btn ghost block" style="margin-top:8px" onclick="shopClose();shopRe()">Plus tard</button>`);
+}
+/* --- essayage --- */
+function shopSheet(html){ shopClose(); const o=document.createElement("div"); o.className="overlay"; o.id="shopov"; o.onclick=e=>{ if (e.target===o){ shopClose(); } };
+  o.innerHTML=`<div class="card result trysheet">${html}</div>`; document.body.appendChild(o); }
+function shopClose(){ const o=document.getElementById("shopov"); if (o) o.remove(); }
+function shopRe(){ const y=scrollY; go("shop"); scrollTo(0,y); }
+function tryPreview(id, zoom){
+  const [c,k]=id.split(":"), acc=Object.assign({}, myAcc(me()));
+  if (c==="an") return animalSVG(k, acc);
+  if (c==="x"){ acc[ACCS[k].s]=k; return animalSVG(myHorse(me()), acc, zoom?{zoom:ACCS[k].s}:undefined); }
+  if (c==="t") return `<div class="tprev" style="height:150px">${SCENES[k]}</div>`;
+  return `<div class="tprev th-${k}" style="height:150px"><span>${k==="galaxie"?"🌌":"☀️"}</span></div>`;
+}
+let TRYZ=false;
+function shopTry(id, z){
+  const p=P(), it=ALLITEMS.find(x=>x.id===id); if (!it) return; TRYZ = z==null ? false : z;
+  const [c,k]=id.split(":"), own=owns(p,id), eq=own&&isEquipped(p,id), lock=!own && lvlOf(p)<it.lvl, isX=c==="x";
+  const act = eq ? (isX ? `<button class="btn ghost block" onclick="shopClose();equip('${id}')">Enlever</button>` : `<div class="muted" style="margin:6px 0">✓ Déjà ${c==="an"?"choisi":"utilisé"}</div>`)
+    : own ? `<button class="btn block" style="background:var(--ok);color:#fff" onclick="shopClose();equip('${id}',true)">✓ ${isX?"Le mettre":"Le choisir"}</button>`
+    : it.rare ? `<div class="muted" style="margin:6px 0">🎁 Objet rare : on le gagne dans les coffres</div>`
+    : lock ? `<div class="muted" style="margin:6px 0">🔒 Disponible au niveau ${it.lvl}</div>`
+    : `<button class="btn block" style="background:var(--sun);color:#3a2600" onclick="purchase('${id}')">Acheter · 🪙 ${it.price}</button>${(p.coins||0)<it.price?`<div class="muted small" style="margin-top:4px">Il te manque 🪙 ${it.price-(p.coins||0)}</div>`:""}`;
+  shopSheet(`<div style="font-size:15px;font-weight:800;color:var(--muted)">👀 Essayage</div>
+    <div class="trypv ${TRYZ?"z":""}">${tryPreview(id, TRYZ)}</div>
+    ${isX?`<div class="seg2"><button class="${TRYZ?"":"on"}" onclick="shopTry('${id}',false)">Tout l'animal</button><button class="${TRYZ?"on":""}" onclick="shopTry('${id}',true)">🔍 Zoom</button></div>`:""}
+    <h2 style="margin:6px 0 10px">${it.name}</h2>${act}
+    <button class="btn ghost block" style="margin-top:8px" onclick="shopClose()">Fermer</button>`);
+}
+/* --- armoire --- */
+function armoireHtml(p){
+  const mine=myHorse(me()), acc=myAcc(me());
+  const anim=ALLITEMS.filter(it=>it.id.startsWith("an:") && owns(p,it.id));
+  const row=(items, curK, fn, none)=>`<div class="arow">${none?`<button class="${curK?"":"on"}" onclick="${none}"><span class="anone">∅</span><i>Rien</i></button>`:""}${items.map(it=>{ const k=it.id.split(":")[1], m=IMG[k];
+    return `<button class="${curK===k?"on":""}" onclick="${fn(k)}">${it.id.startsWith("an:")?animalSVG(k,{}):m?`<svg viewBox="0 0 ${m[1]} ${m[2]}" aria-hidden="true"><image href="${m[0]}" width="${m[1]}" height="${m[2]}"/></svg>`:""}<i>${it.name}</i></button>`; }).join("")}</div>`;
+  let h=`<div class="card" style="text-align:center"><div class="trypv arm">${animalSVG(mine, acc)}</div><div class="muted small">Touche un objet pour l'équiper, ∅ pour l'enlever</div></div>`;
+  h+=`<div class="card"><div class="label">🐾 Mes animaux (${anim.length})</div>${row(anim, mine, k=>`armSet('an','${k}')`)}</div>`;
+  let any=false;
+  for (const [sl,lab] of Object.entries(SLOTS)){
+    const items=ALLITEMS.filter(it=>it.id.startsWith("x:") && ACCS[it.id.slice(2)] && ACCS[it.id.slice(2)].s===sl && owns(p,it.id)); if (!items.length) continue; any=true;
+    h+=`<div class="card"><div class="label">${lab}</div>${row(items, acc[sl]||"", k=>`armSet('${sl}','${k}')`, `armSet('${sl}','')`)}</div>`; }
+  if (!any) h+=`<div class="card muted" style="text-align:center">Pas encore d'accessoire. Va voir 🪽 Ailes, 👑 Couronnes ou 🎩 Chapeaux !</div>`;
+  return h;
+}
+function armSet(sl, k){
+  const p=P();
+  if (sl==="an") p.horse=k;
+  else { p.equip.acc=cleanEq(p.equip.acc); if (k) p.equip.acc[sl]=k; else delete p.equip.acc[sl]; }
+  save(); sndOk(); shopRe();
 }
 function equip(id, force){
   const p=P(), [c,k]=id.split(":");
@@ -1822,6 +1935,7 @@ function normLec(l){
   l.parts=(Array.isArray(l.parts)?l.parts:Object.values(l.parts||{})).filter(Boolean);
   l.q=(Array.isArray(l.q)?l.q:Object.values(l.q||{})).filter(Boolean).map(q=>Object.assign(q,{ch:Array.isArray(q.ch)?q.ch:Object.values(q.ch||{})}));
   l.marks=(Array.isArray(l.marks)?l.marks:Object.values(l.marks||{})).filter(Boolean);
+  l.red=(Array.isArray(l.red)?l.red:Object.values(l.red||{})).filter(Boolean);
   l.st=l.st||{}; return l;
 }
 for (const k of PROFILES) for (const id in LEC[k]) normLec(LEC[k][id]);
@@ -1915,8 +2029,8 @@ SCREENS.lecNew = (addTo) => {
   const src = (k,l)=>`<button class="${LN.src===k?"on":""}" onclick="LN.src='${k}';lnKeep();go('lecNew'${addTo?`,'${addTo}'`:""})">${l}</button>`;
   app.innerHTML = hdr(add?"➕ Ajouter un morceau":"➕ Nouvelle leçon", add?`lecon','${addTo}`:"lecons") + `
   ${add?`<div class="card"><b>${esc(add.t)}</b><div class="muted small">Le nouveau morceau sera ajouté à la suite</div></div>`:""}
-  <div class="card"><div class="label">1. D'où vient ${add?"le morceau":"la leçon"} ?</div><div class="lxchips">${src("photo","📷 Photo (texte imprimé)")}${src("type","⌨️ Je tape")}${add?"":src("ia","📋 Coller (IA)")}</div>
-    ${LN.src==="photo"?`<label class="btn ghost block" style="margin-top:10px">📷 Prendre / choisir la photo<input type="file" accept="image/*" capture="environment" hidden onchange="lnPhoto(this)"></label><div id="ocr" class="muted small" style="margin-top:6px">${LN.photo?"✓ Photo prête":""}</div>`:""}
+  <div class="card"><div class="label">1. D'où vient ${add?"le morceau":"la leçon"} ?</div><div class="lxchips">${src("photo","📷 Photo / PDF")}${src("type","⌨️ Je tape")}${add?"":src("ia","📋 Coller (IA)")}</div>
+    ${LN.src==="photo"?`<label class="btn ghost block" style="margin-top:10px">📷 Photo ou 📄 PDF<input type="file" accept="image/*,application/pdf,.pdf" hidden onchange="lnPhoto(this)"></label><div class="muted small" style="margin-top:6px">Prends la feuille en photo, choisis une image ou un PDF. Les mots en <b style="color:#e23b4b">rouge</b> deviennent les trous (ils apparaissent entre *étoiles*).</div><div id="ocr" class="muted small" style="margin-top:6px">${LN.photo?"✓ Photo prête":""}</div>`:""}
     ${LN.src==="ia"?`<div class="muted small" style="margin-top:8px">Colle ici la réponse de ChatGPT ou Claude (le bloc qui commence par { ). <button class="linkbtn" onclick="go('lecPapa')">Comment faire ?</button></div>`:""}</div>
   <div class="card"><div class="label">${LN.src==="ia"?"2. Réponse de l'IA":LN.src==="photo"?"2. Le texte lu sur la photo (corrige si besoin)":"2. Écris le contenu"}</div>
     <textarea id="lntext" class="lxta" rows="8" placeholder="${LN.src==="ia"?"{ \"titre\": … }":esc(lnHelp())}" oninput="LN.text=this.value;lnSug()">${esc(LN.text)}</textarea></div>
@@ -1929,36 +2043,112 @@ SCREENS.lecNew = (addTo) => {
 function lnHelp(){ return ({poesie:"Un vers par ligne.", mots:"Un mot par ligne (ou séparés par des virgules).", defs:"Une ligne par mot : mot : définition", dates:"Une ligne par date : 1789 : Révolution française", questions:"Une ligne par question : Question ? réponse", texte:"Le texte de la leçon. Des textes à trous seront créés automatiquement."})[LN.type]||""; }
 function lnKeep(){ const t=document.getElementById("lntext"); if (t) LN.text=t.value; const ti=document.getElementById("lntitle"); if (ti && LN.titleEdited) LN.title=ti.value; }
 function lnSug(){ const ti=document.getElementById("lntitle"); if (ti && !LN.titleEdited) ti.value=suggestTitle(LN.type,LN.sub,LN.text); }
+/* --- lecture d'une photo / d'un PDF, avec repérage des mots en rouge --- */
+function loadImg(src){ return new Promise((ok,ko)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=ko; i.src=src; }); }
+function redAt(ctx, x0, y0, x1, y1){
+  x0=Math.max(0,Math.floor(x0)); y0=Math.max(0,Math.floor(y0)); const w=Math.max(1,Math.ceil(x1)-x0), h=Math.max(1,Math.ceil(y1)-y0);
+  let d; try { d=ctx.getImageData(x0,y0,w,h).data; } catch(e){ return false; }
+  let ink=0, red=0;
+  for (let i=0;i<d.length;i+=4){ const r=d[i], g=d[i+1], b=d[i+2]; if (r+g+b>610) continue; ink++; if (r>120 && r-g>60 && r-b>40) red++; }
+  return ink>4 && red/ink>0.35;
+}
+const starW = t => { const m=t.match(/^([«"'(\[]*)(.*?)([»"'.,;:!?)\]]*)$/); return m && m[2] ? `${m[1]}*${m[2]}*${m[3]}` : t; };
+const starJoin = t => t.replace(/\*([^*\n]+)\*([ \t]+)\*([^*\n]+)\*/g, "*$1$2$3*").replace(/\*([^*\n]+)\*([ \t]+)\*([^*\n]+)\*/g, "*$1$2$3*");
+async function ocrImage(src, o){
+  if (!window.Tesseract) await loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js");
+  const r=await Tesseract.recognize(src, "fra", {logger:m=>{ if (m.status==="recognizing text" && o) o.textContent=`⏳ Lecture… ${Math.round(m.progress*100)} %`; }});
+  let ctx=null; try { const im=await loadImg(src), c=document.createElement("canvas"); c.width=im.naturalWidth; c.height=im.naturalHeight; ctx=c.getContext("2d",{willReadFrequently:true}); ctx.drawImage(im,0,0); } catch(e){}
+  const paras=(r.data.paragraphs||[]);
+  if (!paras.length || !ctx) return (r.data.text||"").trim();
+  const good = l => { const ws=l.words||[], t=ws.map(w=>w.text||"").join(""), conf=ws.reduce((a,w)=>a+(w.confidence||0),0)/Math.max(1,ws.length);
+    return ws.length && conf>=55 && (t.match(/[A-Za-zÀ-ÿ]/g)||[]).length >= t.length*.6; };
+  const out=paras.map(p=>(p.lines||[]).filter(good).map(l=>(l.words||[]).map(w=>{ const b=w.bbox, t=w.text||""; return t && redAt(ctx,b.x0,b.y0,b.x1,b.y1) ? starW(t) : t; }).join(" ")).join("\n")).join("\n\n");
+  return starJoin(out.replace(/\*\*/g,"")).replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+}
+async function pdfLib(){
+  if (!window.pdfjsLib){ await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+    pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; }
+  return pdfjsLib;
+}
+async function readPdf(file, o){
+  const lib=await pdfLib(), doc=await lib.getDocument({data:await file.arrayBuffer()}).promise, n=Math.min(doc.numPages, 8), texts=[]; let first=null;
+  for (let pn=1; pn<=n; pn++){
+    if (o) o.textContent=`⏳ Lecture du PDF… page ${pn}/${n}`;
+    const page=await doc.getPage(pn), vp=page.getViewport({scale:2}), c=document.createElement("canvas"); c.width=Math.round(vp.width); c.height=Math.round(vp.height);
+    const ctx=c.getContext("2d",{willReadFrequently:true}); ctx.fillStyle="#fff"; ctx.fillRect(0,0,c.width,c.height);
+    await page.render({canvasContext:ctx, viewport:vp}).promise;
+    if (pn===1){ const s=Math.min(1,1280/Math.max(c.width,c.height)), d=document.createElement("canvas"); d.width=Math.round(c.width*s); d.height=Math.round(c.height*s); d.getContext("2d").drawImage(c,0,0,d.width,d.height); first=d.toDataURL("image/jpeg",.62); }
+    const tc=await page.getTextContent(); let txt="", lastY=null;
+    for (const it of tc.items){ if (!it.str && !it.hasEOL) continue;
+      const m=lib.Util.transform(vp.transform, it.transform), x=m[4], y=m[5], fh=Math.hypot(m[2],m[3]) || 12, w=(it.width||0)*vp.scale;
+      if (lastY!=null && Math.abs(y-lastY)>fh*.5){ if (!txt.endsWith("\n")) txt+="\n"; if (Math.abs(y-lastY)>fh*2.4) txt+="\n"; }
+      const parts=it.str.split(/(\s+)/), L=it.str.length||1; let pos=0;
+      for (const p of parts){ const a=x+w*pos/L, b=x+w*(pos+p.length)/L; pos+=p.length;
+        if (!p.trim()){ txt+=p; continue; }
+        txt+= redAt(ctx, a, y-fh*.8, b, y+fh*.15) ? starW(p) : p; }
+      if (it.hasEOL) txt+="\n"; lastY=y; }
+    txt=starJoin(txt.replace(/[ \t]+/g," ").replace(/ *\n */g,"\n")).replace(/\n{3,}/g,"\n\n").trim();
+    if (txt.replace(/\W/g,"").length<20){ if (o) o.textContent=`⏳ Page ${pn} scannée, lecture…`; txt=await ocrImage(c.toDataURL("image/png"), o); }
+    texts.push(txt);
+  }
+  return {text:texts.filter(Boolean).join("\n\n"), photo:first};
+}
 async function lnPhoto(inp){
-  const f=inp.files&&inp.files[0]; if (!f) return; const o=document.getElementById("ocr");
-  try { LN.photo=await shrinkPhoto(f); } catch(e){ o.textContent="Photo illisible"; return; }
-  o.innerHTML="⏳ Lecture du texte… (la 1re fois peut prendre 20 s)";
+  const f=inp.files&&inp.files[0]; if (!f) return; const o=document.getElementById("ocr"); inp.value="";
+  const isPdf=/pdf/i.test(f.type) || /\.pdf$/i.test(f.name||"");
+  o.innerHTML = isPdf ? "⏳ Ouverture du PDF…" : "⏳ Lecture du texte… (la 1re fois peut prendre 20 s)";
   try {
-    if (!window.Tesseract) await loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js");
-    const r=await Tesseract.recognize(LN.photo, "fra", {logger:m=>{ if (m.status==="recognizing text" && o) o.textContent=`⏳ Lecture… ${Math.round(m.progress*100)} %`; }});
-    const txt=(r.data.text||"").replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+    let txt;
+    if (isPdf){ const r=await readPdf(f, o); txt=r.text; if (r.photo) LN.photo=r.photo; }
+    else { try { LN.photo=await shrinkPhoto(f, 1600); } catch(e){ o.textContent="Photo illisible"; return; } txt=await ocrImage(LN.photo, o); }
     LN.text=(LN.text?LN.text+"\n":"")+txt; const t=document.getElementById("lntext"); if (t){ t.value=LN.text; lnSug(); }
-    o.innerHTML = txt ? "✓ Texte lu. Vérifie et corrige les erreurs éventuelles." : "Je n'ai pas réussi à lire le texte. Tu peux le taper.";
-  } catch(e){ o.textContent="Lecture impossible (pas de réseau ?). La photo est gardée, tu peux taper le texte."; }
+    const nr=(txt.match(/\*[^*\n]+\*/g)||[]).length;
+    o.innerHTML = txt ? `✓ Texte lu${nr?` · <b style="color:#e23b4b">${nr} mot${nr>1?"s":""} en rouge</b> → trous`:""}. Vérifie et corrige si besoin.` : "Je n'ai pas réussi à lire le texte. Tu peux le taper.";
+  } catch(e){ o.textContent = isPdf ? "Je n'arrive pas à ouvrir ce PDF (pas de réseau ?). Tu peux faire une capture d'écran." : "Lecture impossible (pas de réseau ?). La photo est gardée, tu peux taper le texte."; }
+}
+/* mots entre *étoiles* = trous choisis */
+function redSplit(t){ const red=[]; const text=String(t||"").replace(/\*([^*\n]{1,60})\*/g,(m,w)=>{ red.push(w.trim()); return w; }).replace(/\*/g,""); return {text, red}; }
+function lecRedPos(l, toks){
+  const flat=[]; toks.forEach((t,li)=>t.forEach((w,wi)=>{ if (wi%2===1) flat.push([li,wi,w]); })); const out=[]; let cur=0;
+  for (const ph of (l.red||[])){ const ws=String(ph).split(/[^A-Za-zÀ-ÖØ-öø-ÿœŒæÆ'-]+/).filter(Boolean).map(norm); if (!ws.length) continue;
+    for (let i=cur; i+ws.length<=flat.length; i++){ if (ws.every((w,j)=>norm(flat[i+j][2])===w)){ for (let j=0;j<ws.length;j++) if (flat[i+j][2].length>=2) out.push(flat[i+j]); cur=i+ws.length; break; } } }
+  return out;
+}
+function redWords(l){ const set=new Set(); (l.red||[]).forEach(r=>String(r).split(/[^A-Za-zÀ-ÖØ-öø-ÿœŒæÆ0-9'-]+/).forEach(w=>{ if (w.length>=2) set.add(norm(w)); })); return set; }
+/* JSON de l'IA : répare les guillemets et retours à la ligne cassés par le copier-coller */
+function jsonFix(s){
+  s=s.replace(/[“”„‟″＂]/g,'"').replace(/ /g," ");
+  let out="", inS=false;
+  for (let i=0;i<s.length;i++){ const c=s[i];
+    if (!inS){ out+=c; if (c==='"') inS=true; continue; }
+    if (c==="\\"){ out+=c+(s[i+1]||""); i++; continue; }
+    if (c==='"'){ let j=i+1; while (j<s.length && /\s/.test(s[j])) j++; const n=s[j];
+      let close = n===undefined || n===":" || n==="}" || n==="]";
+      if (n===","){ let k=j+1; while (k<s.length && /\s/.test(s[k])) k++; close = /["{\[\d\-tfn\]}]/.test(s[k]||"}"); }
+      if (close){ out+=c; inS=false; } else out+='\\"'; continue; }
+    if (c==="\n"){ out+="\\n"; continue; } if (c==="\r") continue; if (c==="\t"){ out+=" "; continue; }
+    out+=c; }
+  return out.replace(/,\s*([}\]])/g,"$1");
 }
 function parseIA(raw){
   const a=raw.indexOf("{"), b=raw.lastIndexOf("}"); if (a<0||b<a) throw 0;
-  const j=JSON.parse(raw.slice(a,b+1).replace(/[“”]/g,'"'));
+  const blk=raw.slice(a,b+1); let j; try { j=JSON.parse(blk); } catch(e){ j=JSON.parse(jsonFix(blk)); }
   const tmap={poesie:"poesie","poésie":"poesie",mots:"mots",definitions:"defs","définitions":"defs",defs:"defs",dates:"dates",questions:"questions",texte:"texte",cours:"texte"};
   const smap={"français":"fr",francais:"fr",maths:"ma","mathématiques":"ma",sciences:"sc",svt:"sc",histoire:"hi","géographie":"ge",geographie:"ge",geo:"ge","géo":"ge",anglais:"en"};
   const q=(j.questions||[]).map(x=>({q:x.q||x.question, r:String(x.r!=null?x.r:x.reponse!=null?x.reponse:""), ch:(x.faux||x.choix||[]).map(String), rap:x.rappel||""})).filter(x=>x.q&&x.r);
-  return {t:j.titre||"Leçon", sub:smap[norm(j.matiere)]||"au", type:tmap[norm(j.type)]||"texte", text:String(j.texte||""), q, img:j.images||""};
+  const rs=redSplit(String(j.texte||"").replace(/\\n/g,"\n"));
+  return {t:String(j.titre||"Leçon").replace(/\*/g,""), sub:smap[norm(j.matiere)]||"au", type:tmap[norm(j.type)]||"texte", text:rs.text, red:rs.red, q, img:j.images||""};
 }
 function lnCreate(){
-  lnKeep(); const text=(LN.text||"").trim();
+  lnKeep(); const raw=(LN.text||"").trim(), rs=LN.src==="ia"?{text:raw,red:[]}:redSplit(raw), text=rs.text.trim();
   if (LN.addTo){ const l=lecGet(LN.addTo); if (!text && !LN.photo) return toast("Ajoute du texte ou une photo");
-    l.parts.push({x:text, at:Date.now()}); if (LN.photo && !l.photo){ l.photo=1; photoSave(l.id, LN.photo); } else if (LN.photo){ const pid=l.id+"_"+l.parts.length; photoSave(pid, LN.photo); (l.photos=l.photos||[]).push(pid); }
+    l.parts.push({x:text, at:Date.now()}); if (rs.red.length) l.red=[...(l.red||[]), ...rs.red]; if (LN.photo && !l.photo){ l.photo=1; photoSave(l.id, LN.photo); } else if (LN.photo){ const pid=l.id+"_"+l.parts.length; photoSave(pid, LN.photo); (l.photos=l.photos||[]).push(pid); }
     lecSave(l); LN=null; toast("✓ Morceau ajouté"); return go("lecon", l.id); }
   let l;
   if (LN.src==="ia"){ let d; try { d=parseIA(text); } catch(e){ return toast("Je ne reconnais pas la réponse de l'IA. Copie bien tout le bloc { … }"); }
-    l={id:lid(), t:d.t, sub:d.sub, type:d.type, parts:[{x:d.text, at:Date.now()}], q:d.q, img:d.img, created:Date.now(), st:{}, marks:[], ia:1}; }
+    l={id:lid(), t:d.t, sub:d.sub, type:d.type, parts:[{x:d.text, at:Date.now()}], q:d.q, img:d.img, red:d.red, created:Date.now(), st:{}, marks:[], ia:1}; }
   else { if (!text) return toast("Le contenu est vide");
-    l={id:lid(), t:(LN.title||suggestTitle(LN.type,LN.sub,text)).trim(), sub:LN.sub, type:LN.type, parts:[{x:text, at:Date.now()}], q:[], created:Date.now(), st:{}, marks:[]}; }
+    l={id:lid(), t:(LN.title||suggestTitle(LN.type,LN.sub,text)).trim(), sub:LN.sub, type:LN.type, parts:[{x:text, at:Date.now()}], q:[], red:rs.red, created:Date.now(), st:{}, marks:[]}; }
   if (LN.photo){ l.photo=1; photoSave(l.id, LN.photo); }
   lecSave(l); LN=null; sndWin(); toast(`📚 Leçon créée : <b>${esc(l.t)}</b>`); go("lecon", l.id);
 }
@@ -2029,7 +2219,10 @@ SCREENS.lecTrous = (id) => {
   const l=lecGet(id), lvl=Math.min(4,(l.lvl||0)+1), lines=lecLines(l).slice(0,40);
   const toks=lines.map(ln=>ln.split(/([A-Za-zÀ-ÖØ-öø-ÿœŒæÆ'-]+)/));
   const cand=[]; toks.forEach((t,li)=>t.forEach((w,wi)=>{ if (wi%2===1 && w.length>=(lvl>=3?3:4)) cand.push([li,wi,w]); }));
-  const want=Math.max(1,Math.round(cand.length*[0,.15,.3,.5,.8][lvl])), holes=shuffle(cand).slice(0,want).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  const redC=lecRedPos(l, toks);
+  const rk=new Set(redC.map(c=>c[0]+":"+c[1])), rest=cand.filter(c=>!rk.has(c[0]+":"+c[1]));
+  const want=Math.max(1,Math.round(cand.length*[0,.15,.3,.5,.8][lvl]));
+  const holes=(redC.length ? [...redC, ...shuffle(rest).slice(0, lvl>=3?Math.max(0,want-redC.length):0)] : shuffle(cand).slice(0,want)).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
   const all=[...new Set(cand.map(c=>c[2]))];
   LT={id, lvl, toks, holes, i:0, ko:0}; ltDraw();
 };
@@ -2143,7 +2336,9 @@ function iaPrompt(k){ return `Tu prépares une leçon pour l'application de rév
 Règles :
 - "texte" = le contenu du cours recopié fidèlement, une idée ou un vers par ligne (\\n). Pour "mots" : un mot par ligne. Pour "definitions" : « mot : définition » par ligne. Pour "dates" : « date : événement » par ligne.
 - Fais 10 à 20 questions de compréhension adaptées au niveau ${CLASSES()[k]}, y compris sur les schémas, cartes ou images s'il y en a.
-- Les mauvaises réponses doivent être plausibles. Réponses courtes. Français simple.`; }
+- Les mauvaises réponses doivent être plausibles. Réponses courtes. Français simple.
+- Dans "texte", mets entre *astérisques* les mots écrits en rouge, surlignés ou soulignés (ils deviendront les trous à compléter).
+- N'utilise jamais de guillemets " à l'intérieur des textes : utilise « » à la place.`; }
 SCREENS.lecPapa = () => {
   app.innerHTML = hdr("📚 Préparer une leçon", "parents") + `
   <div class="card"><div class="label">Pour qui ?</div>${seg("lpk",[["lana","🦄 Lana ("+CLASSES().lana+")"],["sorya","🐬 Sorya ("+CLASSES().sorya+")"]],LPK,"setLpk")}</div>
@@ -2163,7 +2358,7 @@ async function lpPhoto(inp){ const f=inp.files&&inp.files[0]; if (!f) return; tr
 function lpImport(){
   const raw=document.getElementById("lpta").value, m=document.getElementById("lpmsg"); let d;
   try { d=parseIA(raw); } catch(e){ m.innerHTML=`<span style="color:var(--ko)">Je ne reconnais pas la réponse. Copie bien tout le bloc qui commence par { et finit par }.</span>`; return; }
-  const l={id:lid(), t:d.t, sub:d.sub, type:d.type, parts:[{x:d.text, at:Date.now()}], q:d.q, img:d.img, created:Date.now(), st:{}, marks:[], ia:1, by:"papa"};
+  const l={id:lid(), t:d.t, sub:d.sub, type:d.type, parts:[{x:d.text, at:Date.now()}], q:d.q, img:d.img, red:d.red, created:Date.now(), st:{}, marks:[], ia:1, by:"papa"};
   if (LPP){ l.photo=1; photoSave(l.id, LPP); LPP=null; }
   lecSave(l, LPK); sndWin();
   m.innerHTML=`<span style="color:var(--ok)">✓ « ${esc(l.t)} » · ${lecItems(l).length} questions → envoyée à ${NAMES[LPK]}</span>`; document.getElementById("lpta").value="";
