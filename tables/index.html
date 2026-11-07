@@ -106,7 +106,7 @@ h1,h2,h3,.big,.q{font-family:"Baloo 2",Nunito,sans-serif;margin:0}
 .lxopts.race{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 4px}.lxopts.race button{font-size:15px;text-align:center;padding:12px 6px}
 .lxopts button.good,.lxvf button.good{background:var(--ok);color:#fff;border-color:var(--ok)}.lxopts button.bad,.lxvf button.bad{background:var(--ko);color:#fff;border-color:var(--ko)}
 .lxvf{display:flex;gap:10px}.lxvf button{flex:1;color:#fff;font-weight:800;font-size:19px;padding:16px;border-radius:16px;box-shadow:0 3px 0 rgba(0,0,0,.18)}
-.lxok{color:var(--ok);font-weight:800;margin-top:12px}.lxko{color:var(--ko);font-weight:700;margin-top:12px}.lxrap{color:var(--ink);font-weight:600;background:#e8f7ff;border-radius:12px;padding:10px;margin-top:8px;font-size:14px}
+.lxok{color:var(--ok);font-weight:800;margin-top:12px}.lxko{color:var(--ko);font-weight:700;margin-top:12px}.lxhl{background:var(--sun);color:#3a2600;border-radius:8px;padding:0 6px;font-weight:800}.lxrap{color:#1d2b3a !important;font-weight:600;background:#e8f7ff;border-radius:12px;padding:10px;margin-top:8px;font-size:14px}
 .lxpoem{font-size:18px;line-height:1.9}.lxhole{display:inline-block;min-width:60px;border-bottom:3px solid var(--line);text-align:center;color:var(--muted);font-weight:800}.lxhole.cur{border-color:var(--me);color:var(--me);background:var(--me-soft);border-radius:6px 6px 0 0}
 .lxfill{color:var(--me);font-weight:800}.lxcurl{font-weight:800;color:var(--me);background:var(--me-soft);border-radius:10px;padding:2px 8px}.lxhid{color:var(--line);letter-spacing:2px}
 .lxspk{font-size:64px;background:none}.lxflash{font:800 34px "Baloo 2",Nunito,sans-serif;padding:10px}
@@ -387,7 +387,7 @@ body.p-papa{--me:#f08a24; --me-soft:#ffe8d1}
 </head>
 <body>
 <div id="app"></div>
-<script>const APPV="15";
+<script>const APPV="16";
 (function(){ const chk=()=>fetch(location.pathname+"?x="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{ const m=t.match(/const APPV="(\d+)"/); if (m && m[1]!==APPV){ try{ if (sessionStorage.getItem("upd")===m[1]) return; sessionStorage.setItem("upd",m[1]); }catch(e){} location.replace(location.pathname+"?v="+m[1]+location.hash); } }).catch(()=>{});
   addEventListener("load",()=>setTimeout(chk,1500)); document.addEventListener("visibilitychange",()=>{ if (document.visibilityState==="visible") chk(); }); })();</script>
 <script src="assets.js?v=1"></script>
@@ -1964,9 +1964,34 @@ function misspell(w){
   for (const [a,b] of shuffle(r)){ const v=w.replace(a,b); if (v!==w) out.add(v); if (out.size>=3) break; }
   return [...out];
 }
+/* --- questions automatiques (sans IA) : phrases entières, mots importants --- */
+const STOPW=new Set("avec dans pour sans sous chez mais donc alors ainsi entre elles elle nous vous leur leurs cette ces sont était étaient avait avaient être avoir fait font plus très tout toute tous toutes aussi comme quand puis après avant encore même bien peut pendant depuis contre lors dont quelques autre autres celui celle ceux leurs notre votre parce lorsque toujours jamais seulement beaucoup the and with that this from have".split(" "));
+const isCap = w => /^[A-ZÀ-ÖØ-Þ]/.test(w);
+function lecSentences(l){
+  const ok = s => { const w=s.match(WRE)||[], nb=s.replace(/\s/g,""), let_=(s.match(/[A-Za-zÀ-ÖØ-öø-ÿœŒ]/g)||[]).length;
+    const one=w.filter(x=>x.length===1 && !/^[aàyAÀY]$/.test(x)).length, od=(s.match(/\(/g)||[]).length, cd=(s.match(/\)/g)||[]).length;
+    if (one>=2 || od!==cd || (s.match(/[|+—_\[\]]/g)||[]).length>=2) return false;
+    return w.length>=(l.type==="poesie"?3:5) && let_>=nb.length*.72 && /^[«"(A-Za-zÀ-ÖØ-öø-ÿ0-9]/.test(s) && s.length<=280; };
+  if (l.type==="poesie") return lecLines(l).filter(ok);
+  return lecText(l).replace(/\s*\n\s*/g," ").replace(/([.!?…])\s+(?=[«"(A-ZÀ-ÖØ-Þ])/g,"$1\u0001").split("\u0001").map(x=>x.trim()).filter(ok);
+}
+function lecCloze(l){
+  const S=lecSentences(l), RW=redWords(l), out=[], toks=S.map(s=>s.match(WRE)||[]);
+  const content = (w,i) => w.length>=5 && !STOPW.has(norm(w)) && !/(aient|ait|ent|ons|ez)$/.test(w) || (isCap(w) && i>0 && w.length>=3);
+  const poolCap=[...new Set(toks.flatMap(t=>t.filter((w,i)=>isCap(w) && i>0 && w.length>=3)))], poolLow=[...new Set(toks.flatMap(t=>t.filter((w,i)=>!isCap(w) && content(w,i))))];
+  const redAll=[...new Set(toks.flat().filter(w=>RW.has(norm(w)) && w.length>=3 && !STOPW.has(norm(w))))];
+  S.forEach((s,si)=>{ const t=toks[si]; let pick_=t.filter(w=>RW.has(norm(w)) && w.length>=3 && !STOPW.has(norm(w)));
+    if (!pick_.length){ const caps=t.filter((w,i)=>isCap(w) && i>0 && w.length>=3 && !STOPW.has(norm(w))); pick_ = caps.length ? [caps.sort((a,b)=>b.length-a.length)[0]] : t.filter(content).sort((a,b)=>b.length-a.length).slice(0,1); }
+    [...new Set(pick_)].slice(0,2).forEach(w=>{
+      const pool=(isCap(w)?[...redAll.filter(isCap), ...poolCap]:[...redAll.filter(x=>!isCap(x)), ...poolLow]).filter(x=>norm(x)!==norm(w) && !t.some(y=>norm(y)===norm(x)));
+      const ch=[...new Set(pool)].sort((a,b)=>Math.abs(a.length-w.length)-Math.abs(b.length-w.length)).slice(0,6);
+      const re=new RegExp("(^|[^A-Za-zÀ-ÖØ-öø-ÿœŒæÆ'-])"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"(?![A-Za-zÀ-ÖØ-öø-ÿœŒæÆ'-])");
+      out.push({k:hkey("c"+w+s.slice(0,40)), q:s.replace(re,"$1＿＿＿"), r:w, ch, rap:s, cloze:1}); }); });
+  return out;
+}
 function lecItems(l){
   const it=[], T=l.type;
-  for (const q of l.q||[]) if (q.q && q.r) it.push({k:hkey(q.q), q:q.q, r:q.r, ch:(q.ch||[]).filter(x=>x && norm(x)!==norm(q.r)), rap:q.rap});
+  for (const q of l.q||[]) if (q.q && q.r) it.push({k:hkey(q.q), q:q.q, r:q.r, ch:(q.ch||[]).filter(x=>x && norm(x)!==norm(q.r)), rap:q.rap, ex:q.ex||""});
   if (T==="defs"){ const P=lecPairs(l), B=P.map(p=>p[1]), A=P.map(p=>p[0]);
     P.forEach(([a,b])=>{ it.push({k:hkey("d"+a), q:`Que veut dire « ${a} » ?`, r:b, ch:B.filter(x=>x!==b), rap:`${a} : ${b}`});
       it.push({k:hkey("e"+a), q:`Quel mot correspond à : « ${b} » ?`, r:a, ch:A.filter(x=>x!==a), rap:`${a} : ${b}`}); }); }
@@ -1976,12 +2001,7 @@ function lecItems(l){
   if (T==="questions"){ for (const s of lecLines(l)){ const m=s.match(/^(.+?\?)\s*(.+)$/)||s.match(/^(.+?)\s*\|\s*(.+)$/); if (m) it.push({k:hkey(m[1]), q:m[1], r:m[2], ch:[], rap:s}); }
     const R=it.map(x=>x.r); it.forEach(x=>{ if (!x.ch.length) x.ch=R.filter(r=>r!==x.r); }); }
   if (T==="mots"){ for (const w of lecWords(l)){ const m=misspell(w); if (m.length>=2) it.push({k:hkey("m"+w), q:"Quelle est la bonne orthographe ?", r:w, ch:m, rap:`On écrit : ${w}`}); } }
-  if (T==="poesie" || T==="texte" || (!it.length && lecLines(l).length)){
-    const lines=lecLines(l), all=[...new Set(lecText(l).match(WRE)||[])].filter(w=>w.length>=4);
-    lines.forEach((ln,i)=>{ const ws=(ln.match(WRE)||[]).filter(w=>w.length>=4); if (!ws.length) return; const w=ws.sort((a,b)=>b.length-a.length)[0];
-      const sim=all.filter(x=>x!==w).sort((a,b)=>Math.abs(a.length-w.length)-Math.abs(b.length-w.length)).slice(0,6);
-      it.push({k:hkey("t"+i+ln), q:ln.replace(w,"＿＿＿"), r:w, ch:sim, rap:ln, cloze:1}); });
-  }
+  if (T==="poesie" || T==="texte" || (!it.length && lecLines(l).length)) it.push(...lecCloze(l));
   for (const x of it){ x.ch=shuffle([...new Set(x.ch.filter(c=>norm(c)!==norm(x.r)))]).slice(0,3); }
   return it.filter(x=>x.ch.length>=1);
 }
@@ -2135,7 +2155,7 @@ function parseIA(raw){
   const blk=raw.slice(a,b+1); let j; try { j=JSON.parse(blk); } catch(e){ j=JSON.parse(jsonFix(blk)); }
   const tmap={poesie:"poesie","poésie":"poesie",mots:"mots",definitions:"defs","définitions":"defs",defs:"defs",dates:"dates",questions:"questions",texte:"texte",cours:"texte"};
   const smap={"français":"fr",francais:"fr",maths:"ma","mathématiques":"ma",sciences:"sc",svt:"sc",histoire:"hi","géographie":"ge",geographie:"ge",geo:"ge","géo":"ge",anglais:"en"};
-  const q=(j.questions||[]).map(x=>({q:x.q||x.question, r:String(x.r!=null?x.r:x.reponse!=null?x.reponse:""), ch:(x.faux||x.choix||[]).map(String), rap:x.rappel||""})).filter(x=>x.q&&x.r);
+  const q=(j.questions||[]).map(x=>({q:x.q||x.question, r:String(x.r!=null?x.r:x.reponse!=null?x.reponse:""), ch:(x.faux||x.choix||[]).map(String), rap:x.rappel||"", ex:x.explication||x.ex||""})).filter(x=>x.q&&x.r);
   const rs=redSplit(String(j.texte||"").replace(/\\n/g,"\n"));
   return {t:String(j.titre||"Leçon").replace(/\*/g,""), sub:smap[norm(j.matiere)]||"au", type:tmap[norm(j.type)]||"texte", text:rs.text, red:rs.red, q, img:j.images||""};
 }
@@ -2189,8 +2209,10 @@ function lqNext(){
   if (LQ.i>=LQ.items.length){ if (LQ.retry.length){ LQ.items.push(...LQ.retry.splice(0)); } else return lecEnd(l, LQ.ok, LQ.items.length, LQ.mode==="vf"?"Vrai / faux":"Quiz", ()=>go("lecQuiz",LQ.id,LQ.mode)); }
   const x=LQ.items[LQ.i], n=LQ.items.length;
   let body;
-  if (LQ.mode==="vf"){ const tr=Math.random()<.5, shown=tr?x.r:pick(x.ch); LQ.cur={x, tr};
-    body=`<div class="lxq">${esc(x.q)}</div><div class="lxprop">${esc(shown)}</div><div class="lxvf"><button style="background:var(--ok)" onclick="lqAns(true,this)">✓ Vrai</button><button style="background:var(--ko)" onclick="lqAns(false,this)">✗ Faux</button></div>`; }
+  if (LQ.mode==="vf"){ const tr=Math.random()<.5, shown=tr?x.r:pick(x.ch); LQ.cur={x, tr, shown};
+    body = x.cloze ? `<div class="label">Vrai ou faux ?</div><div class="lxq">${esc(x.q).replace("＿＿＿",`<span class="lxhl">${esc(shown)}</span>`)}</div><div class="lxvf">`
+      : `<div class="lxq">${esc(x.q)}</div><div class="lxprop">${esc(shown)}</div><div class="lxvf">`;
+    body+=`<button style="background:var(--ok)" onclick="lqAns(true,this)">✓ Vrai</button><button style="background:var(--ko)" onclick="lqAns(false,this)">✗ Faux</button></div>`; }
   else { const opts=shuffle([x.r, ...x.ch]); LQ.cur={x};
     body=`<div class="lxq">${esc(x.q)}</div><div class="lxopts">${opts.map(o=>`<button onclick="lqAns(this.dataset.v,this)" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>`; }
   app.innerHTML = `<div class="top"><button class="back" onclick="go('lecon','${LQ.id}')">✕</button><h2 style="font-size:17px">${esc(l.t)}</h2><span class="pchip" style="margin-left:auto">${Math.min(LQ.i+1,n)} / ${n}</span></div>
@@ -2202,8 +2224,10 @@ function lqAns(v, el){
   lecRecord(l, x.k, ok); petReact(ok); ok?(LQ.ok++,sndOk()):(sndKo(), LQ.retry.push(x));
   if (LQ.mode!=="vf") document.querySelectorAll(".lxopts button").forEach(b=>{ if (norm(b.dataset.v)===norm(x.r)) b.classList.add("good"); else if (b===el) b.classList.add("bad"); });
   else el.classList.add(ok?"good":"bad");
-  document.getElementById("lxfb").innerHTML = ok ? `<div class="lxok">✓ Bravo ! <b>🪙 +1</b></div>` : `<div class="lxko">✗ La bonne réponse : <b>${esc(x.r)}</b>${x.rap?`<div class="lxrap">📖 ${esc(x.rap)}</div>`:""}</div>`;
-  LQ.i++; lecSave(l); const t=setTimeout(()=>{ LQ.lock=0; lqNext(); }, ok?900:2600); cleanup.push(()=>{ clearTimeout(t); LQ.lock=0; });
+  const why = x.ex ? `<div class="lxrap">💡 ${esc(x.ex)}</div>` : x.rap && !x.cloze ? `<div class="lxrap">📖 ${esc(x.rap)}</div>` : x.cloze ? `<div class="lxrap">📖 ${esc(x.rap).replace(esc(x.r),`<b>${esc(x.r)}</b>`)}</div>` : "";
+  const vfTxt = LQ.mode==="vf" ? (tr ? `C'était bien <b>${esc(x.r)}</b>.` : `Ce n'est pas « ${esc(LQ.cur.shown)} », c'est <b>${esc(x.r)}</b>.`) : `La bonne réponse : <b>${esc(x.r)}</b>`;
+  document.getElementById("lxfb").innerHTML = ok ? `<div class="lxok">✓ Bravo ! <b>🪙 +1</b>${LQ.mode==="vf"&&!tr?` <span style="font-weight:600">${vfTxt}</span>`:""}</div>${x.ex?why:""}` : `<div class="lxko">✗ ${vfTxt}${why}</div>`;
+  LQ.i++; lecSave(l); const t=setTimeout(()=>{ LQ.lock=0; lqNext(); }, ok?(x.ex?2200:900):(x.ex||x.rap?3800:2600)); cleanup.push(()=>{ clearTimeout(t); LQ.lock=0; });
 }
 function lecEnd(l, ok, n, name, again){
   lecSave(l); save(); const pct=Math.round(100*ok/Math.max(1,n));
@@ -2330,21 +2354,33 @@ function lecCourse(id){ const l=lecGet(id); LCQ={id, items:lecPickItems(l, 30)};
 
 /* --- Papa : préparer une leçon avec l'IA --- */
 let LPK="lana";
+let LPS="au", LPT="";
+const IASUB = {
+  fr:"C'est un cours de FRANÇAIS. Questions variées : compréhension du texte (qui, quoi, pourquoi, que se passe-t-il ensuite), sens des mots difficiles, grammaire et conjugaison si le cours en parle, orthographe des mots importants. Pour une poésie : sens, auteur, images, rimes, et quelques vers à compléter.",
+  ma:"C'est un cours de MATHS. Questions sur les règles, définitions et méthodes du cours, et surtout de petits exercices d'application NOUVEAUX (avec d'autres nombres que dans le cours) dont la réponse est un nombre ou un mot court. Les mauvaises réponses = erreurs typiques des élèves (retenue oubliée, confusion périmètre/aire, mauvaise unité…).",
+  hi:"C'est un cours d'HISTOIRE. Questions variées : qui, quoi, où, quand ; pourquoi et quelles conséquences ; rôle des personnages ; ordre des événements (« Que se passe-t-il juste après… ? ») ; dates importantes ; vocabulaire historique ; questions sur les cartes, frises ou documents.",
+  ge:"C'est un cours de GÉOGRAPHIE. Questions variées : repérage sur la carte (où se trouve…, qu'y a-t-il au nord de…), définitions, caractéristiques des lieux (climat, relief, population, activités), chiffres clés, comparaisons, questions sur les cartes et documents.",
+  sc:"C'est un cours de SCIENCES. Questions variées : définitions, comment ça fonctionne et pourquoi, étapes d'un phénomène dans l'ordre, légendes des schémas, résultats d'expériences, causes et conséquences, exemples de la vie de tous les jours.",
+  en:"C'est un cours d'ANGLAIS. Questions variées : vocabulaire dans les deux sens (« Comment dit-on chat en anglais ? » / « Que veut dire dog ? »), phrases à compléter en anglais, grammaire du cours, petites traductions. Questions en français, réponses en anglais quand c'est du vocabulaire anglais.",
+  au:"Adapte les questions à la matière du cours (compréhension, vocabulaire, faits importants, causes et conséquences)."};
 function iaPrompt(k){ return `Tu prépares une leçon pour l'application de révision de ma fille ${NAMES[k]} (classe : ${CLASSES()[k]}).
+${IASUB[LPS]||IASUB.au}
 À partir de la photo du cours ci-jointe, réponds UNIQUEMENT avec un bloc JSON, sans aucun texte avant ou après, au format exact :
-{"titre":"titre court","matiere":"Français|Maths|Sciences|Histoire|Géographie|Anglais|Autre","type":"poesie|mots|definitions|dates|questions|texte","texte":"…","questions":[{"q":"question","r":"bonne réponse courte","faux":["mauvaise réponse 1","mauvaise réponse 2"],"rappel":"phrase du cours qui contient la réponse"}],"images":"courte description des schémas, cartes ou images du cours (ou vide)"}
+{"titre":"titre court","matiere":"Français|Maths|Sciences|Histoire|Géographie|Anglais|Autre","type":"poesie|mots|definitions|dates|questions|texte","texte":"…","questions":[{"q":"question","r":"bonne réponse courte","faux":["mauvaise réponse 1","mauvaise réponse 2","mauvaise réponse 3"],"explication":"une phrase simple qui explique la bonne réponse","rappel":"phrase du cours qui contient la réponse"}],"images":"courte description des schémas, cartes ou images du cours (ou vide)"}
 Règles :
 - "texte" = le contenu du cours recopié fidèlement, une idée ou un vers par ligne (\\n). Pour "mots" : un mot par ligne. Pour "definitions" : « mot : définition » par ligne. Pour "dates" : « date : événement » par ligne.
-- Fais 10 à 20 questions de compréhension adaptées au niveau ${CLASSES()[k]}, y compris sur les schémas, cartes ou images s'il y en a.
+- Fais 15 à 20 questions claires et complètes (une vraie phrase avec un point d'interrogation), adaptées au niveau ${CLASSES()[k]}, y compris sur les schémas, cartes ou images s'il y en a. Varie les types de questions. Pas de question dont la réponse n'est pas dans le cours.
+- "explication" : une phrase courte et bienveillante, comme un professeur, qui aide à retenir la bonne réponse.
 - Les mauvaises réponses doivent être plausibles. Réponses courtes. Français simple.
 - Dans "texte", mets entre *astérisques* les mots écrits en rouge, surlignés ou soulignés (ils deviendront les trous à compléter).
 - N'utilise jamais de guillemets " à l'intérieur des textes : utilise « » à la place.`; }
 SCREENS.lecPapa = () => {
   app.innerHTML = hdr("📚 Préparer une leçon", "parents") + `
   <div class="card"><div class="label">Pour qui ?</div>${seg("lpk",[["lana","🦄 Lana ("+CLASSES().lana+")"],["sorya","🐬 Sorya ("+CLASSES().sorya+")"]],LPK,"setLpk")}</div>
+  <div class="card"><div class="label">Matière du cours</div><div class="lxchips">${Object.entries(SUBJ).map(([k,[i,n]])=>`<button class="${LPS===k?"on":""}" onclick="setLps('${k}')">${i} ${n}</button>`).join("")}</div><div class="muted small" style="margin-top:6px">Le message pour l'IA s'adapte à la matière.</div></div>
   <div class="card"><div class="label">1. Copie le message pour l'IA</div><div class="lxprompt">${esc(iaPrompt(LPK)).replace(/\n/g,"<br>")}</div><button class="btn ghost block" style="margin-top:8px;font-size:15px" onclick="lpCopy(this)">📋 Copier le message</button></div>
   <div class="card"><div class="label">2. Dans ChatGPT ou Claude</div><div class="small">📷 Envoie la photo du cours (même écrite à la main) + colle le message. L'IA répond par un bloc qui commence par <b>{</b>. Copie toute sa réponse.</div></div>
-  <div class="card"><div class="label">3. Colle la réponse ici</div><textarea id="lpta" class="lxta" rows="6" placeholder="{ &quot;titre&quot;: … }"></textarea>
+  <div class="card"><div class="label">3. Colle la réponse ici</div><textarea id="lpta" class="lxta" rows="6" placeholder="{ &quot;titre&quot;: … }" oninput="LPT=this.value">${esc(LPT)}</textarea>
     <label class="btn ghost block" style="margin-top:8px;font-size:15px">📷 Joindre aussi la photo du cours (optionnel)<input type="file" accept="image/*" hidden onchange="lpPhoto(this)"></label><div class="muted small" id="lpph"></div>
     <button class="btn block" style="margin-top:10px;background:var(--ok);color:#fff" onclick="lpImport()">✓ Envoyer à ${NAMES[LPK]}</button><div id="lpmsg" class="small" style="margin-top:8px"></div></div>
   <div class="card"><div class="label">Ou sans IA</div><div class="row wrap"><button class="btn ghost" style="flex:1;font-size:15px" onclick="LN=null;LW='${LPK}';go('lecNew')">⌨️ Taper / 📷 photo</button><button class="btn ghost" style="flex:1;font-size:15px" onclick="go('lecons','${LPK}')">📚 Ses leçons (${lecOf(LPK).length})</button></div></div>
@@ -2355,13 +2391,14 @@ function setClass(k,v){ S.parent.classes=Object.assign({},S.parent.classes||{},{
 function lpCopy(el){ const t=iaPrompt(LPK); (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{ el.textContent="✓ Copié !"; }).catch(()=>{ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); el.textContent="✓ Copié !"; }); }
 let LPP=null;
 async function lpPhoto(inp){ const f=inp.files&&inp.files[0]; if (!f) return; try { LPP=await shrinkPhoto(f); document.getElementById("lpph").textContent="✓ Photo jointe"; } catch(e){} }
+function setLps(k){ const t=document.getElementById("lpta"); if (t) LPT=t.value; LPS=k; const y=scrollY; go("lecPapa"); scrollTo(0,y); }
 function lpImport(){
   const raw=document.getElementById("lpta").value, m=document.getElementById("lpmsg"); let d;
   try { d=parseIA(raw); } catch(e){ m.innerHTML=`<span style="color:var(--ko)">Je ne reconnais pas la réponse. Copie bien tout le bloc qui commence par { et finit par }.</span>`; return; }
-  const l={id:lid(), t:d.t, sub:d.sub, type:d.type, parts:[{x:d.text, at:Date.now()}], q:d.q, img:d.img, red:d.red, created:Date.now(), st:{}, marks:[], ia:1, by:"papa"};
+  const l={id:lid(), t:d.t, sub:LPS!=="au"?LPS:d.sub, type:d.type, parts:[{x:d.text, at:Date.now()}], q:d.q, img:d.img, red:d.red, created:Date.now(), st:{}, marks:[], ia:1, by:"papa"};
   if (LPP){ l.photo=1; photoSave(l.id, LPP); LPP=null; }
   lecSave(l, LPK); sndWin();
-  m.innerHTML=`<span style="color:var(--ok)">✓ « ${esc(l.t)} » · ${lecItems(l).length} questions → envoyée à ${NAMES[LPK]}</span>`; document.getElementById("lpta").value="";
+  m.innerHTML=`<span style="color:var(--ok)">✓ « ${esc(l.t)} » · ${lecItems(l).length} questions → envoyée à ${NAMES[LPK]}</span>`; document.getElementById("lpta").value=""; LPT="";
 }
 
 /* ================== Maths (problèmes, calcul, géométrie) ================== */
